@@ -1020,10 +1020,10 @@ function hud(now){
   }
   ctx.textAlign='left';
 }
-function frame(now){
+function frame(){ const now=performance.now();
   if(phase==='bet'&&now-phaseStart>=BET_MS&&!starting){ starting=true; startRun().finally(()=>starting=false) }
   if(phase==='run'){
-    mult=Math.min(MAXM,Math.floor(Math.exp(GROWTH*(now-phaseStart))*100)/100);
+    mult=Math.min(MAXM,Math.max(1,Math.floor(Math.exp(GROWTH*Math.max(0,now-phaseStart))*100)/100));
     const a=+$('auto').value;
     if(myBet&&!myBet.out&&a>=1.01&&mult>=a&&a<=crashAt){ mult=a; cashOut() }
     bots.forEach(b=>{ if(!b.done&&mult>=b.out&&b.out<=crashAt){ b.done=true; renderPlayers() } });

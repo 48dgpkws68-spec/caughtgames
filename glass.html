@@ -220,11 +220,11 @@ let burstGlow=0;
 
 /* ---------- loop ---------- */
 let last=performance.now(), shake=0;
-function frame(now){
+function frame(){ const now=performance.now();
   const dt=Math.min(.05,(now-last)/1000); last=now; const T=now/1000;
   let I=0;
   if(phase==='bet'){ const left=Math.max(0,BET_MS-(now-t0)); $('sub').textContent='PLACE YOUR BETS · '+(left/1000).toFixed(1)+'s'; if(left<=0) start() }
-  else if(phase==='run'){ mult=Math.min(10000,Math.floor(Math.exp(GROWTH*(now-t0))*100)/100); I=Math.min(1,Math.log(mult)/Math.log(25));
+  else if(phase==='run'){ mult=Math.min(10000,Math.max(1,Math.floor(Math.exp(GROWTH*Math.max(0,now-t0))*100)/100)); I=Math.min(1,Math.log(mult)/Math.log(25));
     const a=+$('auto').value; if(myBet&&!myBet.out&&a>=1.01&&mult>=a&&a<=crashAt){ mult=a; cash() }
     if(mult>=crashAt) bust(); else { $('mult').textContent=fmt(mult)+'×'; if(myBet&&!myBet.out) btn() }
     if(!crackUntil&&now>crackAt&&mult<crashAt*.85){ crackUntil=now+520; crackAt=now+3500+Math.random()*5000; shake=.25; $('sub').textContent='CRACKING…'; if(ac&&!muted){ tone(1800,300,.35,.12,'sawtooth'); tone(90,60,.3,.25,'square') } }
