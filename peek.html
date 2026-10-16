@@ -18,8 +18,9 @@
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
 .wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:20px 60px}
 header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
-.logo{font-family:var(--display);font-size:clamp(28px,5vw,44px);letter-spacing:1px;line-height:1;background:var(--goldg);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(3px 3px 0 var(--acc))}
-.logo small{display:block;font-family:var(--body);font-size:13px;color:var(--muted);-webkit-text-fill-color:var(--muted);letter-spacing:.5px;margin-top:6px}
+.logo{font-family:var(--display);font-size:clamp(28px,5vw,44px);letter-spacing:1px;line-height:1}
+.logo .lt{display:inline-block;background:var(--goldg);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(3px 3px 0 var(--acc))}
+.logo small{display:block;font-family:var(--body);font-size:13px;color:var(--muted);letter-spacing:.5px;margin-top:6px}
 .themes{display:flex;gap:6px;background:var(--surface);padding:4px;border-radius:999px;border:1px solid var(--line)}
 .themes button{border:0;background:transparent;color:var(--muted);font:600 13px var(--body);padding:8px 14px;border-radius:999px;cursor:pointer}
 .themes button[aria-pressed="true"]{background:var(--acc);color:#07060b}
@@ -88,7 +89,7 @@ ul.pts{padding-left:18px;margin:8px 0 0;max-width:68ch} ul.pts li{margin-bottom:
 </head><body>
 <div class="wrap">
   <header>
-    <div class="logo" id="logo">GLUREN!<small id="tagline">Hoe langer je gluurt, hoe hoger je winst. Cash uit voordat ze omkijkt.</small></div>
+    <div class="logo" id="logo"><span class="lt">GLUREN!</span><small id="tagline">Hoe langer je gluurt, hoe hoger je winst. Cash uit voordat ze omkijkt.</small></div>
     <div class="themes" role="group" aria-label="Thema">
       <button id="thA" aria-pressed="true" data-t="thA">Gluren</button>
       <button id="thB" aria-pressed="false" data-t="thB">Kluiskraak</button>
@@ -1162,7 +1163,7 @@ function extras(scale,caught,now){
 /* ---------- thema ---------- */
 function setTheme(t){
   theme=t; $('thA').setAttribute('aria-pressed',t==='A'); $('thB').setAttribute('aria-pressed',t==='B');
-  $('logo').firstChild.nodeValue=T(t==='A'?'logoA':'logoB');
+  $('logo').querySelector('.lt').textContent=T(t==='A'?'logoA':'logoB');
   $('tagline').textContent=T(t==='A'?'tagA':'tagB');
   document.documentElement.style.setProperty('--acc',t==='A'?'#46c6e0':'#e9c46a');
   try{localStorage.setItem('gl-theme',t)}catch(e){}
