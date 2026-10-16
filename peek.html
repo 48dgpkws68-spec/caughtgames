@@ -202,14 +202,14 @@ const L={nl:{hey:'HÉ!',stop:'STOP!',bets:'ZET IN',caught:'BETRAPT!',bet:'INZETT
  min:'Kies een inzet van minimaal 1.',broke:'Niet genoeg speelgeld voor deze inzet.',ready:a=>`Inzet ${a} staat klaar.`,queued:a=>`Inzet ${a} geldt voor de volgende ronde.`,
  first:'Speel eerst een ronde.',ok:c=>`Klopt: hash komt overeen en de seed geeft ${c}×.`,bad:'Komt niet overeen.',
  logoA:'GLUREN!',logoB:'KLUISKRAAK!',tagA:'Hoe langer je gluurt, hoe hoger je winst. Cash uit voordat ze omkijkt.',tagB:'Hoe langer je graait, hoe hoger je winst. Cash uit voordat de bewaker wakker wordt.',
- thA:'Gluren',oi:'HÉ, JIJ!',close:'BIJNA BETRAPT!',sndOn:'Geluid: aan',sndOff:'Geluid: uit',thB:'Kluiskraak',play:'Speelgeld',stake:'Inzet',auto:'Automatisch uitcashen bij (0 = uit)',pl:'Spelers deze ronde',sim:'Andere spelers zijn gesimuleerd voor de demo.',
+ thA:'Gluren',snrk:'SNURK?!',oi:'HÉ, JIJ!',close:'BIJNA BETRAPT!',sndOn:'Geluid: aan',sndOff:'Geluid: uit',thB:'Kluiskraak',play:'Speelgeld',stake:'Inzet',auto:'Automatisch uitcashen bij (0 = uit)',pl:'Spelers deze ronde',sim:'Andere spelers zijn gesimuleerd voor de demo.',
  nh:'Hash van de volgende server-seed (vooraf vastgelegd)',ps:'Vorige ronde: seed en uitkomst',none:'nog geen ronde gespeeld',ver:'Controleer vorige ronde'},
  en:{hey:'HEY!',stop:'STOP!',bets:'PLACE BETS',caught:'BUSTED!',bet:'PLACE BET',cash:'CASH OUT',cancel:'CANCEL',next:'BET NEXT ROUND',
  lost:'lost',you:'You',caughtMsg:x=>`Caught at ${x}×. Stake lost.`,outMsg:(x,w)=>`Cashed out at ${x}×: +${w}`,cancelled:'Bet cancelled.',
  min:'Minimum stake is 1.',broke:'Not enough play money for this stake.',ready:a=>`Bet of ${a} is ready.`,queued:a=>`Bet of ${a} goes into the next round.`,
  first:'Play a round first.',ok:c=>`Verified: hash matches and the seed gives ${c}×.`,bad:'Does not match.',
  logoA:'PEEK!',logoB:'VAULT HEIST!',tagA:'The longer you peek, the bigger the win. Cash out before she turns around.',tagB:'The longer you grab, the bigger the win. Cash out before the guard wakes up.',
- thA:'Peek',oi:'HEY, YOU!',close:'CLOSE CALL!',sndOn:'Sound: on',sndOff:'Sound: off',thB:'Vault Heist',play:'Play money',stake:'Stake',auto:'Auto cash-out at (0 = off)',pl:'Players this round',sim:'Other players are simulated for the demo.',
+ thA:'Peek',snrk:'SNRK?!',oi:'HEY, YOU!',close:'CLOSE CALL!',sndOn:'Sound: on',sndOff:'Sound: off',thB:'Vault Heist',play:'Play money',stake:'Stake',auto:'Auto cash-out at (0 = off)',pl:'Players this round',sim:'Other players are simulated for the demo.',
  nh:'Hash of the next server seed (committed in advance)',ps:'Previous round: seed and result',none:'no round played yet',ver:'Verify previous round'}};
 const EMBED=location.hash==='#embed'; let lang=(EMBED||location.hash==='#en')?'en':'nl';
 const T=(k,...a)=>{const v=L[lang][k];return typeof v==='function'?v(...a):v};
@@ -304,7 +304,7 @@ async function startRun(){
   updateBtn(); renderPlayers();
 }
 function crash(){
-  phase='crash'; crashedAt=performance.now(); mult=crashAt; fakeUntil=0; ending=2; sfx('bust'); flash=.32; flashCol='255,255,255'; if(theme==='A'){ sfx(ending===1?'splash':'boing') }
+  phase='crash'; crashedAt=performance.now(); mult=crashAt; fakeUntil=0; ending=2; sfx('bust'); flash=.32; flashCol='255,255,255'; if(theme==='A'){ sfx(ending===1?'splash':'boing') } else { sfx('alarm'); if(vaultReady()){ const sp=sackPos(); burst(sp.x,sp.y+40,45,true) } }
   history.push(crashAt); renderHist();
   if(myBet&&!myBet.out) say(T('caughtMsg',crashAt.toFixed(2)));
   $('prevSeed').textContent=`seed ${prev.seed} · nonce ${prev.nonce} · ${prev.crash.toFixed(2)}×`;
@@ -517,8 +517,122 @@ function drawBoyfriend(since){
     ctx.fillStyle='#ff2d6f'; ctx.font='34px Bungee, Impact, sans-serif'; ctx.textAlign='center'; ctx.fillText(T('oi'),bx+85,by+48); ctx.textAlign='left'; ctx.restore() }
 }
 
+/* ---------- Vault Heist: geïllustreerde lagen (thema B) ---------- */
+['vault_bg','thief','thief_caught','guard_sleep','guard_awake'].forEach(k=>{ const i=new Image(); i.decoding='async'; i.src='art/'+k+'.webp'; ART[k]=i });
+const vaultReady=()=>theme==='B'&&['vault_bg','thief','thief_caught','guard_sleep','guard_awake'].every(artOk);
+const TH={h:430, fx:255, fy:630, sack:[.3,.15]};          // inbreker: hoogte, voeten, zak (fractie van beeld)
+const GD={h:440, fx:1015, fy:628, lamp:[.12,.2]};          // bewaker: hoogte, voeten, zaklamp (fractie van beeld)
+const VAULT_IN={x:842,y:168};                               // goudgloed in de kluis
+let thiefFreeze=0;
+function vaultBox(im,h,fx,fy){ const w=im.width*h/im.height; return {x:fx-w/2,y:fy-h,w,h} }
+function sackPos(){ const b=vaultBox(ART.thief,TH.h,TH.fx,TH.fy); return {x:b.x+b.w*TH.sack[0], y:b.y+b.h*TH.sack[1]} }
+
+function drawVaultBG(now){
+  const im=ART.vault_bg, k=1.03+Math.sin(now/9000)*.008, w=W*k, h=w*im.height/im.width;
+  ctx.drawImage(im,(W-w)/2+Math.sin(now/8000)*5,-118-(h-W*im.height/im.width)/2,w,h);
+  // pulserende goudgloed uit de kluis
+  const I=phase==='run'?inten():0, gl=.25+.2*Math.sin(now/600)+I*.35;
+  const g=ctx.createRadialGradient(VAULT_IN.x,VAULT_IN.y,10,VAULT_IN.x,VAULT_IN.y,260); g.addColorStop(0,`rgba(255,214,110,${gl})`); g.addColorStop(1,'rgba(255,214,110,0)');
+  ctx.fillStyle=g; ctx.fillRect(VAULT_IN.x-260,VAULT_IN.y-260,520,520);
+  // stofjes in het lamplicht
+  for(let i=0;i<22;i++){ const t=(now/9000+i*.137)%1, x=VAULT_IN.x-200+((i*83)%400)+Math.sin(now/1300+i)*18, y=VAULT_IN.y+120-t*240;
+    ctx.fillStyle=`rgba(255,236,170,${.5*Math.sin(t*Math.PI)})`; ctx.beginPath(); ctx.arc(x,y,1.5+(i%3),0,7); ctx.fill() }
+}
+function drawGuard(caught,since){
+  const now=performance.now(), TT=caught?Math.min(1,Math.max(0,herTurn)):0;
+  const a=ART.guard_sleep, b=ART.guard_awake, bx=vaultBox(a,GD.h,GD.fx,GD.fy);
+  const snore=Math.sin(now/900), stir=fakeUntil&&!caught?Math.sin(now/45)*.035:0;
+  const jolt=caught?-Math.sin(Math.min(1,since/240)*Math.PI)*22:0;
+  ctx.fillStyle='rgba(0,0,0,.35)'; ctx.beginPath(); ctx.ellipse(GD.fx,GD.fy-4,bx.w*.42,16,0,0,7); ctx.fill();
+  ctx.save(); ctx.translate(GD.fx,GD.fy); ctx.rotate(stir); ctx.scale(1+(1-TT)*snore*.006,1+(1-TT)*snore*.012); ctx.translate(-GD.fx,-GD.fy+jolt*-1);
+  if(TT<.999) ctx.drawImage(a,bx.x,bx.y+jolt,bx.w,bx.h);
+  if(TT>.001){ ctx.globalAlpha=TT; ctx.drawImage(b,bx.x,bx.y+jolt,bx.w,bx.h); ctx.globalAlpha=1 }
+  ctx.restore();
+  // Zzz zolang hij slaapt
+  if(TT<.3&&!fakeUntil){ for(let i=0;i<3;i++){ const ph=((now/1800)+i/3)%1, zx=bx.x+bx.w*.62+ph*60, zy=bx.y+bx.h*.12-ph*90;
+    ctx.globalAlpha=Math.sin(ph*Math.PI); ctx.font=`${22+ph*26}px Bungee, Impact, sans-serif`; ctx.lineWidth=5; ctx.strokeStyle='#1a2140'; ctx.strokeText('Z',zx,zy); ctx.fillStyle='#bfe0ff'; ctx.fillText('Z',zx,zy); ctx.globalAlpha=1 } }
+  // snurk-schrik bij bijna betrapt
+  if(fakeUntil&&!caught){ ctx.font='30px Bungee, Impact, sans-serif'; ctx.textAlign='center'; ctx.lineWidth=7; ctx.strokeStyle='#1a2140'; ctx.strokeText(T('snrk'),bx.x+bx.w*.55,bx.y+10); ctx.fillStyle='#ffd23f'; ctx.fillText(T('snrk'),bx.x+bx.w*.55,bx.y+10); ctx.textAlign='left' }
+}
+function drawFlashlight(since){
+  const bx=vaultBox(ART.guard_awake,GD.h,GD.fx,GD.fy), lx=bx.x+bx.w*GD.lamp[0], ly=bx.y+bx.h*GD.lamp[1];
+  const tb=vaultBox(ART.thief,TH.h,TH.fx,TH.fy), tx=tb.x+tb.w*.55-(since>1300?600*Math.min(1,(since-1300)/520)**2:0), ty=tb.y+tb.h*.35;
+  const on=ease(Math.min(1,Math.max(0,(since-120)/180))), flick=.85+.15*Math.sin(since/23);
+  if(on<=0) return;
+  ctx.save(); ctx.globalCompositeOperation='lighter';
+  const ang=Math.atan2(ty-ly,tx-lx), len=Math.hypot(tx-lx,ty-ly)+120, spread=.2;
+  const g=ctx.createRadialGradient(lx,ly,8,lx,ly,len); g.addColorStop(0,`rgba(255,250,210,${.55*on*flick})`); g.addColorStop(1,'rgba(255,240,170,0)');
+  ctx.fillStyle=g; ctx.beginPath(); ctx.moveTo(lx,ly); ctx.arc(lx,ly,len,ang-spread,ang+spread); ctx.closePath(); ctx.fill();
+  const s=ctx.createRadialGradient(tx,ty,4,tx,ty,120); s.addColorStop(0,`rgba(255,250,220,${.45*on})`); s.addColorStop(1,'rgba(255,250,220,0)');
+  ctx.fillStyle=s; ctx.beginPath(); ctx.arc(tx,ty,120,0,7); ctx.fill();
+  ctx.restore();
+}
+function drawAlarm(now,since){
+  // draaiend rood zwaailicht + rode gloed over de kluis
+  const a=Math.min(1,since/150), rot=now/180;
+  ctx.save(); ctx.globalCompositeOperation='lighter';
+  for(let k=0;k<2;k++){ const ang=rot+k*Math.PI, x=1105, y=40;
+    const g=ctx.createRadialGradient(x,y,4,x,y,900); g.addColorStop(0,`rgba(255,40,40,${.5*a})`); g.addColorStop(1,'rgba(255,0,0,0)');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.moveTo(x,y); ctx.arc(x,y,900,ang-.22,ang+.22); ctx.closePath(); ctx.fill() }
+  ctx.restore();
+  ctx.fillStyle=`rgba(255,0,30,${(.08+.08*Math.sin(now/90))*a})`; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#ff2a2a'; ctx.shadowColor='#ff2a2a'; ctx.shadowBlur=30; ctx.beginPath(); ctx.ellipse(1105,40,22,16,0,0,7); ctx.fill(); ctx.shadowBlur=0;
+}
+function dollarEyes(b,I,t){
+  const e=Math.min(1,Math.max(0,(mult-1.05)/.5)); if(e<=0) return;
+  const r=(15+I*14)*e*(1+beatPulse*.2);
+  [[.635,.152],[.785,.142]].forEach(([fx,fy],i)=>{ const x=b.x+b.w*fx, y=b.y+b.h*fy+Math.sin(t/90+i)*1.5*I;
+    const g=ctx.createRadialGradient(x-r*.3,y-r*.3,1,x,y,r); g.addColorStop(0,'#fff6c2'); g.addColorStop(.6,'#ffd23f'); g.addColorStop(1,'#c88a12');
+    ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,r,0,7); ctx.fill(); ctx.lineWidth=2; ctx.strokeStyle='#5a3a08'; ctx.stroke();
+    ctx.fillStyle='#2e7d32'; ctx.font=`${r*1.6}px Bungee, Impact, sans-serif`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('$',x,y+r*.08);
+    ctx.fillStyle='rgba(255,255,255,.8)'; ctx.beginPath(); ctx.arc(x-r*.4,y-r*.4,r*.18,0,7); ctx.fill() });
+  // dollartekens die om zijn hoofd cirkelen
+  const hx=b.x+b.w*.71, hy=b.y+b.h*.1, n=Math.floor(3+I*9);
+  for(let i=0;i<n;i++){ const a=t/(700-I*350)+i*Math.PI*2/n, rx=95+I*40, ry=28+I*10, front=Math.sin(a)>0;
+    const x=hx+Math.cos(a)*rx, y=hy-30+Math.sin(a)*ry, sz=(34+I*22)*(front?1:.75);
+    ctx.globalAlpha=front?1:.6; ctx.font=`${sz}px Bungee, Impact, sans-serif`; ctx.lineWidth=4; ctx.strokeStyle='#1d4d20'; ctx.strokeText('$',x,y); ctx.fillStyle='#4fe37a'; ctx.fillText('$',x,y) }
+  ctx.globalAlpha=1; ctx.textAlign='left'; ctx.textBaseline='alphabetic';
+}
+function drawThief(scale,caught,t){
+  const since=performance.now()-crashedAt, I=phase==='run'?inten():0;
+  const fp=Math.min(1,Math.max(0,(since-1300)/520)), flee=caught?620*fp*fp:0;
+  thiefFreeze+=(((fakeUntil&&!caught)?1:0)-thiefFreeze)*(1-Math.exp(-DT/(fakeUntil?35:180)));
+  const step=caught?0:Math.abs(Math.sin(t/240))*(1-thiefFreeze), bob=-step*9, greed=1+I*.07;
+  const lean=caught?0:Math.sin(t/240)*.025*(1-thiefFreeze)+I*.05;
+  const runBob=flee>2?-Math.abs(Math.sin(since/55))*14:0;
+  const im=ART.thief, b=vaultBox(im,TH.h*greed,TH.fx,TH.fy);
+  ctx.fillStyle='rgba(0,0,0,.35)'; ctx.beginPath(); ctx.ellipse(TH.fx-flee,TH.fy-4,b.w*.36,14,0,0,7); ctx.fill();
+  if(flee>2){ for(let k=0;k<7;k++){ const a=Math.max(0,1-k/7); ctx.fillStyle=`rgba(180,170,200,${.45*a})`; ctx.beginPath(); ctx.arc(TH.fx+40-flee+k*38,TH.fy-10-k*3+Math.sin(since/40+k)*4,14+k*5,0,7); ctx.fill() } }
+  ctx.save(); ctx.translate(TH.fx-flee,TH.fy+bob+runBob); ctx.rotate(lean+(flee>2?-.18:0)); ctx.scale(1+thiefFreeze*.04,1-thiefFreeze*.1); ctx.translate(-TH.fx,-TH.fy);
+  const c=caught?ease(Math.min(1,since/140)):0;
+  if(c<1) ctx.drawImage(im,b.x,b.y,b.w,b.h);
+  if(!caught&&phase==='run'&&c<1) dollarEyes(b,I,t);
+  if(c>0){ const cb=vaultBox(ART.thief_caught,TH.h,TH.fx,TH.fy); ctx.globalAlpha=c; ctx.drawImage(ART.thief_caught,cb.x,cb.y,cb.w,cb.h); ctx.globalAlpha=1 }
+  ctx.restore();
+  if(thiefFreeze>.3){ const sp=sackPos(); flat(()=>{ ctx.moveTo(sp.x+120,sp.y-70); ctx.quadraticCurveTo(sp.x+132,sp.y-48,sp.x+120,sp.y-42); ctx.quadraticCurveTo(sp.x+108,sp.y-48,sp.x+120,sp.y-70) },'#8fd6ff',3) }
+}
+// goudstroom uit de kluis naar de zak: hoe hoger de multiplier, hoe voller
+function lootStream(now){
+  if(phase!=='run'||fakeUntil) return;
+  const I=inten(), n=Math.floor(4+I*26), sp=sackPos();
+  for(let i=0;i<n;i++){ const ph=((now/(1400-I*700))+i/n)%1, e=ease(ph);
+    const x=lerp(VAULT_IN.x,sp.x,e), y=lerp(VAULT_IN.y,sp.y,e)-Math.sin(ph*Math.PI)*(140+I*80);
+    const spin=Math.abs(Math.cos(now/120+i)), r=16+I*8;
+    if(i%3===0){ ctx.save(); ctx.translate(x,y); ctx.rotate(now/300+i); ctx.scale(2,2); const g=ctx.createLinearGradient(-14,-6,14,6); g.addColorStop(0,'#fff1a8'); g.addColorStop(.5,'#f2b52a'); g.addColorStop(1,'#a8701a');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.moveTo(-14,4); ctx.lineTo(-9,-6); ctx.lineTo(9,-6); ctx.lineTo(14,4); ctx.closePath(); ctx.fill(); ctx.strokeStyle='#6b4410'; ctx.lineWidth=1.5; ctx.stroke(); ctx.restore() }
+    else{ const g=ctx.createRadialGradient(x-2,y-2,1,x,y,r); g.addColorStop(0,'#fff6c2'); g.addColorStop(.6,'#f5c33b'); g.addColorStop(1,'#b37a14');
+      ctx.fillStyle=g; ctx.beginPath(); ctx.ellipse(x,y,r*spin+1,r,0,0,7); ctx.fill(); ctx.strokeStyle='#7a5210'; ctx.lineWidth=1.5; ctx.stroke() }
+  }
+  // dollartekens boven zijn hoofd, net als de hartjes bij PEEK!
+  const secs=(now-phaseStart)/1000, m=Math.min(30,Math.floor(secs*1.4)), hx=sp.x+70, hy=sp.y-80;
+  ctx.textAlign='center';
+  for(let i=0;i<m;i++){ const ph=((now/2600)+i*.1373)%1, x=hx+((i*67)%120)-60+Math.sin(now/420+i)*10*ph, y=hy-ph*(140+m*2), sz=30+(i%3)*10+I*16;
+    ctx.globalAlpha=Math.min(1,ph*6,(1-ph)*2); ctx.font=`${sz}px Bungee, Impact, sans-serif`; ctx.lineWidth=4; ctx.strokeStyle='#5a3a08'; ctx.strokeText('$',x,y); ctx.fillStyle='#ffd23f'; ctx.fillText('$',x,y) }
+  ctx.globalAlpha=1; ctx.textAlign='left';
+}
+
 function scene(now){
-  if(theme!=='A'){ sceneB(now); return }
+  if(theme!=='A'){ if(vaultReady()){ drawVaultBG(now); return } sceneB(now); return }
   if(artReady()){ drawBG(now); return }
   // lucht met zachte zon-gloed
   const g=ctx.createLinearGradient(0,0,0,350); g.addColorStop(0,'#3d9be9'); g.addColorStop(1,'#a9dcf7');
@@ -596,6 +710,7 @@ function windbreak(){
     ctx.fillStyle='#5a3418'; ctx.beginPath(); ctx.ellipse(x,WALL-18,7,4,0,0,7); ctx.fill() }
 }
 function hedge(){
+  if(vaultReady()) return;
   if(theme==='A'&&artReady()){ windbreak(); return }
   if(theme==='A'){
     const cols=['#ff4d6d','#ffffff','#3aa0ff','#ffffff','#ff4d6d','#ffffff','#3aa0ff'];
@@ -612,6 +727,7 @@ function focusPoint(){ return theme==='A'?(artReady()?artFocus():{x:905,y:398}):
 
 /* de gluurder */
 function watcher(scale,caught,t){
+  if(vaultReady()) return drawThief(scale,caught,t);
   if(artReady()) return drawMan(scale,caught,t);
   const since=performance.now()-crashedAt;
   const flee=(caught&&theme==='A'&&ending===2)?Math.min(460,Math.max(0,(since-450)*0.8)):0;
@@ -788,6 +904,7 @@ function boyfriend(since){
 }
 
 function guard(caught,since){
+  if(vaultReady()) return drawGuard(caught,since);
   const x=1010,y=450, turn=caught?Math.min(1,since/160):(fakeUntil?1:0);
   ctx.fillStyle='#4a3b2a'; rr(x-80,y+30,160,140,10); ctx.fill();
   const ug=ctx.createLinearGradient(x-70,0,x+70,0); ug.addColorStop(0,'#2c3e74'); ug.addColorStop(1,'#1c2a55');
@@ -811,7 +928,7 @@ function target(caught,since){
   const turn=caught?Math.min(1,since/160):0;
   if(turn>=0.5){
     const x=theme==='A'?905:960, y=theme==='A'?250:380;
-    const A=artReady(), bx=A?1000:x+40, by=A?70:y-150, tx=A?975:x+40, ty=A?186:y-40;
+    const V=vaultReady(), A=artReady(), bx=V?720:A?1000:x+40, by=V?96:A?70:y-150, tx=V?905:A?975:x+40, ty=V?205:A?186:y-40;
     const pp=1+Math.max(0,.4*(1-(performance.now()-crashedAt)/200));
     ctx.save(); ctx.translate(bx+90,by+40); ctx.scale(pp,pp); ctx.translate(-bx-90,-by-40);
     flat(()=>ctx.roundRect(bx,by,180,80,18),'#fff',4);
@@ -879,7 +996,7 @@ function frame(now){
   ctx.save();
   if(!reduce){ const amp=caught?Math.max(0,22*(1-(now-crashedAt)/500)):(phase==='run'?Math.pow(inten(),2)*7:0); if(amp>0) ctx.translate((Math.random()-.5)*amp,(Math.random()-.5)*amp) }
   if(!reduce&&phase==='run'){ const z=1+inten()*.07; ctx.translate(W*.4,H*.55); ctx.scale(z,z); ctx.translate(-W*.4,-H*.55) }
-  scene(now); if(caught&&theme==='A'&&ending===2) boyfriend(now-crashedAt); target(caught,now-crashedAt); watcher(phase==='bet'?1:s,caught,now); hedge(); extras(phase==='bet'?1:s,caught,now); overlays(now); hud(now);
+  scene(now); if(caught&&theme==='A'&&ending===2) boyfriend(now-crashedAt); target(caught,now-crashedAt); watcher(phase==='bet'?1:s,caught,now); hedge(); if(caught&&vaultReady()){ drawFlashlight(now-crashedAt); drawAlarm(now,now-crashedAt) } extras(phase==='bet'?1:s,caught,now); overlays(now); hud(now);
   ctx.restore();
   requestAnimationFrame(frame);
 }
@@ -921,6 +1038,7 @@ function sfx(k){
     noise(t,1.1,.28,'bandpass',1100,null,.7); tone('square',523,1046,.25,.08); tone('square',659,1318,.25,.08,.1); tone('square',784,1568,.35,.08,.2) }
   if(k==='splash'){ noise(t+.35,.6,.5,'bandpass',900,null,1,200); noise(t,.4,.25,'highpass',4000) }
   if(k==='boing'){ tone('sine',120,620,.5,.35); tone('sawtooth',60,90,.7,.12,.1) }
+  if(k==='alarm'){ for(let i=0;i<4;i++){ tone('square',620,980,.42,.09,i*.84); tone('square',980,620,.42,.09,i*.84+.42) } }
   if(k==='tick'){ tone('square',1900,1900,.03,.06) }
   if(k==='tock'){ tone('square',2600,2600,.05,.1) }
 }
@@ -1004,7 +1122,8 @@ function extras(scale,caught,now){
   const since=now-crashedAt;
   const flee=(caught&&theme==='A'&&ending===2)?Math.min(420,Math.max(0,(since-500)*0.7)):0;
   const A=artReady(), cx=(A?236:215)-flee, cy=(A?330:372)+flee*0.15;
-  if(!caught&&phase==='run'){
+  if(vaultReady()) lootStream(now);
+  if(!caught&&phase==='run'&&!vaultReady()){
     // hartjeswolk: hoe langer hij kijkt, hoe meer
     { const secs=(now-phaseStart)/1000, n=Math.min(46,Math.floor(secs*1.6));
       for(let i=0;i<n;i++){ const ph=((now/2600+i*0.1373)%1), spread=40+Math.min(110,n*3);
