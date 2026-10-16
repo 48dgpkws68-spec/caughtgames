@@ -6,8 +6,9 @@
 <style>
 /* Layout: arcadekast bovenaan (speelveld + bediening), daaronder de pitch voor de casino-eigenaar. Bewust één donker thema. */
 :root{
-  --bg:#17112b; --surface:#241a42; --surface2:#2f2356; --line:#3d2f6b;
-  --fg:#f3ecff; --muted:#a99cd0; --gold:#ffc934; --pink:#ff5d8f; --ok:#4fe3a1;
+  --bg:#07060b; --surface:#13101d; --surface2:#1a1626; --line:#2a2438;
+  --fg:#f6f1e6; --muted:#a39cb5; --gold:#e9c46a; --gold2:#f8e3a3; --pink:#ff2d6f; --ok:#3ff0b0; --acc:#46c6e0;
+  --goldg:linear-gradient(100deg,#b8862b 0%,#f8e3a3 30%,#e9c46a 55%,#fff4cf 70%,#b8862b 100%);
   --display:"Bungee","Impact",system-ui,sans-serif;
   --body:"Rubik",system-ui,-apple-system,sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
@@ -17,11 +18,11 @@
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
 .wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:20px 60px}
 header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
-.logo{font-family:var(--display);font-size:clamp(28px,5vw,44px);letter-spacing:1px;color:var(--gold);line-height:1;text-shadow:3px 3px 0 var(--pink)}
-.logo small{display:block;font-family:var(--body);font-size:13px;color:var(--muted);text-shadow:none;letter-spacing:.5px;margin-top:6px}
+.logo{font-family:var(--display);font-size:clamp(28px,5vw,44px);letter-spacing:1px;line-height:1;background:var(--goldg);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(3px 3px 0 var(--acc))}
+.logo small{display:block;font-family:var(--body);font-size:13px;color:var(--muted);-webkit-text-fill-color:var(--muted);letter-spacing:.5px;margin-top:6px}
 .themes{display:flex;gap:6px;background:var(--surface);padding:4px;border-radius:999px;border:1px solid var(--line)}
 .themes button{border:0;background:transparent;color:var(--muted);font:600 13px var(--body);padding:8px 14px;border-radius:999px;cursor:pointer}
-.themes button[aria-pressed="true"]{background:var(--gold);color:#241a42}
+.themes button[aria-pressed="true"]{background:var(--acc);color:#07060b}
 .game{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px}
 @media (max-width:880px){.game{grid-template-columns:minmax(0,1fr)}}
 .stage{align-self:start;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:0}
@@ -32,15 +33,17 @@ canvas{display:block;width:100%;height:auto;max-width:100%}
 .side{display:flex;flex-direction:column;gap:16px;min-width:0}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
 .bal{display:flex;justify-content:space-between;align-items:baseline}
-.bal b{font:700 22px var(--mono);font-variant-numeric:tabular-nums;color:var(--gold)}
+.bal b{font:700 22px var(--mono);font-variant-numeric:tabular-nums;color:var(--gold2)}
 label{display:block;font-size:12px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin:12px 0 4px}
 .field{display:flex;gap:6px}
 input[type=number]{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--fg);font:600 16px var(--mono);padding:9px 10px;border-radius:8px}
-input:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+input:focus-visible,button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+input[type=number]:focus{border-color:var(--acc)}
 .mini{border:1px solid var(--line);background:var(--surface2);color:var(--fg);border-radius:8px;font:600 13px var(--mono);padding:0 10px;cursor:pointer}
-.big{margin-top:14px;width:100%;border:0;border-radius:10px;padding:16px;font:20px var(--display);letter-spacing:1px;cursor:pointer;background:var(--gold);color:#241a42;transition:transform .08s}
+.big{margin-top:14px;width:100%;border:0;border-radius:12px;padding:16px;font:20px var(--display);letter-spacing:1px;cursor:pointer;background:var(--goldg);background-size:200% 100%;color:#1b1406;box-shadow:0 10px 36px -10px rgba(233,196,106,.6),inset 0 1px 0 rgba(255,255,255,.6);transition:transform .08s,box-shadow .2s}
+.big:hover{box-shadow:0 14px 48px -8px rgba(233,196,106,.85)}
 .big:active{transform:scale(.98)}
-.big.cash{background:var(--ok)}
+.big.cash{background:linear-gradient(135deg,#d2ffef,#3ff0b0 60%,#1fb98a);box-shadow:0 10px 40px -6px rgba(63,240,176,.7),inset 0 1px 0 #fff}
 .big.wait{background:var(--surface2);color:var(--muted);cursor:default}
 .msg{min-height:22px;margin-top:8px;font-size:13px;color:var(--muted)}
 .players{list-style:none;margin:0;padding:0;font-size:13px}
@@ -48,14 +51,14 @@ input:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-o
 .players li span:nth-child(2){font-family:var(--mono);color:var(--muted)}
 .players li .w{color:var(--ok);font-family:var(--mono)}
 .players li .l{color:var(--pink);font-family:var(--mono)}
-.players li.me{color:var(--gold)}
+.players li.me{color:var(--gold2)}
 h3{margin:0 0 6px;font:15px var(--display);letter-spacing:.5px;color:var(--fg)}
 .note{font-size:12px;color:var(--muted)}
 .fair code{display:block;font:11px var(--mono);word-break:break-all;color:var(--fg);background:var(--bg);padding:6px 8px;border-radius:6px;margin:3px 0 8px}
 
 /* pitch */
 .pitch{margin-top:48px}
-.pitch h2{font:clamp(24px,4vw,34px) var(--display);color:var(--gold);margin:0 0 8px;text-wrap:balance}
+.pitch h2{font:clamp(24px,4vw,34px) var(--display);color:var(--gold2);margin:0 0 8px;text-wrap:balance}
 .lead{max-width:68ch;color:var(--muted);margin:0 0 24px;font-size:16px}
 .kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:28px}
 @media (max-width:760px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -78,7 +81,7 @@ td{font-family:var(--mono)}
 .out b{display:block;font:700 22px var(--mono);color:var(--ok)}
 .out span{font-size:12px;color:var(--muted)}
 ul.pts{padding-left:18px;margin:8px 0 0;max-width:68ch} ul.pts li{margin-bottom:6px}
-.simbtn{margin-top:12px;border:1px solid var(--gold);background:transparent;color:var(--gold);border-radius:8px;padding:9px 14px;font:600 14px var(--body);cursor:pointer}
+.simbtn{margin-top:12px;border:1px solid var(--gold);background:transparent;color:var(--gold2);border-radius:8px;padding:9px 14px;font:600 14px var(--body);cursor:pointer}
 @media (prefers-reduced-motion:reduce){.big{transition:none}}
 </style>
 
@@ -1161,6 +1164,7 @@ function setTheme(t){
   theme=t; $('thA').setAttribute('aria-pressed',t==='A'); $('thB').setAttribute('aria-pressed',t==='B');
   $('logo').firstChild.nodeValue=T(t==='A'?'logoA':'logoB');
   $('tagline').textContent=T(t==='A'?'tagA':'tagB');
+  document.documentElement.style.setProperty('--acc',t==='A'?'#46c6e0':'#e9c46a');
   try{localStorage.setItem('gl-theme',t)}catch(e){}
 }
 $('thA').onclick=()=>setTheme('A'); $('thB').onclick=()=>setTheme('B');
