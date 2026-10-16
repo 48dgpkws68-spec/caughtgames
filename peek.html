@@ -423,13 +423,15 @@ function drawWoman(caught,since){
 }
 function drawMan(scale,caught,t){
   const since=performance.now()-crashedAt;
-  const flee=(caught&&ending===2)?600*ease(Math.min(1,Math.max(0,(since-1050)/650))):0;
+  const fp=Math.min(1,Math.max(0,(since-1450)/520)), flee=(caught&&ending===2)?620*fp*fp:0;
   const lean=caught?-6:Math.min(30,(scale-1)*28), tilt=caught?-.05:Math.min(.12,(scale-1)*.11);
   const bob=Math.sin(t/520)*3+(caught?Math.sin(since/28)*Math.max(0,4-since/150):0);
   const jump=caught?-Math.sin(Math.min(1,since/260)*Math.PI)*26:0;
   const im=ART.man, w=im.width*MAN.s, h=im.height*MAN.s;
   const px=MAN.x+MAN.pivot[0]*MAN.s, py=MAN.y+MAN.pivot[1]*MAN.s;
-  ctx.save(); ctx.translate(lean*(1-duckVis)-flee,bob+jump+duckVis*150); ctx.translate(px,py); ctx.rotate(tilt); ctx.translate(-px,-py);
+  if(flee>2){ for(let k=0;k<7;k++){ const a=Math.max(0,1-k/7), dx=px+40-flee+k*38; ctx.fillStyle=`rgba(235,205,150,${.55*a})`; ctx.beginPath(); ctx.arc(dx,WALL+20-k*3+Math.sin(since/40+k)*4,14+k*5,0,7); ctx.fill() } }
+  const runBob=flee>2?-Math.abs(Math.sin(since/55))*14:0, runTilt=flee>2?-.18:0;
+  ctx.save(); ctx.translate(lean*(1-duckVis)-flee,bob+jump+duckVis*150+runBob); ctx.translate(px,py); ctx.rotate(runTilt); ctx.rotate(tilt); ctx.translate(-px,-py);
   const c=caught?ease(Math.min(1,since/140)):0;
   if(c<1) ctx.drawImage(im,MAN.x,MAN.y,w,h);
   if(c>0){ ctx.globalAlpha=c; ctx.drawImage(ART.man_caught,MAN.x,MAN.y,w,h); ctx.globalAlpha=1 }
@@ -493,7 +495,7 @@ function artEyes(scale,t,tilt=0,caught=false){
 function drawBoyfriend(since){
   const im=ART.boyfriend; if(!artOk('boyfriend')) return;
   const r=ease(Math.min(1,since/420)), wk=ease(Math.min(1,Math.max(0,(since-330)/820)));
-  const sc=lerp(.5,.98,wk), w=im.width*sc, h=im.height*sc;
+  const sc=lerp(.48,.88,wk), w=im.width*sc, h=im.height*sc;
   const fx=lerp(610,500,wk), fy=lerp(452,636,wk);
   const walking=wk>0&&wk<1, step=walking?Math.abs(Math.sin(since/85))*12:0;
   const shake=wk>=1?Math.sin(since/28)*2.5:0, lean=walking?Math.sin(since/85)*.03:-.03;
@@ -852,7 +854,7 @@ function hud(now){
     ctx.fillStyle=gg; ctx.fillText(txt,0,0);
     ctx.lineWidth=3; ctx.strokeStyle='rgba(255,255,255,.55)'; ctx.strokeText(txt,0,-2);
     ctx.restore(); ctx.textBaseline='alphabetic'; ctx.textAlign='center';
-    if(c){ ctx.font='34px Bungee, Impact, sans-serif'; const pop=1+0.8*Math.max(0,1-(now-crashedAt)/260); ctx.save(); ctx.translate(W/2,250); ctx.scale(pop,pop); ctx.rotate(-0.06); ctx.font='64px Bungee, Impact, sans-serif'; ctx.lineWidth=12; ctx.strokeText(T('caught'),0,0); ctx.fillStyle='#ffc934'; ctx.fillText(T('caught'),0,0); ctx.restore() }
+    if(c){ ctx.font='34px Bungee, Impact, sans-serif'; const sc=now-crashedAt, pop=1+0.8*Math.max(0,1-sc/260), out=ease(Math.min(1,Math.max(0,(sc-800)/350))); ctx.save(); ctx.globalAlpha=1-out; ctx.translate(W/2,250-out*60); ctx.scale(pop,pop); ctx.rotate(-0.06); ctx.font='64px Bungee, Impact, sans-serif'; ctx.lineWidth=12; ctx.strokeText(T('caught'),0,0); ctx.fillStyle='#ffc934'; ctx.fillText(T('caught'),0,0); ctx.restore() }
   }
   ctx.textAlign='left';
 }
