@@ -176,7 +176,7 @@ body.embed .brand{display:none}
         <div class="grade"><div class="ring2" id="gRing"><b id="gVal">0</b></div><div><h3 id="gTitle">Sonar reader</h3><p id="gText"></p></div></div>
         <div class="stats"><div><b id="sClicks">0</b><span>TILES</span></div><div><b id="sFree">0</b><span>FREE READS</span></div><div><b id="sFee">0%</b><span>RISK FEES</span></div></div>
         <div class="scrub"><button id="prev" aria-label="Previous move">◀</button><div class="t" id="scrubT"></div><button id="next" aria-label="Next move">▶</button></div>
-        <div class="legend"><span style="color:var(--sea2)">◯ your pick</span><span style="color:var(--gold2)">◇ safest tile</span><span>% = chance safe</span></div>
+        <div class="legend"><span style="color:var(--sea2)">◯ your pick</span><span style="color:var(--gold2)">◇ safest tile</span><span>72% = chance the tile was safe at that move</span></div>
       </div>
     </div>
   </div>
@@ -295,7 +295,8 @@ function dive(i){
   const P=E.mineProbs(revealed,M,pings), p=1-P[i], g=E.stepGain(p,first);
   const safeTiles=[]; for(let j=0;j<C;j++) if(!tiles[j].rev) safeTiles.push(j);
   const riskP=safeTiles.filter(j=>P[j]>1e-12&&P[j]<1-1e-12).map(j=>1-P[j]), bestRisky=riskP.length?Math.max(...riskP):1;
-  const mv={i,p,P:Array.from(P),best:Math.max(...safeTiles.map(j=>1-P[j])),bestRisky,first,bust:false,pings:new Map(pings),rev:new Map(revealed),gain:g};
+  const nBest=riskP.filter(q=>Math.abs(q-bestRisky)<1e-6).length;
+  const mv={i,p,nBest,P:Array.from(P),best:Math.max(...safeTiles.map(j=>1-P[j])),bestRisky,first,bust:false,pings:new Map(pings),rev:new Map(revealed),gain:g};
   moves.push(mv);
   if(mines.has(i)){ mv.bust=true; bust(i); return }
   const n=E.sonarAt(mines,i); revealed.set(i,n); Object.assign(tiles[i],{rev:1,n,t0:now,free:p>=1-1e-9});
@@ -415,10 +416,11 @@ function drawReplayTile(i,T,x,y,p,s,cxp,cyp,t,rv){ const was=rv.rev.has(i), ps=1
     const hc=ps>=.9995?'143,255,240':ps>.9?'157,255,106':ps>.78?'255,225,74':ps>.6?'255,176,74':'255,79,109';
     const g=cx.createRadialGradient(cxp,cyp,0,cxp,cyp,s*.7); g.addColorStop(0,'rgba('+hc+',.22)'); g.addColorStop(1,'rgba('+hc+',.04)'); cx.fillStyle=g; rr(cx,x+p,y+p,s,s,s*.16); cx.fill();
     cx.strokeStyle='rgba('+hc+',.35)'; cx.lineWidth=W*.0015; rr(cx,x+p,y+p,s,s,s*.16); cx.stroke();
-    if(isMine){ cx.globalAlpha=.5; drawMine(cx,x+p+s*.8,y+p+s*.2,s*.11,t,false); cx.globalAlpha=1 }
-    cx.fillStyle='rgba('+hc+',1)'; cx.font='700 '+Math.round(s*.22)+'px JetBrains Mono, monospace'; cx.textAlign='center'; cx.textBaseline='middle';
-    cx.fillText(ps>=.9995?'100':ps<.0005?'0':(ps*100).toFixed(ps>.99||ps<.01?1:0),cxp,cyp); cx.font='600 '+Math.round(s*.11)+'px JetBrains Mono, monospace'; cx.globalAlpha=.6; cx.fillText('% SAFE',cxp,cyp+s*.22); cx.globalAlpha=1;
-    if(!rv.first&&rv.bestRisky<1&&ps>1e-9&&Math.abs(ps-rv.bestRisky)<1e-6){ cx.strokeStyle='#f8e3a3'; cx.lineWidth=W*.003; cx.shadowColor='#e9c46a'; cx.shadowBlur=W*.015; rr(cx,x+p+W*.004,y+p+W*.004,s-W*.008,s-W*.008,s*.13); cx.stroke(); cx.shadowBlur=0; cx.fillStyle='#f8e3a3'; cx.font='700 '+Math.round(s*.1)+'px JetBrains Mono, monospace'; cx.fillText('SAFEST',cxp,y+p+s*.15) } }
+    const pct=(ps>=.9995?'100':ps<.0005?'0':(ps*100).toFixed(ps>.99||ps<.01?1:0))+'%';
+    if(isMine){ cx.fillStyle='rgba(120,10,30,.45)'; rr(cx,x+p,y+p,s,s,s*.16); cx.fill(); drawMine(cx,cxp,cyp+s*.06,s*.24,t,i===rv.i&&rv.bust);
+      cx.fillStyle='rgba(2,10,14,.75)'; rr(cx,x+p+s*.06,y+p+s*.06,s*.5,s*.22,s*.08); cx.fill(); cx.fillStyle='rgba('+hc+',1)'; cx.font='700 '+Math.round(s*.15)+'px JetBrains Mono, monospace'; cx.textAlign='center'; cx.textBaseline='middle'; cx.fillText(pct,x+p+s*.31,y+p+s*.175) }
+    else { cx.fillStyle='rgba('+hc+',1)'; cx.font='700 '+Math.round(s*.22)+'px JetBrains Mono, monospace'; cx.textAlign='center'; cx.textBaseline='middle'; cx.fillText(pct,cxp,cyp); cx.font='600 '+Math.round(s*.11)+'px JetBrains Mono, monospace'; cx.globalAlpha=.6; cx.fillText('SAFE',cxp,cyp+s*.22); cx.globalAlpha=1 }
+    if(!rv.first&&rv.bestRisky<1&&rv.nBest<=4&&ps>1e-9&&Math.abs(ps-rv.bestRisky)<1e-6){ cx.strokeStyle='#f8e3a3'; cx.lineWidth=W*.003; cx.shadowColor='#e9c46a'; cx.shadowBlur=W*.015; rr(cx,x+p+W*.004,y+p+W*.004,s-W*.008,s-W*.008,s*.13); cx.stroke(); cx.shadowBlur=0; cx.fillStyle='#f8e3a3'; cx.font='700 '+Math.round(s*.1)+'px JetBrains Mono, monospace'; cx.fillText('SAFEST',cxp,y+p+s*.15) } }
   if(i===rv.i){ const pu=.5+.5*Math.sin(t*.008), c=rv.bust?'#ff4f6d':'#8ffff0'; cx.strokeStyle=c; cx.lineWidth=W*.0045; cx.shadowColor=c; cx.shadowBlur=W*.02*(1+pu); rr(cx,x+p-W*.004,y+p-W*.004,s+W*.008,s+W*.008,s*.18); cx.stroke(); cx.shadowBlur=0;
     cx.fillStyle=c; cx.font='700 '+Math.round(s*.1)+'px JetBrains Mono, monospace'; cx.textAlign='center'; cx.fillText(rv.bust?'MINE':'YOUR DIVE',cxp,y+p+s*.88) } }
 function draw(t){ const dt=Math.min(50,t-now); now=t; const w=W; if(!w) return;
