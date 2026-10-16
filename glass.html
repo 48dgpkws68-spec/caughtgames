@@ -43,6 +43,7 @@ html,body{margin:0;height:100%;background:#05040c;color:var(--fg);font-family:Ma
 #act.cash{background:linear-gradient(135deg,#d2ffef,#5cf2c4);box-shadow:0 10px 40px -6px rgba(92,242,196,.7)}
 #msg{position:fixed;left:50%;bottom:120px;transform:translateX(-50%);font:600 13px Manrope;color:var(--muted);pointer-events:none}
 </style>
+<style>.backlink{position:fixed;left:14px;bottom:14px;z-index:30;display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:999px;font:600 12px system-ui,sans-serif;color:#f4f2ff;text-decoration:none;background:rgba(10,8,20,.6);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}.backlink:hover{border-color:#e9c46a}@media(max-width:640px){.backlink{left:18px;right:auto;top:18px;bottom:auto} body:not(.emb) .brand{visibility:hidden}}</style>
 </head>
 <body>
 <canvas id="gl"></canvas>
@@ -265,5 +266,7 @@ fairUI(); setBal(); btn(); requestAnimationFrame(frame);
 if(location.hash==='#embed') document.querySelector('.brand').style.display='none';
 })();
 </script>
+<a class="backlink" id="backlink" href="index.html#glass"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg>Caught Games</a>
+<script>if(location.hash==='#embed'){ document.getElementById('backlink').remove(); document.body.classList.add('emb') }</script>
 </body>
 </html>

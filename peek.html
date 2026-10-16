@@ -19,6 +19,9 @@ body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-
 .wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:20px 60px}
 header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
 .logo{display:flex;align-items:center;gap:14px}
+.backbar{display:inline-flex;align-items:center;gap:6px;width:100%;font:600 13px var(--body);color:var(--muted);text-decoration:none;margin-bottom:4px}
+.backbar:hover{color:var(--fg)}
+@media (max-width:600px){.wrap{padding-inline:12px} .logo .eye{display:none} .logo small{font-size:12px} .themes{width:100%;justify-content:center} .themes button{flex:1} .panel{padding:14px} .big{padding:15px;font-size:17px}}
 .logo .eye{width:44px;height:44px;flex:none;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center}
 .logo .lt{display:block;font-family:var(--display);font-size:clamp(22px,3.4vw,30px);letter-spacing:.5px;line-height:1;background:var(--goldg);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 0 rgba(0,0,0,.6)) drop-shadow(0 0 14px rgba(233,196,106,.35))}
 .logo small{display:block;font-family:var(--body);font-size:13px;color:var(--muted);letter-spacing:.2px;margin-top:5px}
@@ -253,7 +256,7 @@ const L={nl:{hey:'HÉ!',stop:'STOP!',bets:'ZET IN',caught:'BETRAPT!',bet:'INZETT
  logoA:'PEEK!',logoB:'VAULT HEIST!',tagA:'The longer you peek, the bigger the win. Cash out before she turns around.',tagB:'The longer you grab, the bigger the win. Cash out before the guard wakes up.',
  thA:'Peek',inplay:'in play',plN:'players',cashed:'cashed out',sealed:'SEED COMMITTED',snrk:'SNRK?!',oi:'HEY, YOU!',close:'CLOSE CALL!',sndOn:'Sound: on',sndOff:'Sound: off',thB:'Vault Heist',play:'Play money',stake:'Stake',auto:'Auto cash-out at (0 = off)',pl:'Players this round',sim:'Other players are simulated for the demo.',
  nh:'Hash of the next server seed (committed in advance)',ps:'Previous round: seed and result',none:'no round played yet',ver:'Verify previous round'}};
-const EMBED=location.hash==='#embed'; let lang=(EMBED||location.hash==='#en')?'en':'nl';
+const EMBED=location.hash==='#embed', PLAY=location.hash.match(/^#play-(peek|vault)$/); let lang=(EMBED||PLAY||location.hash==='#en')?'en':'nl';
 const T=(k,...a)=>{const v=L[lang][k];return typeof v==='function'?v(...a):v};
 
 const $=id=>document.getElementById(id);
@@ -1211,8 +1214,12 @@ function setTheme(t){
 $('thA').onclick=()=>setTheme('A'); $('thB').onclick=()=>setTheme('B');
 document.querySelectorAll('[data-t]').forEach(e=>e.textContent=T(e.dataset.t));
 if(EMBED){ $('pitch').hidden=true; document.querySelector('.wrap').style.paddingBlock='8px' }
+if(PLAY){ $('pitch').hidden=true; document.querySelector('.themes').style.display='none';
+  const bar=document.createElement('a'); bar.className='backbar'; bar.href='index.html#'+(PLAY[1]==='vault'?'games':'games'); bar.innerHTML='<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg> Caught Games';
+  document.querySelector('header').prepend(bar); document.title=(PLAY[1]==='vault'?'Vault Heist':'PEEK!')+' · Caught Games' }
 setTheme('A');
 try{ if(localStorage.getItem('gl-theme')==='B') setTheme('B') }catch(e){}
+if(PLAY) setTheme(PLAY[1]==='vault'?'B':'A');
 
 /* ---------- pitch: kansen, rekenmodel, simulatie ---------- */
 function probTable(){

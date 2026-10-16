@@ -174,6 +174,22 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 .term .res{display:flex;justify-content:space-between;align-items:baseline;border-top:1px dashed var(--line2);padding-top:14px}
 .term .res b{font:700 34px var(--mono);color:var(--mint)}
 
+/* play buttons */
+.playbar{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
+@media (max-width:600px){.playbar .btn{flex:1 1 100%;justify-content:center}}
+/* mobile polish */
+@media (max-width:600px){
+  section{padding-block:64px}
+  .device{padding:6px;border-radius:20px}
+  .device iframe{border-radius:14px}
+  .hero{min-height:auto;padding-top:104px}
+  .hero .cta .btn{flex:1 1 100%;justify-content:center}
+  .livebar div{padding:14px}
+  .lead{font-size:16px}
+  .nums b{font-size:38px}
+  .sheet{padding:4px 10px 10px}
+  .sheet td,.sheet th{padding:9px 6px;font-size:12px}
+}
 /* game sheets */
 .tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:44px}
 @media (max-width:760px){.tiles{grid-template-columns:minmax(0,1fr)}}
@@ -309,7 +325,7 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
     <p class="lead">Caught Games designs, builds and supplies crash games for online casinos. Every title ships with transparent RTP math, provably fair rounds and a story players get in one second. Want something nobody else has? We build it for you.</p>
     <div class="cta">
       <a class="btn gold-b" href="#games">Play PEEK! live <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
-      <a class="btn ghost" href="#glass">Play Glass Ascent</a>
+      <a class="btn ghost" href="#sheets">See all games</a>
     </div>
     <div class="livebar" aria-live="off">
       <div><b id="lvRounds">0</b><span><i class="dot"></i>rounds simulated in your browser</span></div>
@@ -334,6 +350,7 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
         <li><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 12l3 3 5-6"/></svg></span><div><b>One ending, two skins</b><span>Her bodybuilder boyfriend rises from the sea. Vault Heist skin for a neutral lobby, identical math.</span></div></li>
       </ul>
       <div class="skins"><span class="chip on">PEEK!</span><span class="chip on">VAULT HEIST</span><span class="chip">YOUR BRAND</span></div>
+      <div class="playbar"><a class="btn gold-b" href="peek.html#play-peek">Play PEEK! <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a><a class="btn ghost" href="peek.html#play-vault">Play Vault Heist <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a></div>
     </div>
     <div class="device rv"><iframe src="peek.html#embed" style="background:#07060b" title="PEEK! playable demo with play money" loading="lazy" allow="autoplay"></iframe></div>
   </div>
@@ -353,6 +370,7 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
         <li><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span><div><b>Built for every lobby</b><span>Neutral, premium and brand-safe. Recolour the light to your palette in a day.</span></div></li>
       </ul>
       <div class="skins"><span class="chip on">GLASS ASCENT</span><span class="chip">YOUR COLOURS</span></div>
+      <div class="playbar"><a class="btn gold-b" href="glass.html">Play Glass Ascent <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a></div>
     </div>
   </div>
 </section>
@@ -365,6 +383,7 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
         <h2>SONAR <span class="gold">Read the sea. Dive cheap.</span></h2>
       </div>
       <p class="lead rv" style="margin:0">Mines, reinvented. Every tile you open reveals a sonar number: how many mines touch it. Players reason their way through the water instead of guessing, and every tile pays its exact true odds minus a risk fee. Sharp readers climb on cheap, low-risk tiles. Blind clickers pay for it. The house edge never drops below 2.5%.</p>
+      <div class="playbar" style="grid-column:1/-1;margin-top:0"><a class="btn gold-b" href="sonar.html">Play SONAR <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a></div>
     </div>
     <div class="device rv" style="box-shadow:0 40px 120px -30px rgba(63,240,208,.35),0 0 0 1px var(--line2),inset 0 1px 0 rgba(255,255,255,.08)"><iframe class="sonar-frame" src="sonar.html#embed" title="SONAR playable demo with play money" loading="lazy"></iframe></div>
     <ul class="bul rv" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px;margin-top:40px">
@@ -463,9 +482,9 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
     <h2 class="rv">The numbers your <span class="gold">team will ask for.</span></h2>
     <p class="lead rv">Three titles, one certified math core. Every value below is configurable per market; these are the defaults in the live demos.</p>
     <div class="tiles rv">
-      <a class="tile" href="#games" style="--img:url(art/bg.webp);--pos:62% 40%"><span class="tt">PEEK!</span><span class="ts">Crash · comedy</span></a>
-      <a class="tile" href="#games" style="--img:url(art/vault_bg.webp);--pos:55% 45%"><span class="tt">VAULT HEIST</span><span class="ts">Crash · neutral skin</span></a>
-      <a class="tile glass-tile" href="#glass"><span class="tt">GLASS ASCENT</span><span class="ts">Crash · real-time 3D</span></a>
+      <a class="tile" href="peek.html#play-peek" style="--img:url(art/bg.webp);--pos:62% 40%"><span class="tt">PEEK!</span><span class="ts">Crash · comedy</span></a>
+      <a class="tile" href="peek.html#play-vault" style="--img:url(art/vault_bg.webp);--pos:55% 45%"><span class="tt">VAULT HEIST</span><span class="ts">Crash · neutral skin</span></a>
+      <a class="tile glass-tile" href="glass.html"><span class="tt">GLASS ASCENT</span><span class="ts">Crash · real-time 3D</span></a>
     </div>
     <div class="tbl sheet rv"><table>
       <thead><tr><th>Specification</th><th>PEEK!</th><th>Vault Heist</th><th>Glass Ascent</th><th>SONAR</th></tr></thead>
