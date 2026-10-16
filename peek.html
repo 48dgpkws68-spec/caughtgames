@@ -18,45 +18,77 @@
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
 .wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:20px 60px}
 header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
-.logo{font-family:var(--display);font-size:clamp(28px,5vw,44px);letter-spacing:1px;line-height:1}
-.logo .lt{display:inline-block;background:var(--goldg);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(3px 3px 0 var(--acc))}
-.logo small{display:block;font-family:var(--body);font-size:13px;color:var(--muted);letter-spacing:.5px;margin-top:6px}
-.themes{display:flex;gap:6px;background:var(--surface);padding:4px;border-radius:999px;border:1px solid var(--line)}
-.themes button{border:0;background:transparent;color:var(--muted);font:600 13px var(--body);padding:8px 14px;border-radius:999px;cursor:pointer}
+.logo{display:flex;align-items:center;gap:14px}
+.logo .eye{width:44px;height:44px;flex:none;border-radius:12px;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center}
+.logo .lt{display:block;font-family:var(--display);font-size:clamp(22px,3.4vw,30px);letter-spacing:.5px;line-height:1;background:var(--goldg);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 0 rgba(0,0,0,.6)) drop-shadow(0 0 14px rgba(233,196,106,.35))}
+.logo small{display:block;font-family:var(--body);font-size:13px;color:var(--muted);letter-spacing:.2px;margin-top:5px}
+.themes{display:flex;gap:4px;background:var(--surface);padding:4px;border-radius:999px;border:1px solid var(--line)}
+.themes button{border:0;background:transparent;color:var(--muted);font:600 13px var(--body);padding:8px 14px;border-radius:999px;cursor:pointer;transition:background .2s,color .2s}
 .themes button[aria-pressed="true"]{background:var(--acc);color:#07060b}
-.game{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px}
+.game{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px}
 @media (max-width:880px){.game{grid-template-columns:minmax(0,1fr)}}
-.stage{align-self:start;background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:0}
-.hist{display:flex;gap:6px;padding:10px 12px;overflow-x:auto;border-bottom:1px solid var(--line)}
-.chip{font:700 12px var(--mono);padding:3px 9px;border-radius:999px;background:var(--surface2);white-space:nowrap}
-.chip.lo{color:var(--pink)} .chip.mid{color:var(--gold)} .chip.hi{color:var(--ok)}
+.stage{align-self:start;position:relative;background:var(--surface);border:1px solid var(--line);border-radius:18px;overflow:hidden;min-width:0;box-shadow:0 30px 80px -40px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.06)}
+.hist{display:flex;gap:6px;padding:10px 12px;overflow-x:auto;background:linear-gradient(180deg,rgba(255,255,255,.04),transparent);border-bottom:1px solid var(--line);scrollbar-width:none}
+.hist::-webkit-scrollbar{display:none}
+.hist:empty::before{content:attr(data-empty);font:500 12px var(--mono);color:var(--muted);letter-spacing:.08em}
+.chip{font:700 12px var(--mono);padding:4px 10px;border-radius:999px;background:var(--surface2);border:1px solid var(--line);white-space:nowrap}
+.chip.lo{color:var(--pink);border-color:rgba(255,45,111,.35)} .chip.mid{color:var(--gold2);border-color:rgba(233,196,106,.35)} .chip.hi{color:var(--ok);border-color:rgba(63,240,176,.35)}
 canvas{display:block;width:100%;height:auto;max-width:100%}
-.side{display:flex;flex-direction:column;gap:16px;min-width:0}
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px}
-.bal{display:flex;justify-content:space-between;align-items:baseline}
-.bal b{font:700 22px var(--mono);font-variant-numeric:tabular-nums;color:var(--gold2)}
-label{display:block;font-size:12px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin:12px 0 4px}
-.field{display:flex;gap:6px}
-input[type=number]{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--fg);font:600 16px var(--mono);padding:9px 10px;border-radius:8px}
+.side{display:flex;flex-direction:column;gap:14px;min-width:0}
+.panel{position:relative;background:linear-gradient(180deg,var(--surface2),var(--surface));border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.bal{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;margin-bottom:4px;border-bottom:1px solid var(--line)}
+.bal .note{font:600 11px var(--mono);letter-spacing:.12em;text-transform:uppercase}
+.bal b{font:700 24px var(--mono);font-variant-numeric:tabular-nums;background:var(--goldg);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent}
+label{display:block;font:600 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:14px 0 6px}
+.field{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg .mini{border:0;border-radius:0;background:var(--surface2);padding:0 12px}
+.seg .mini+.mini{border-left:1px solid var(--line)}
+.quick{display:flex;gap:6px;margin-top:6px}
+.quick button{flex:1;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:8px;font:600 12px var(--mono);padding:6px 0;cursor:pointer}
+.quick button:hover{border-color:var(--acc);color:var(--fg)}
+input[type=number]{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--fg);font:600 16px var(--mono);padding:10px 12px;border-radius:10px;transition:border-color .2s}
+input[type=number]::-webkit-inner-spin-button{opacity:.4}
 input:focus-visible,button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
-input[type=number]:focus{border-color:var(--acc)}
+input[type=number]:focus{border-color:var(--acc);outline:none}
 .mini{border:1px solid var(--line);background:var(--surface2);color:var(--fg);border-radius:8px;font:600 13px var(--mono);padding:0 10px;cursor:pointer}
-.big{margin-top:14px;width:100%;border:0;border-radius:12px;padding:16px;font:20px var(--display);letter-spacing:1px;cursor:pointer;background:var(--goldg);background-size:200% 100%;color:#1b1406;box-shadow:0 10px 36px -10px rgba(233,196,106,.6),inset 0 1px 0 rgba(255,255,255,.6);transition:transform .08s,box-shadow .2s}
-.big:hover{box-shadow:0 14px 48px -8px rgba(233,196,106,.85)}
+.big{margin-top:16px;width:100%;border:0;border-radius:14px;padding:17px;font:19px var(--display);letter-spacing:.5px;cursor:pointer;background:var(--goldg);background-size:200% 100%;color:#1b1406;box-shadow:0 10px 36px -10px rgba(233,196,106,.6),inset 0 1px 0 rgba(255,255,255,.6);transition:transform .08s,box-shadow .2s,background-position .4s}
+.big:hover{box-shadow:0 14px 48px -8px rgba(233,196,106,.85);background-position:100% 0}
 .big:active{transform:scale(.98)}
-.big.cash{background:linear-gradient(135deg,#d2ffef,#3ff0b0 60%,#1fb98a);box-shadow:0 10px 40px -6px rgba(63,240,176,.7),inset 0 1px 0 #fff}
+.big.cash{background:linear-gradient(135deg,#d2ffef,#3ff0b0 60%,#1fb98a);box-shadow:0 10px 40px -6px rgba(63,240,176,.7),inset 0 1px 0 #fff;animation:cashpulse 1s ease-in-out infinite}
+@keyframes cashpulse{50%{box-shadow:0 10px 56px -2px rgba(63,240,176,.95),inset 0 1px 0 #fff}}
 .big.wait{background:var(--surface2);color:var(--muted);cursor:default}
-.msg{min-height:22px;margin-top:8px;font-size:13px;color:var(--muted)}
-.players{list-style:none;margin:0;padding:0;font-size:13px}
-.players li{display:grid;grid-template-columns:1fr auto auto;gap:10px;padding:5px 0;border-bottom:1px dashed var(--line);font-variant-numeric:tabular-nums}
-.players li span:nth-child(2){font-family:var(--mono);color:var(--muted)}
-.players li .w{color:var(--ok);font-family:var(--mono)}
-.players li .l{color:var(--pink);font-family:var(--mono)}
-.players li.me{color:var(--gold2)}
-h3{margin:0 0 6px;font:15px var(--display);letter-spacing:.5px;color:var(--fg)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px}
+.msg{min-height:20px;font-size:13px;color:var(--muted)}
+.snd{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;font:600 11px var(--mono);letter-spacing:.08em;padding:6px 10px;cursor:pointer;white-space:nowrap}
+.snd:hover{color:var(--fg);border-color:var(--acc)}
+.ph{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.ph h3{margin:0}
+.ph .note{font:600 11px var(--mono);letter-spacing:.08em}
+.players{list-style:none;margin:0;padding:0;font-size:13px;display:grid;gap:4px}
+.players li{display:grid;grid-template-columns:26px minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:6px 8px;border-radius:10px;font-variant-numeric:tabular-nums}
+.players li:nth-child(odd){background:rgba(255,255,255,.025)}
+.players .av{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:700 11px var(--mono);color:#07060b;background:var(--acc)}
+.players .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.players .bt{font-family:var(--mono);color:var(--muted)}
+.players .st{font:700 11px var(--mono);padding:3px 8px;border-radius:999px;min-width:58px;text-align:center}
+.players .st.w{color:var(--ok);background:rgba(63,240,176,.12)}
+.players .st.l{color:var(--pink);background:rgba(255,45,111,.12)}
+.players .st.p{color:var(--muted);background:transparent}
+.players li.me{background:linear-gradient(90deg,rgba(233,196,106,.16),rgba(233,196,106,.04));box-shadow:inset 3px 0 0 var(--gold)}
+.players li.me .av{background:var(--goldg);background-size:200% 100%}
+.players li.me .nm{color:var(--gold2);font-weight:700}
+h3{margin:0 0 6px;font:14px var(--display);letter-spacing:.5px;color:var(--fg)}
 .note{font-size:12px;color:var(--muted)}
-.fair code{display:block;font:11px var(--mono);word-break:break-all;color:var(--fg);background:var(--bg);padding:6px 8px;border-radius:6px;margin:3px 0 8px}
-
+.fair summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.fair summary::-webkit-details-marker{display:none}
+.fair summary::after{content:"+";font:400 20px var(--mono);color:var(--gold);transition:transform .25s}
+.fair details[open] summary::after{transform:rotate(45deg)}
+.fair .sh{display:inline-flex;align-items:center;gap:8px;font:600 11px var(--mono);color:var(--ok);letter-spacing:.06em}
+.fair .sh i{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok)}
+.fair .body{margin-top:12px;display:grid;gap:8px}
+.fair code{display:block;font:11px/1.5 var(--mono);word-break:break-all;color:var(--acc);background:var(--bg);padding:8px 10px;border-radius:8px;border:1px solid var(--line)}
+.fair .mini{padding:9px 12px;border-radius:10px;justify-self:start}
 /* pitch */
 .pitch{margin-top:48px}
 .pitch h2{font:clamp(24px,4vw,34px) var(--display);color:var(--gold2);margin:0 0 8px;text-wrap:balance}
@@ -89,7 +121,10 @@ ul.pts{padding-left:18px;margin:8px 0 0;max-width:68ch} ul.pts li{margin-bottom:
 </head><body>
 <div class="wrap">
   <header>
-    <div class="logo" id="logo"><span class="lt">GLUREN!</span><small id="tagline">Hoe langer je gluurt, hoe hoger je winst. Cash uit voordat ze omkijkt.</small></div>
+    <div class="logo" id="logo">
+      <span class="eye"><svg width="26" height="26" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 32c8-12 16-17 24-17s16 5 24 17c-8 12-16 17-24 17S16 44 8 32z" fill="none" stroke="#e9c46a" stroke-width="4"/><circle cx="32" cy="32" r="9" fill="#ff2d6f"/><circle cx="35" cy="29" r="3" fill="#fff"/></svg></span>
+      <div><span class="lt">GLUREN!</span><small id="tagline">Hoe langer je gluurt, hoe hoger je winst. Cash uit voordat ze omkijkt.</small></div>
+    </div>
     <div class="themes" role="group" aria-label="Thema">
       <button id="thA" aria-pressed="true" data-t="thA">Gluren</button>
       <button id="thB" aria-pressed="false" data-t="thB">Kluiskraak</button>
@@ -98,7 +133,7 @@ ul.pts{padding-left:18px;margin:8px 0 0;max-width:68ch} ul.pts li{margin-bottom:
 
   <div class="game">
     <div class="stage">
-      <div class="hist" id="hist" aria-label="Vorige rondes"></div>
+      <div class="hist" id="hist" aria-label="Vorige rondes" data-empty="…"></div>
       <canvas id="cv" width="1200" height="640" aria-label="Speelveld"></canvas>
     </div>
 
@@ -108,28 +143,31 @@ ul.pts{padding-left:18px;margin:8px 0 0;max-width:68ch} ul.pts li{margin-bottom:
         <label for="bet" data-t="stake">Inzet</label>
         <div class="field">
           <input id="bet" type="number" min="1" step="1" value="10">
-          <button class="mini" id="half">½</button>
-          <button class="mini" id="dbl">2×</button>
+          <div class="seg"><button class="mini" id="half">½</button><button class="mini" id="dbl">2×</button></div>
         </div>
+        <div class="quick" id="quick"><button data-v="1">1</button><button data-v="5">5</button><button data-v="10">10</button><button data-v="25">25</button><button data-v="100">100</button></div>
         <label for="auto" data-t="auto">Automatisch uitcashen bij (0 = uit)</label>
         <input id="auto" type="number" min="0" step="0.1" value="0">
         <button class="big" id="act">INZETTEN</button>
-        <div class="msg" id="msg" aria-live="polite"></div>
-        <button class="mini" id="snd" style="padding:7px 10px;margin-top:6px" data-t="sndOn">Geluid: aan</button>
+        <div class="row"><div class="msg" id="msg" aria-live="polite"></div><button class="snd" id="snd" data-t="sndOn">Geluid: aan</button></div>
       </div>
       <div class="panel">
-        <h3 data-t="pl">Spelers deze ronde</h3>
+        <div class="ph"><h3 data-t="pl">Spelers deze ronde</h3><span class="note" id="plc"></span></div>
         <ul class="players" id="players"></ul>
-        <p class="note" style="margin:8px 0 0" data-t="sim">Andere spelers zijn gesimuleerd voor de demo.</p>
+        <p class="note" style="margin:10px 0 0" data-t="sim">Andere spelers zijn gesimuleerd voor de demo.</p>
       </div>
       <div class="panel fair">
-        <h3>Provably fair</h3>
-        <span class="note" data-t="nh">Hash van de volgende server-seed (vooraf vastgelegd)</span>
-        <code id="nextHash">...</code>
-        <span class="note" data-t="ps">Vorige ronde: seed en uitkomst</span>
-        <code id="prevSeed" data-t="none">nog geen ronde gespeeld</code>
-        <button class="mini" id="verify" style="padding:8px 10px" data-t="ver">Controleer vorige ronde</button>
-        <div class="msg" id="vmsg"></div>
+        <details>
+          <summary><h3>Provably fair</h3><span class="sh"><i></i><span data-t="sealed">SEED VASTGELEGD</span></span></summary>
+          <div class="body">
+            <span class="note" data-t="nh">Hash van de volgende server-seed (vooraf vastgelegd)</span>
+            <code id="nextHash">...</code>
+            <span class="note" data-t="ps">Vorige ronde: seed en uitkomst</span>
+            <code id="prevSeed" data-t="none">nog geen ronde gespeeld</code>
+            <button class="mini" id="verify" data-t="ver">Controleer vorige ronde</button>
+            <div class="msg" id="vmsg"></div>
+          </div>
+        </details>
       </div>
     </div>
   </div>
@@ -206,14 +244,14 @@ const L={nl:{hey:'HÉ!',stop:'STOP!',bets:'ZET IN',caught:'BETRAPT!',bet:'INZETT
  min:'Kies een inzet van minimaal 1.',broke:'Niet genoeg speelgeld voor deze inzet.',ready:a=>`Inzet ${a} staat klaar.`,queued:a=>`Inzet ${a} geldt voor de volgende ronde.`,
  first:'Speel eerst een ronde.',ok:c=>`Klopt: hash komt overeen en de seed geeft ${c}×.`,bad:'Komt niet overeen.',
  logoA:'GLUREN!',logoB:'KLUISKRAAK!',tagA:'Hoe langer je gluurt, hoe hoger je winst. Cash uit voordat ze omkijkt.',tagB:'Hoe langer je graait, hoe hoger je winst. Cash uit voordat de bewaker wakker wordt.',
- thA:'Gluren',snrk:'SNURK?!',oi:'HÉ, JIJ!',close:'BIJNA BETRAPT!',sndOn:'Geluid: aan',sndOff:'Geluid: uit',thB:'Kluiskraak',play:'Speelgeld',stake:'Inzet',auto:'Automatisch uitcashen bij (0 = uit)',pl:'Spelers deze ronde',sim:'Andere spelers zijn gesimuleerd voor de demo.',
+ thA:'Gluren',inplay:'speelt',plN:'spelers',cashed:'uitgecasht',sealed:'SEED VASTGELEGD',snrk:'SNURK?!',oi:'HÉ, JIJ!',close:'BIJNA BETRAPT!',sndOn:'Geluid: aan',sndOff:'Geluid: uit',thB:'Kluiskraak',play:'Speelgeld',stake:'Inzet',auto:'Automatisch uitcashen bij (0 = uit)',pl:'Spelers deze ronde',sim:'Andere spelers zijn gesimuleerd voor de demo.',
  nh:'Hash van de volgende server-seed (vooraf vastgelegd)',ps:'Vorige ronde: seed en uitkomst',none:'nog geen ronde gespeeld',ver:'Controleer vorige ronde'},
  en:{hey:'HEY!',stop:'STOP!',bets:'PLACE BETS',caught:'BUSTED!',bet:'PLACE BET',cash:'CASH OUT',cancel:'CANCEL',next:'BET NEXT ROUND',
  lost:'lost',you:'You',caughtMsg:x=>`Caught at ${x}×. Stake lost.`,outMsg:(x,w)=>`Cashed out at ${x}×: +${w}`,cancelled:'Bet cancelled.',
  min:'Minimum stake is 1.',broke:'Not enough play money for this stake.',ready:a=>`Bet of ${a} is ready.`,queued:a=>`Bet of ${a} goes into the next round.`,
  first:'Play a round first.',ok:c=>`Verified: hash matches and the seed gives ${c}×.`,bad:'Does not match.',
  logoA:'PEEK!',logoB:'VAULT HEIST!',tagA:'The longer you peek, the bigger the win. Cash out before she turns around.',tagB:'The longer you grab, the bigger the win. Cash out before the guard wakes up.',
- thA:'Peek',snrk:'SNRK?!',oi:'HEY, YOU!',close:'CLOSE CALL!',sndOn:'Sound: on',sndOff:'Sound: off',thB:'Vault Heist',play:'Play money',stake:'Stake',auto:'Auto cash-out at (0 = off)',pl:'Players this round',sim:'Other players are simulated for the demo.',
+ thA:'Peek',inplay:'in play',plN:'players',cashed:'cashed out',sealed:'SEED COMMITTED',snrk:'SNRK?!',oi:'HEY, YOU!',close:'CLOSE CALL!',sndOn:'Sound: on',sndOff:'Sound: off',thB:'Vault Heist',play:'Play money',stake:'Stake',auto:'Auto cash-out at (0 = off)',pl:'Players this round',sim:'Other players are simulated for the demo.',
  nh:'Hash of the next server seed (committed in advance)',ps:'Previous round: seed and result',none:'no round played yet',ver:'Verify previous round'}};
 const EMBED=location.hash==='#embed'; let lang=(EMBED||location.hash==='#en')?'en':'nl';
 const T=(k,...a)=>{const v=L[lang][k];return typeof v==='function'?v(...a):v};
@@ -281,15 +319,16 @@ function makeBots(){
   }));
 }
 function renderPlayers(){
-  const rows=bots.map(b=>{
-    let st=phase==='bet'?'':b.done?`<span class="w">${b.out.toFixed(2)}×</span>`:phase==='crash'?`<span class="l">${T('lost')}</span>`:'';
-    return `<li><span>${b.n}</span><span>€${b.bet}</span>${st||'<span></span>'}</li>`;
-  });
+  const av=n=>`<span class="av">${n.replace(/[^a-z0-9]/gi,'').slice(0,2).toUpperCase()}</span>`;
+  const chip=(b)=>phase==='bet'?`<span class="st p">…</span>`:b.done?`<span class="st w">${b.out.toFixed(2)}×</span>`:phase==='crash'?`<span class="st l">${T('lost')}</span>`:`<span class="st p">${T('inplay')}</span>`;
+  const rows=bots.map(b=>`<li>${av(b.n)}<span class="nm">${b.n}</span><span class="bt">€${b.bet}</span>${chip(b)}</li>`);
   if(myBet){
-    const st=myBet.out?`<span class="w">${myBet.out.toFixed(2)}×</span>`:phase==='crash'?`<span class="l">${T('lost')}</span>`:'<span></span>';
-    rows.unshift(`<li class="me"><span>${T('you')}</span><span>${fmt(myBet.amt)}</span>${st}</li>`);
+    const st=myBet.out?`<span class="st w">${myBet.out.toFixed(2)}×</span>`:phase==='crash'?`<span class="st l">${T('lost')}</span>`:`<span class="st p">${T('inplay')}</span>`;
+    rows.unshift(`<li class="me"><span class="av">★</span><span class="nm">${T('you')}</span><span class="bt">${fmt(myBet.amt)}</span>${st}</li>`);
   }
   $('players').innerHTML=rows.join('');
+  const n=bots.length+(myBet?1:0), out=bots.filter(b=>b.done).length+(myBet&&myBet.out?1:0);
+  $('plc').textContent=phase==='bet'?`${n} ${T('plN')}`:`${out}/${n} ${T('cashed')}`;
 }
 function renderHist(){
   $('hist').innerHTML=history.slice(-30).reverse().map(c=>`<span class="chip ${c<2?'lo':c<10?'mid':'hi'}">${c.toFixed(2)}×</span>`).join('');
@@ -345,6 +384,7 @@ $('act').onclick=()=>{ audio();
   say(phase==='bet'?T('ready',fmt(a)):T('queued',fmt(a)));
   updateBtn();
 };
+$('quick').onclick=e=>{ const v=e.target.dataset.v; if(v) $('bet').value=v };
 $('half').onclick=()=>{$('bet').value=Math.max(1,Math.floor(+$('bet').value/2))};
 $('dbl').onclick=()=>{$('bet').value=Math.min(Math.floor(bal),Math.floor(+$('bet').value*2))||1};
 document.addEventListener('keydown',e=>{ if(e.code==='Space'&&e.target.tagName!=='INPUT'){e.preventDefault();$('act').click()} });
