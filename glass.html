@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Glass Ascent</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;800&family=Manrope:wght@500;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{--fg:#f4f2ff;--muted:rgba(230,226,255,.62);--line:rgba(255,255,255,.14);--glass:rgba(255,255,255,.07);--ok:#5cf2c4;--hot:#ff4f8b;--ice:#8fe3ff;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#05040c;color:var(--fg);font-family:Manrope,system-ui,sans-serif;overflow:hidden}
+#gl{position:fixed;inset:0;width:100%;height:100%;display:block}
+.ui{position:fixed;inset:0;pointer-events:none;display:grid;grid-template-rows:auto 1fr auto;padding:18px}
+.glass{background:var(--glass);border:1px solid var(--line);border-radius:22px;backdrop-filter:blur(22px) saturate(1.6);-webkit-backdrop-filter:blur(22px) saturate(1.6);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 20px 60px -20px rgba(0,0,0,.6)}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.brand{padding:12px 18px;font:800 18px Unbounded,sans-serif;letter-spacing:.02em}
+.brand small{display:block;font:500 11px 'JetBrains Mono',monospace;color:var(--muted);letter-spacing:.14em;margin-top:3px}
+.hist{display:flex;gap:6px;padding:10px;max-width:min(560px,60vw);overflow:hidden}
+.chip{font:700 12px 'JetBrains Mono',monospace;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid var(--line);white-space:nowrap}
+.mid{display:grid;place-items:start center;text-align:center;padding-top:2vh}
+#mult{font:800 clamp(56px,11vw,150px)/1 Unbounded,sans-serif;letter-spacing:-.04em;background:linear-gradient(180deg,#fff,#cfe9ff 55%,#8fb8ff);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 4px 0 rgba(10,8,30,.9)) drop-shadow(0 0 28px rgba(143,227,255,.5));transition:filter .2s}
+#mult.bust{background:linear-gradient(180deg,#ffd0de,#ff4f8b);-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 40px rgba(255,79,139,.7))}
+#sub{font:600 13px 'JetBrains Mono',monospace;letter-spacing:.24em;color:var(--muted);margin-top:10px;min-height:18px}
+.bottom{display:flex;justify-content:center}
+.panel{pointer-events:auto;display:grid;grid-template-columns:auto auto auto 1fr;gap:12px;align-items:end;padding:14px;width:min(760px,100%)}
+@media(max-width:640px){.panel{grid-template-columns:1fr 1fr}.panel .act{grid-column:1/-1}}
+.f label{display:block;font:600 10px 'JetBrains Mono',monospace;letter-spacing:.14em;color:var(--muted);margin:0 0 6px 4px;text-transform:uppercase}
+.f input{width:120px;background:rgba(0,0,0,.25);border:1px solid var(--line);color:var(--fg);font:700 16px 'JetBrains Mono',monospace;padding:11px 12px;border-radius:14px;outline:none}
+@media(max-width:640px){.f input{width:100%}}
+.f input:focus{border-color:var(--ice)}
+.bal b{display:block;font:700 18px 'JetBrains Mono',monospace;padding:11px 4px}
+#act{font:800 16px Unbounded,sans-serif;letter-spacing:.04em;border:0;border-radius:16px;padding:17px;cursor:pointer;color:#05040c;background:linear-gradient(135deg,#bff3ff,#8fe3ff 40%,#b9a6ff);box-shadow:0 10px 40px -8px rgba(143,227,255,.6),inset 0 1px 0 #fff;transition:transform .12s}
+#act:active{transform:scale(.98)}
+#act.cash{background:linear-gradient(135deg,#d2ffef,#5cf2c4);box-shadow:0 10px 40px -6px rgba(92,242,196,.7)}
+#msg{position:fixed;left:50%;bottom:120px;transform:translateX(-50%);font:600 13px Manrope;color:var(--muted);pointer-events:none}
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div class="ui">
+  <div class="top">
+    <div class="glass brand">GLASS ASCENT<small>CAUGHT GAMES · 97% RTP</small></div>
+    <div class="glass hist" id="hist"></div>
+  </div>
+  <div class="mid"><div><div id="mult">1.00×</div><div id="sub">PLACE YOUR BETS</div></div></div>
+  <div class="bottom">
+    <div class="glass panel">
+      <div class="f bal"><label>Play money</label><b id="bal">1,000.00</b></div>
+      <div class="f"><label for="bet">Stake</label><input id="bet" type="number" value="10" min="1"></div>
+      <div class="f"><label for="auto">Auto cash-out</label><input id="auto" type="number" value="0" min="0" step="0.1"></div>
+      <button class="act" id="act">PLACE BET</button>
+    </div>
+  </div>
+</div>
+<div id="msg"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/CopyShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/shaders/LuminosityHighPassShader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/EffectComposer.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/RenderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/ShaderPass.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/postprocessing/UnrealBloomPass.js"></script>
+<script>
+(()=>{
+const $=id=>document.getElementById(id), reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fmt=(n,d=2)=>n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const RTP=.97, GROWTH=.00006, BET_MS=6000, PAUSE_MS=3800;
+const crashPoint=()=>{ const r=crypto.getRandomValues(new Uint32Array(2)); const u=(r[0]*2**21+(r[1]>>>11))/2**53; return Math.min(10000,Math.max(1,Math.floor(100*RTP/(1-u))/100)) };
+
+/* ---------- renderer, camera, environment ---------- */
+const cv=$('gl'), R=new THREE.WebGLRenderer({canvas:cv,antialias:true,powerPreference:'high-performance'});
+R.setPixelRatio(Math.min(2,devicePixelRatio)); R.toneMapping=THREE.ACESFilmicToneMapping; R.toneMappingExposure=.95; R.outputEncoding=THREE.sRGBEncoding;
+const scene=new THREE.Scene(); scene.fog=new THREE.FogExp2(0x06040f,.028);
+const cam=new THREE.PerspectiveCamera(42,1,.1,200); cam.position.set(0,0,11);
+
+// studio environment for reflections/refraction: coloured light panels baked into a PMREM map
+(function env(){
+  const es=new THREE.Scene(); es.background=new THREE.Color(0x0a0820);
+  const panel=(c,x,y,z,w,h,ry=0)=>{ const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({color:c,side:THREE.DoubleSide})); m.position.set(x,y,z); m.lookAt(0,0,0); es.add(m) };
+  panel(0x8fe3ff,-6,4,4,4,8); panel(0xff4f8b,6,-2,3,3,7); panel(0xffffff,0,8,0,10,2); panel(0xb9a6ff,0,-6,-5,8,3); panel(0x5cf2c4,7,5,-4,3,3);
+  const pm=new THREE.PMREMGenerator(R); scene.environment=pm.fromScene(es,.02).texture;
+})();
+scene.add(new THREE.AmbientLight(0xffffff,.25));
+const key=new THREE.PointLight(0x9fdcff,3,40); key.position.set(-4,5,6); scene.add(key);
+const rim=new THREE.PointLight(0xff5c9a,2.5,40); rim.position.set(5,-3,4); scene.add(rim);
+
+/* ---------- background: nebula shader plane ---------- */
+const bgMat=new THREE.ShaderMaterial({depthWrite:false,uniforms:{t:{value:0},I:{value:0},bust:{value:0}},
+  vertexShader:'varying vec2 v;void main(){v=uv;gl_Position=vec4(position.xy,1.,1.);}',
+  fragmentShader:`varying vec2 v;uniform float t,I,bust;
+  float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5);}
+  float n(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+1.),f.x),f.y);}
+  float fbm(vec2 p){float s=0.,a=.5;for(int i=0;i<5;i++){s+=a*n(p);p*=2.02;a*=.5;}return s;}
+  void main(){vec2 p=v*vec2(2.,1.2);float y=t*(.03+I*.25);
+    float a=fbm(p*1.6+vec2(0.,-y)),b=fbm(p*3.+vec2(a*1.5,-y*1.7));
+    vec3 c=mix(vec3(.02,.015,.06),vec3(.12,.07,.32),b);c+=vec3(.25,.55,.85)*pow(b,3.)*(.6+I);c+=vec3(.9,.25,.5)*pow(a,4.)*(.4+I*.8);
+    c=mix(c,vec3(.5,.02,.12)*b+vec3(.1,0,.02),bust*.8);c*=1.-.55*length(v-.5);gl_FragColor=vec4(c,1.);}`});
+const bg=new THREE.Mesh(new THREE.PlaneGeometry(2,2),bgMat); bg.frustumCulled=false; bg.renderOrder=-1; scene.add(bg);
+
+/* ---------- the crystal ---------- */
+const glassMat=new THREE.MeshPhysicalMaterial({color:0xffffff,metalness:0,roughness:0,transmission:1,thickness:1.4,clearcoat:1,clearcoatRoughness:0,envMapIntensity:1.1,transparent:true,opacity:1,side:THREE.DoubleSide});
+const crystalGeo=new THREE.OctahedronGeometry(1.25,0); crystalGeo.scale(1,1.55,1);
+const crystal=new THREE.Mesh(crystalGeo,glassMat); scene.add(crystal);
+const core=new THREE.Mesh(new THREE.OctahedronGeometry(.42,0),new THREE.MeshBasicMaterial({color:0x8fe3ff})); core.scale.y=1.55; crystal.add(core);
+const edges=new THREE.LineSegments(new THREE.EdgesGeometry(crystalGeo),new THREE.LineBasicMaterial({color:0xcff4ff,transparent:true,opacity:.55})); crystal.add(edges);
+
+/* ---------- glass rings it rises through ---------- */
+const rings=[]; const ringMat=new THREE.MeshPhysicalMaterial({color:0xbfd8ff,roughness:.12,transmission:.92,thickness:.6,clearcoat:1,envMapIntensity:1.6,transparent:true});
+for(let i=0;i<9;i++){ const r=new THREE.Mesh(new THREE.TorusGeometry(3.2+((i*7)%3)*.5,.07+(i%3)*.03,16,120),ringMat); r.rotation.x=Math.PI/2.15; r.position.y=-14+i*4; r.userData.ph=i; scene.add(r); rings.push(r) }
+// glowing light rails
+const rails=[]; for(let i=0;i<14;i++){ const m=new THREE.Mesh(new THREE.BoxGeometry(.03,6,.03),new THREE.MeshBasicMaterial({color:i%3?0x8fe3ff:0xff4f8b})); const a=i/14*Math.PI*2; m.position.set(Math.cos(a)*6.5,Math.random()*20-10,Math.sin(a)*3-4); scene.add(m); rails.push(m) }
+
+/* ---------- dust / bokeh particles ---------- */
+const PN=900, pg=new THREE.BufferGeometry(), pp=new Float32Array(PN*3);
+for(let i=0;i<PN;i++){ pp[i*3]=(Math.random()-.5)*24; pp[i*3+1]=(Math.random()-.5)*24; pp[i*3+2]=(Math.random()-.5)*14-3 }
+pg.setAttribute('position',new THREE.BufferAttribute(pp,3));
+const dust=new THREE.Points(pg,new THREE.PointsMaterial({color:0xcfe9ff,size:.05,transparent:true,opacity:.8,blending:THREE.AdditiveBlending,depthWrite:false})); scene.add(dust);
+
+/* ---------- shards for the shatter ---------- */
+const SH=160, shards=[]; const shardMat=glassMat.clone(); shardMat.transmission=.85; shardMat.thickness=.3;
+for(let i=0;i<SH;i++){ const g=new THREE.TetrahedronGeometry(.16+Math.random()*.42,0); g.scale(1,1+Math.random()*1.8,.35+Math.random()*.5);
+  const m=new THREE.Mesh(g,i%5?shardMat:new THREE.MeshBasicMaterial({color:i%2?0x8fe3ff:0xffffff})); m.visible=false; scene.add(m); shards.push({m,v:new THREE.Vector3(),w:new THREE.Vector3()}) }
+const flashL=new THREE.PointLight(0xff4f8b,0,30); scene.add(flashL);
+const wave=new THREE.Mesh(new THREE.RingGeometry(.9,1,96),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:0,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,depthWrite:false})); wave.visible=false; scene.add(wave);
+const glowTex=(()=>{ const c=document.createElement('canvas'); c.width=c.height=256; const x=c.getContext('2d'); const g=x.createRadialGradient(128,128,0,128,128,128); g.addColorStop(0,'rgba(255,255,255,1)'); g.addColorStop(.25,'rgba(255,220,240,.8)'); g.addColorStop(.6,'rgba(255,120,180,.25)'); g.addColorStop(1,'rgba(255,80,140,0)'); x.fillStyle=g; x.fillRect(0,0,256,256); const t=new THREE.CanvasTexture(c); return t })();
+const flashSpr=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:0xffffff,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false})); flashSpr.scale.setScalar(6); scene.add(flashSpr);
+// cash-out: golden sparks
+const SPN=220, spg=new THREE.BufferGeometry(), spp=new Float32Array(SPN*3), spv=[]; for(let i=0;i<SPN;i++){ spv.push(new THREE.Vector3()) }
+spg.setAttribute('position',new THREE.BufferAttribute(spp,3));
+const sparks=new THREE.Points(spg,new THREE.PointsMaterial({color:0xffe08a,size:.16,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false})); scene.add(sparks); let sparkLife=0;
+function sparkBurst(){ sparkLife=1; for(let i=0;i<SPN;i++){ spp[i*3]=crystal.position.x; spp[i*3+1]=crystal.position.y; spp[i*3+2]=crystal.position.z; const a=Math.random()*Math.PI*2, e=Math.random()*Math.PI-Math.PI/2, sp=3+Math.random()*7; spv[i].set(Math.cos(a)*Math.cos(e)*sp,Math.sin(e)*sp+3,Math.sin(a)*Math.cos(e)*sp) } spg.attributes.position.needsUpdate=true }
+
+/* ---------- post: bloom ---------- */
+const comp=new THREE.EffectComposer(R); comp.addPass(new THREE.RenderPass(scene,cam));
+const bloom=new THREE.UnrealBloomPass(new THREE.Vector2(1,1),.55,.5,.55); comp.addPass(bloom);
+function size(){ const w=innerWidth,h=innerHeight; R.setSize(w,h,false); comp.setSize(w,h); cam.aspect=w/h; cam.position.z=w<700?14:11; cam.updateProjectionMatrix() }
+size(); addEventListener('resize',size);
+
+/* ---------- audio ---------- */
+let ac=null; const au=()=>{ if(!ac){ try{ac=new AudioContext()}catch(e){} } ac&&ac.state==='suspended'&&ac.resume() };
+function tone(f1,f2,d,v,type='sine',delay=0){ if(!ac) return; const t=ac.currentTime+delay,o=ac.createOscillator(),g=ac.createGain(); o.type=type; o.frequency.setValueAtTime(f1,t); o.frequency.exponentialRampToValueAtTime(f2,t+d); g.gain.setValueAtTime(v,t); g.gain.exponentialRampToValueAtTime(.0001,t+d); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+d+.02) }
+function shatterSnd(){ if(!ac) return; const b=ac.createBuffer(1,ac.sampleRate*.8,ac.sampleRate),d=b.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);
+  const s=ac.createBufferSource(); s.buffer=b; const f=ac.createBiquadFilter(); f.type='highpass'; f.frequency.value=2500; const g=ac.createGain(); g.gain.value=.7; s.connect(f).connect(g).connect(ac.destination); s.start();
+  for(let i=0;i<10;i++) tone(2000+Math.random()*4000,800,.25+Math.random()*.3,.05,'triangle',Math.random()*.25) }
+let nextChime=0;
+
+/* ---------- game state ---------- */
+let phase='bet', t0=performance.now(), crashAt=1, mult=1, bal=1000, myBet=null, queued=null, bustAt=0, hist=[];
+const say=m=>{$('msg').textContent=m};
+function setBal(){ $('bal').textContent=fmt(bal) }
+function btn(){ const b=$('act'); b.className='act';
+  if(phase==='run'&&myBet&&!myBet.out){ b.classList.add('cash'); b.textContent='CASH OUT '+fmt((myBet.amt*mult))+''; return }
+  b.textContent=queued?'CANCEL':(phase==='bet'?'PLACE BET':'BET NEXT ROUND') }
+$('act').onclick=()=>{ au();
+  if(phase==='run'&&myBet&&!myBet.out) return cash();
+  if(queued){ bal+=queued; queued=null; setBal(); say('Bet cancelled.'); return btn() }
+  const a=Math.floor(+$('bet').value*100)/100; if(!(a>=1)) return say('Minimum stake is 1.'); if(a>bal) return say('Not enough play money.');
+  bal-=a; queued=a; setBal(); say(phase==='bet'?'Bet placed.':'Bet goes into the next round.'); btn() };
+addEventListener('keydown',e=>{ if(e.code==='Space'&&e.target.tagName!=='INPUT'){ e.preventDefault(); $('act').click() } });
+function cash(){ myBet.out=Math.floor(mult*100)/100; const w=myBet.amt*myBet.out; bal+=w; setBal(); say('Cashed out at '+fmt(myBet.out)+'× · +'+fmt(w)); tone(880,1760,.25,.15,'triangle'); tone(1320,2640,.3,.1,'triangle',.08); burstGlow=1; sparkBurst(); btn() }
+function start(){ phase='run'; t0=performance.now(); crashAt=crashPoint(); mult=1; if(queued){ myBet={amt:queued,out:null}; queued=null } $('sub').textContent='ASCENDING'; $('mult').classList.remove('bust'); btn() }
+function bust(){ phase='bust'; bustAt=performance.now(); mult=crashAt; hist.unshift(crashAt); hist=hist.slice(0,14);
+  $('hist').innerHTML=hist.map(c=>`<span class="chip" style="color:${c<2?'#ff8fb3':c<10?'#ffe08a':'#5cf2c4'}">${fmt(c)}×</span>`).join('');
+  $('mult').classList.add('bust'); $('mult').textContent=fmt(crashAt)+'×'; $('sub').textContent='SHATTERED'; if(myBet&&!myBet.out) say('Shattered at '+fmt(crashAt)+'×. Stake lost.');
+  shatterSnd(); explode(); btn() }
+function newBet(){ phase='bet'; t0=performance.now(); myBet=null; crystal.visible=true; crystal.scale.setScalar(1); glassMat.opacity=1; shards.forEach(s=>s.m.visible=false); $('mult').classList.remove('bust'); $('mult').textContent='1.00×'; btn() }
+function explode(){ crystal.visible=false; const p=crystal.position; wave.visible=true; wave.position.copy(p); wave.scale.setScalar(.2); flashSpr.position.copy(p);
+  shards.forEach((s,i)=>{ s.m.visible=true; s.m.position.copy(p).add(new THREE.Vector3((Math.random()-.5)*1.4,(Math.random()-.5)*2,(Math.random()-.5)*1.4));
+    const d=s.m.position.clone().sub(p).normalize(); s.v.copy(d.multiplyScalar(4+Math.random()*9)); s.v.y+=2; s.w.set(Math.random()*12-6,Math.random()*12-6,Math.random()*12-6) }) }
+let burstGlow=0;
+
+/* ---------- loop ---------- */
+let last=performance.now(), shake=0;
+function frame(now){
+  const dt=Math.min(.05,(now-last)/1000); last=now; const T=now/1000;
+  let I=0;
+  if(phase==='bet'){ const left=Math.max(0,BET_MS-(now-t0)); $('sub').textContent='PLACE YOUR BETS · '+(left/1000).toFixed(1)+'s'; if(left<=0) start() }
+  else if(phase==='run'){ mult=Math.min(10000,Math.floor(Math.exp(GROWTH*(now-t0))*100)/100); I=Math.min(1,Math.log(mult)/Math.log(25));
+    const a=+$('auto').value; if(myBet&&!myBet.out&&a>=1.01&&mult>=a&&a<=crashAt){ mult=a; cash() }
+    if(mult>=crashAt) bust(); else { $('mult').textContent=fmt(mult)+'×'; if(myBet&&!myBet.out) btn() }
+    if(now>nextChime&&ac){ tone(520*Math.pow(2,I*1.5),520*Math.pow(2,I*1.5)*1.01,.18,.05+I*.05,'sine'); nextChime=now+Math.max(160,700-I*540) } }
+  else if(now-bustAt>PAUSE_MS) newBet();
+  const B=phase==='bust'?Math.max(0,1-(now-bustAt)/1800):0;
+
+  // crystal: hovers, spins faster, glows hotter with the multiplier
+  if(crystal.visible){ crystal.rotation.y+=dt*(.4+I*5); crystal.rotation.z=Math.sin(T*.7)*.12; crystal.position.y=-1.25+Math.sin(T*1.3)*.18*(1-I)+(Math.random()-.5)*I*.06; crystal.position.x=(Math.random()-.5)*I*.06;
+    const s=1+I*.18+Math.sin(T*8)*.015*I; crystal.scale.set(s,s,s);
+    core.material.color.setHSL(.55-I*.55,1,.45+I*.1); core.scale.setScalar(.85+I*.6+Math.sin(T*10)*.05*I); core.scale.y*=1.55;
+    edges.material.opacity=.4+I*.5 }
+  // world rushes past: rings and rails fall faster as it ascends
+  const speed=phase==='run'?(1.2+Math.pow(I,1.4)*26):(phase==='bet'?.4:.15);
+  rings.forEach(r=>{ r.position.y-=speed*dt; if(r.position.y<-14) r.position.y+=36; r.rotation.z+=dt*(.2+I); const d=Math.abs(r.position.y); r.material.opacity=Math.min(1,d/1.5+.25) });
+  rails.forEach(m=>{ m.position.y-=speed*dt*1.6; if(m.position.y<-14) m.position.y+=28; m.scale.y=1+I*3 });
+  const pos=pg.attributes.position.array; for(let i=0;i<PN;i++){ pos[i*3+1]-=speed*dt*(.5+(i%5)*.25); if(pos[i*3+1]<-12) pos[i*3+1]+=24 } pg.attributes.position.needsUpdate=true;
+  dust.material.size=.05+I*.08;
+  // shatter physics
+  if(phase==='bust'){ const since=now-bustAt, slow=reduce?1:(since<420?.18+.82*(since/420)**2:1), sd=dt*slow;
+    shards.forEach(s=>{ s.v.y-=9*sd; s.v.multiplyScalar(1-sd*.5); s.m.position.addScaledVector(s.v,sd); s.m.rotation.x+=s.w.x*sd; s.m.rotation.y+=s.w.y*sd; s.m.rotation.z+=s.w.z*sd });
+    const wp=Math.min(1,since/700); wave.scale.setScalar(.2+wp*14); wave.material.opacity=(1-wp)*.9; wave.lookAt(cam.position);
+    flashSpr.material.opacity=Math.max(0,1-since/320); flashSpr.scale.setScalar(5+since/60) } else { wave.visible=false; flashSpr.material.opacity=0 }
+  if(sparkLife>0){ sparkLife-=dt*.9; for(let i=0;i<SPN;i++){ spv[i].y-=12*dt; spp[i*3]+=spv[i].x*dt; spp[i*3+1]+=spv[i].y*dt; spp[i*3+2]+=spv[i].z*dt } spg.attributes.position.needsUpdate=true; sparks.material.opacity=Math.max(0,sparkLife) }
+  flashL.intensity=B*B*40; flashL.position.copy(crystal.position);
+  // camera: drift, push-in and shake
+  shake=Math.max(shake*.9,phase==='run'?I*I*.06:0); if(phase==='bust'&&now-bustAt<80) shake=.5;
+  cam.position.x=Math.sin(T*.3)*.4+(reduce?0:(Math.random()-.5)*shake); cam.position.y=Math.cos(T*.25)*.3+(reduce?0:(Math.random()-.5)*shake);
+  const zt=(innerWidth<700?14:11)-I*2.2+B*1.5; cam.position.z+=(zt-cam.position.z)*.05; cam.lookAt(0,-.6,0);
+  bloom.strength=.45+I*.45+B*1.1+burstGlow*.8; burstGlow*=.92; key.intensity=2.2+I*1.2; rim.intensity=1.8+I*1.6+B*4;
+  bgMat.uniforms.t.value=T; bgMat.uniforms.I.value=I; bgMat.uniforms.bust.value=B;
+  comp.render(); requestAnimationFrame(frame);
+}
+setBal(); btn(); requestAnimationFrame(frame);
+if(location.hash==='#embed') document.querySelector('.brand').style.display='none';
+})();
+</script>
+</body>
+</html>
