@@ -324,7 +324,7 @@ function say(t){ $('msg').textContent=t }
 function updateBtn(){
   const b=$('act');
   b.className='big';
-  if(phase==='run'&&myBet&&!myBet.out){ b.classList.add('cash'); b.textContent=T('cash'); return }
+  if(phase==='run'&&myBet&&!myBet.out){ b.classList.add('cash'); b.textContent=T('cash')+' '+fmt(myBet.amt*Math.floor(mult*100)/100); return }
   if(phase==='bet'&&queued){ b.textContent=T('cancel'); return }
   if(phase==='bet'){ b.textContent=T('bet'); return }
   b.textContent=queued?T('cancel'):T('next');
@@ -983,6 +983,7 @@ function frame(now){
     const a=+$('auto').value;
     if(myBet&&!myBet.out&&a>=1.01&&mult>=a&&a<=crashAt){ mult=a; cashOut() }
     bots.forEach(b=>{ if(!b.done&&mult>=b.out&&b.out<=crashAt){ b.done=true; renderPlayers() } });
+    if(myBet&&!myBet.out) updateBtn();
     if(!fakeUntil&&now>fakeAt&&mult<crashAt*0.85){ fakeUntil=now+650; fakeAt=now+4000+Math.random()*6000; sfx('gasp'); flash=.25; flashCol='255,255,255' }
     if(fakeUntil&&now>fakeUntil) fakeUntil=0;
     if(now>nextBeat){ sfx('beat'); beatPulse=1; nextBeat=now+Math.max(230,950/Math.sqrt(mult)) }
