@@ -606,7 +606,7 @@ function drawThief(scale,caught,t){
   ctx.save(); ctx.translate(TH.fx-flee,TH.fy+bob+runBob); ctx.rotate(lean+(flee>2?-.18:0)); ctx.scale(1+thiefFreeze*.04,1-thiefFreeze*.1); ctx.translate(-TH.fx,-TH.fy);
   const c=caught?ease(Math.min(1,since/140)):0;
   if(c<1) ctx.drawImage(im,b.x,b.y,b.w,b.h);
-  if(!caught&&phase==='run'&&c<1) dollarEyes(b,I,t);
+
   if(c>0){ const cb=vaultBox(ART.thief_caught,TH.h,TH.fx,TH.fy); ctx.globalAlpha=c; ctx.drawImage(ART.thief_caught,cb.x,cb.y,cb.w,cb.h); ctx.globalAlpha=1 }
   ctx.restore();
   if(thiefFreeze>.3){ const sp=sackPos(); flat(()=>{ ctx.moveTo(sp.x+120,sp.y-70); ctx.quadraticCurveTo(sp.x+132,sp.y-48,sp.x+120,sp.y-42); ctx.quadraticCurveTo(sp.x+108,sp.y-48,sp.x+120,sp.y-70) },'#8fd6ff',3) }
