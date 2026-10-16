@@ -6,8 +6,10 @@
 <title>Caught Games</title>
 <meta name="description" content="Caught Games builds crash and instant-win casino games for operators. Transparent RTP math, provably fair rounds, branded reskins and custom games on request.">
 <meta property="og:title" content="Caught Games · Crash games your players can't look away from">
-<meta property="og:description" content="B2B casino game studio. Play PEEK! live, explore the math and order a custom game.">
+<meta property="og:description" content="B2B casino game studio. Play PEEK!, Vault Heist and Glass Ascent live, explore the math and order a custom game.">
 <meta property="og:url" content="https://caughtgames.com/">
+<meta property="og:image" content="https://caughtgames.com/art/bg.webp">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#07060b">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2307060b'/%3E%3Cpath d='M8 32c8-12 16-17 24-17s16 5 24 17c-8 12-16 17-24 17S16 44 8 32z' fill='none' stroke='%23e9c46a' stroke-width='4'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%23ff2d6f'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -65,11 +67,12 @@ nav .w{display:flex;align-items:center;justify-content:space-between;height:74px
 .logo{display:flex;align-items:center;gap:12px;text-decoration:none;font:800 18px var(--display);letter-spacing:-.01em}
 .logo .eye{width:40px;height:40px}
 .logo small{display:block;font:500 10px var(--mono);letter-spacing:.2em;color:var(--muted)}
-.nl{display:flex;gap:30px;font-size:15px;font-weight:500;color:var(--muted)}
+.nl{display:flex;gap:22px;font-size:14px;font-weight:500;color:var(--muted);white-space:nowrap}
+@media (max-width:1180px){.nl a:nth-child(n+6){display:none}}
 .nl a{text-decoration:none;position:relative;padding:6px 0}
 .nl a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:1px;background:var(--gold);transition:right .3s}
 .nl a:hover{color:var(--fg)}.nl a:hover::after{right:0}
-@media (max-width:980px){.nl{display:none}}
+@media (max-width:1000px){.nl{display:none}}
 @media (max-width:520px){nav .btn{padding:12px 16px;font-size:13px}.logo small{display:none}}
 .blink .lid{animation:blink 5s infinite;transform-origin:50% 50%}
 @keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.08)}}
@@ -519,7 +522,7 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
 
 <footer>
   <div class="w">
-    <span>© 2026 Caught Games · caughtgames.com · B2B supplier of casino games</span>
+    <span>© 2026 Caught Games · caughtgames.com · PEEK! · Vault Heist · Glass Ascent</span>
     <span><span class="age">18+</span>Supplied to licensed operators only. Play responsibly.</span>
   </div>
 </footer>
@@ -586,7 +589,7 @@ if('IntersectionObserver' in window&&!reduce){
   kinds.forEach(([m,ring],k)=>{
     const face=new THREE.MeshStandardMaterial({map:faceTex(m,ring),metalness:.55,roughness:.3});
     const edge=new THREE.MeshStandardMaterial({color:ring,metalness:.9,roughness:.25});
-    for(let i=0;i<5;i++){
+    for(let i=0;i<(innerWidth<800?3:5);i++){
       const mesh=new THREE.Mesh(geo,[edge,face,face]);
       const s=.7+Math.random()*.9; mesh.scale.set(s,s,s);
       mesh.position.set(3+Math.random()*9,(Math.random()-.5)*10,-Math.random()*8);
@@ -610,7 +613,7 @@ if('IntersectionObserver' in window&&!reduce){
   size(); addEventListener('resize',size);
   let visible=true; new IntersectionObserver(e=>visible=e[0].isIntersecting).observe(cv);
   function loop(t){
-    if(visible){
+    if(visible&&!document.hidden){
       chips.forEach(c=>{ const u=c.userData; c.position.y+=u.vy; c.rotation.x+=u.rx; c.rotation.y+=u.ry; c.position.x+=Math.sin(t/1500+u.ph)*.003; if(c.position.y>7) c.position.y=-7 });
       dust.rotation.y=t/40000; l1.position.x=6+Math.sin(t/1200)*4;
       cam.position.y+=((-my*1.5)-cam.position.y)*.05; scene.rotation.y+=((mx*.25)-scene.rotation.y)*.05;
