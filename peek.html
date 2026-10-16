@@ -361,204 +361,271 @@ function rnd(seed){let s=seed;return()=>((s=Math.imul(s^s>>>15,1|s)+0x6D2B79F5|0
 function skin(x,y,r,base,shade){const g=ctx.createRadialGradient(x-r*.35,y-r*.4,r*.1,x,y,r*1.2);g.addColorStop(0,base);g.addColorStop(1,shade);return g}
 const SK='#f4c7a1', SKD='#d99a72', SK2='#e9b48c', SK2D='#b9784f';
 
-function scene(now){
-  if(theme==='A'){
-    const g=ctx.createLinearGradient(0,0,0,360);
-    g.addColorStop(0,'#5fa8e8'); g.addColorStop(1,'#bfe3f7');
-    ctx.fillStyle=g; ctx.fillRect(0,0,W,360);
-    // wolken
-    ctx.fillStyle='rgba(255,255,255,.85)';
-    [[180,90,1],[560,60,.8],[980,110,1.1]].forEach(([x,y,s])=>{
-      [[0,0,34],[30,-12,40],[66,0,32],[34,10,30]].forEach(([dx,dy,r])=>{ctx.beginPath();ctx.arc(x+dx*s+(now/400%W),y+dy*s,r*s,0,7);ctx.fill()})
-    });
-    // zee
-    const s=ctx.createLinearGradient(0,330,0,440);
-    s.addColorStop(0,'#1f6fae'); s.addColorStop(1,'#3fb2c9');
-    ctx.fillStyle=s; ctx.fillRect(0,330,W,110);
-    ctx.strokeStyle='rgba(255,255,255,.45)'; ctx.lineWidth=2;
-    for(let i=0;i<14;i++){const y=345+i*7, o=(now/30+i*40)%120; ctx.beginPath(); for(let x=-120+o;x<W;x+=120){ctx.moveTo(x,y);ctx.quadraticCurveTo(x+15,y-3,x+30,y)} ctx.stroke()}
-    // zand
-    const z=ctx.createLinearGradient(0,430,0,H);
-    z.addColorStop(0,'#f6dfae'); z.addColorStop(1,'#dcb878');
-    ctx.fillStyle=z; ctx.fillRect(0,430,W,H-430);
-    ctx.fillStyle='rgba(255,255,255,.7)'; ctx.fillRect(0,428,W,5);
-    // parasol
-    ctx.strokeStyle='#ddd'; ctx.lineWidth=6; ctx.beginPath(); ctx.moveTo(1090,150); ctx.lineTo(1060,620); ctx.stroke();
-    ['#ff5d6c','#fff','#ff5d6c','#fff','#ff5d6c'].forEach((c,i)=>{ctx.fillStyle=c;ctx.beginPath();ctx.moveTo(1090,120);ctx.arc(1090,190,170,Math.PI+i*Math.PI/5,Math.PI+(i+1)*Math.PI/5);ctx.closePath();ctx.fill()});
-  }else{
-    const g=ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#1c1a33'); g.addColorStop(1,'#0e0c1c');
-    ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
-    ctx.fillStyle='rgba(255,255,255,.03)'; for(let x=0;x<W;x+=80) ctx.fillRect(x,0,40,H*0.72);
-    ctx.fillStyle='#17142a'; ctx.fillRect(0,H*0.72,W,H*0.28);
-    const v=ctx.createLinearGradient(560,170,820,430); v.addColorStop(0,'#7b8096'); v.addColorStop(1,'#3d4152');
-    ctx.fillStyle=v; rr(560,170,260,260,18); ctx.fill();
-    ctx.fillStyle='#2f3240'; ctx.beginPath(); ctx.arc(690,300,72,0,7); ctx.fill();
-    ctx.strokeStyle='#c7cad6'; ctx.lineWidth=8; ctx.beginPath(); ctx.arc(690,300,42,0,7); ctx.stroke();
-    for(let i=0;i<6;i++){const a=i*Math.PI/3+now/2000; ctx.beginPath(); ctx.moveTo(690,300); ctx.lineTo(690+Math.cos(a)*62,300+Math.sin(a)*62); ctx.stroke()}
-    const n=Math.min(16,Math.floor(Math.log(Math.max(1,mult))*3));
-    for(let i=0;i<n;i++){const x=470+(i%4)*50-(Math.floor(i/4)%2)*25, y=448-Math.floor(i/4)*22;
-      const gg=ctx.createLinearGradient(x,y,x,y+20); gg.addColorStop(0,'#ffe27a'); gg.addColorStop(1,'#d39a12');
-      ctx.fillStyle=gg; rr(x,y,46,20,4); ctx.fill()}
-  }
+/* ---------- cartoonstijl: dikke lijnen + cel-shading ---------- */
+const OL='#1d1222';
+const lerp=(a,b,t)=>a+(b-a)*t;
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+let herTurn=0, blinkAt=0, lastNow=0;
+// vul een vorm, schaduw rechtsonder (licht komt van linksboven), dan outline
+function cel(build,base,dark,lx=-7,ly=-8,lw=5){
+  ctx.save(); ctx.beginPath(); build(); ctx.clip();
+  ctx.fillStyle=dark; ctx.fillRect(-2000,-2000,5000,5000);
+  ctx.translate(lx,ly); ctx.beginPath(); build(); ctx.fillStyle=base; ctx.fill();
+  ctx.restore();
+  ctx.beginPath(); build(); ctx.lineWidth=lw; ctx.strokeStyle=OL; ctx.lineJoin='round'; ctx.lineCap='round'; ctx.stroke();
 }
-function hedge(){
-  const r=rnd(7);
-  for(let i=0;i<140;i++){
-    const x=r()*440-10, y=470+r()*200, rad=22+r()*26, sh=r();
-    ctx.fillStyle=theme==='A'?`hsl(${110+sh*25},${45+sh*15}%,${22+sh*18}%)`:`hsl(250,${10+sh*10}%,${12+sh*10}%)`;
-    ctx.beginPath(); ctx.arc(x,y,rad,0,7); ctx.fill();
-  }
-}
-/* doelpunt waar de ogen naartoe kruipen */
-function focusPoint(){ return theme==='A'?{x:905,y:392}:{x:540,y:430} }
+function flat(build,fill,lw=5){ ctx.beginPath(); build(); if(fill){ctx.fillStyle=fill; ctx.fill()} if(lw){ctx.lineWidth=lw; ctx.strokeStyle=OL; ctx.lineJoin='round'; ctx.lineCap='round'; ctx.stroke()} }
+function line(pts,lw=5,col=OL){ ctx.beginPath(); ctx.moveTo(pts[0],pts[1]); for(let i=2;i<pts.length;i+=2) ctx.lineTo(pts[i],pts[i+1]); ctx.lineWidth=lw; ctx.strokeStyle=col; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.stroke() }
+const E=(x,y,rx,ry,r=0)=>()=>ctx.ellipse(x,y,rx,ry,r,0,Math.PI*2);
+const SKIN='#f6c39d', SKIND='#dc9a72', SKIN2='#f3bd94', SKIN2D='#d48f66';
+function shine(x,y,rx,ry,a=.55){ ctx.fillStyle=`rgba(255,255,255,${a})`; ctx.beginPath(); ctx.ellipse(x,y,rx,ry,-.5,0,7); ctx.fill() }
 
-function watcher(scale,caught,t){
-  const flee=(caught&&theme==='A'&&ending===2)?Math.min(420,Math.max(0,(performance.now()-crashedAt-500)*0.7)):0; const cx=215-flee, cy=372+flee*0.15;
-  // oren
-  ctx.fillStyle=skin(cx,cy,30,SK,SKD);
-  [-1,1].forEach(s=>{ctx.beginPath();ctx.ellipse(cx+s*86,cy-20,16,24,0,0,7);ctx.fill()});
-  // hoofd
-  ctx.fillStyle=skin(cx,cy-30,100,SK,SKD);
-  ctx.beginPath(); ctx.ellipse(cx,cy-20,86,104,0,0,7); ctx.fill();
-  // haar
+function scene(now){
+  if(theme!=='A'){ sceneB(now); return }
+  // lucht met zachte zon-gloed
+  const g=ctx.createLinearGradient(0,0,0,350); g.addColorStop(0,'#3d9be9'); g.addColorStop(1,'#a9dcf7');
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,350);
+  const sg=ctx.createRadialGradient(980,70,10,980,70,260); sg.addColorStop(0,'rgba(255,248,200,.95)'); sg.addColorStop(.18,'rgba(255,236,160,.6)'); sg.addColorStop(1,'rgba(255,236,160,0)');
+  ctx.fillStyle=sg; ctx.fillRect(700,0,500,350);
+  flat(E(980,70,44,44),'#fff3b0',4);
+  // wolken met outline
+  [[140,90,1,40],[520,58,.8,26],[780,120,.9,32]].forEach(([x,y,s,sp])=>{
+    const ox=((now/sp)%(W+300))-150; const cx=((x+ox)%(W+300))-150;
+    const parts=[[0,0,34],[34,-16,42],[74,0,34],[38,12,32]];
+    ctx.fillStyle=OL; parts.forEach(([dx,dy,r])=>{ ctx.beginPath(); ctx.arc(cx+dx*s,y+dy*s,r*s+4,0,7); ctx.fill() });
+    ctx.fillStyle='#d6ecfb'; parts.forEach(([dx,dy,r])=>{ ctx.beginPath(); ctx.arc(cx+dx*s,y+dy*s,r*s,0,7); ctx.fill() });
+    ctx.fillStyle='#fff'; parts.forEach(([dx,dy,r])=>{ ctx.beginPath(); ctx.arc(cx+dx*s-4,y+dy*s-5,r*s*.9,0,7); ctx.fill() });
+  });
+  // meeuwen
+  for(let i=0;i<3;i++){ const bx=((now/18+i*260)%(W+100))-50, by=150+i*28+Math.sin(now/400+i)*8, f=Math.sin(now/120+i)*7;
+    line([bx-14,by-f,bx,by,bx+14,by-f],3) }
+  // zee in banden
+  ctx.fillStyle='#1b72b8'; ctx.fillRect(0,340,W,40); ctx.fillStyle='#2a8fd0'; ctx.fillRect(0,380,W,30); ctx.fillStyle='#46b3dd'; ctx.fillRect(0,410,W,24);
+  line([0,340,W,340],4);
+  ctx.strokeStyle='rgba(255,255,255,.75)'; ctx.lineWidth=3;
+  for(let r=0;r<4;r++){ const y=352+r*22, o=(now/(40-r*6))%90; ctx.beginPath(); for(let x=-90+o+r*30;x<W;x+=90){ ctx.moveTo(x,y); ctx.quadraticCurveTo(x+12,y-6,x+24,y) } ctx.stroke() }
+  // schuimrand
+  ctx.fillStyle='#fff'; ctx.beginPath(); ctx.moveTo(0,436);
+  for(let x=0;x<=W;x+=30) ctx.quadraticCurveTo(x+15,428+Math.sin(now/300+x/40)*4,x+30,436);
+  ctx.lineTo(W,446); ctx.lineTo(0,446); ctx.fill();
+  // zand met korrels
+  const z=ctx.createLinearGradient(0,440,0,H); z.addColorStop(0,'#f8dfa6'); z.addColorStop(1,'#e8c27c');
+  ctx.fillStyle=z; ctx.fillRect(0,444,W,H-444); line([0,444,W,444],4);
+  const r=rnd(3); ctx.fillStyle='rgba(180,130,60,.35)'; for(let i=0;i<90;i++){ ctx.beginPath(); ctx.arc(r()*W,460+r()*180,1.5+r()*2,0,7); ctx.fill() }
+  // schelp + emmertje
+  flat(()=>{ctx.moveTo(560,600);ctx.lineTo(600,600);ctx.lineTo(594,566);ctx.lineTo(566,566);ctx.closePath()},'#ff6b8a',4);
+  flat(E(580,566,15,5),'#c9385a',4); line([566,566,580,548,594,566],3);
+  // parasol met wapperende rand
+  const sway=Math.sin(now/700)*.03;
+  ctx.save(); ctx.translate(1090,190); ctx.rotate(sway);
+  line([0,-70,-20,430],8,'#7a4b2a'); line([0,-70,-20,430],2,'#b07a4a');
+  const segs=6;
+  for(let i=0;i<segs;i++){ const a0=Math.PI+i*Math.PI/segs, a1=Math.PI+(i+1)*Math.PI/segs;
+    flat(()=>{ ctx.moveTo(0,-70); ctx.lineTo(Math.cos(a0)*190,Math.sin(a0)*80); ctx.quadraticCurveTo(Math.cos((a0+a1)/2)*200,Math.sin((a0+a1)/2)*80+18+Math.sin(now/200+i)*4,Math.cos(a1)*190,Math.sin(a1)*80); ctx.closePath() }, i%2?'#ffffff':'#ff4d6d',4) }
+  flat(E(0,-74,8,8),'#ffd23f',3);
+  ctx.restore();
+  // ligbedje-schaduw
+  ctx.fillStyle='rgba(150,100,40,.25)'; ctx.beginPath(); ctx.ellipse(905,628,190,20,0,0,7); ctx.fill();
+}
+function sceneB(now){
+  const g=ctx.createLinearGradient(0,0,0,H); g.addColorStop(0,'#232046'); g.addColorStop(1,'#100d22');
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='rgba(255,255,255,.04)'; for(let x=0;x<W;x+=80) ctx.fillRect(x,0,40,H*0.72);
+  ctx.fillStyle='#1a1630'; ctx.fillRect(0,H*0.72,W,H*0.28); line([0,H*.72,W,H*.72],4);
+  cel(()=>ctx.roundRect(560,170,260,260,18),'#8a8fa6','#5a5e73',-8,-8);
+  cel(E(690,300,72,72),'#3a3e50','#262938');
+  ctx.strokeStyle='#d7dae6'; ctx.lineWidth=8; ctx.beginPath(); ctx.arc(690,300,42,0,7); ctx.stroke();
+  for(let i=0;i<6;i++){const a=i*Math.PI/3+now/2000; line([690,300,690+Math.cos(a)*62,300+Math.sin(a)*62],7,'#d7dae6')}
+  const n=Math.min(16,Math.floor(Math.log(Math.max(1,mult))*3));
+  for(let i=0;i<n;i++){const x=470+(i%4)*50-(Math.floor(i/4)%2)*25, y=448-Math.floor(i/4)*22; cel(()=>ctx.roundRect(x,y,46,20,4),'#ffd23f','#d49a12',-3,-4,3)}
+}
+// voorgrond: gestreept windscherm (thema A) of struik (thema B)
+function hedge(){
   if(theme==='A'){
-    ctx.fillStyle='#3b2416';
-    ctx.beginPath(); ctx.moveTo(cx-88,cy-30); ctx.bezierCurveTo(cx-100,cy-150,cx+90,cy-170,cx+90,cy-40);
-    ctx.bezierCurveTo(cx+60,cy-95,cx-20,cy-110,cx-88,cy-30); ctx.fill();
-    // stoppelbaard
-    ctx.fillStyle='rgba(60,35,20,.18)'; ctx.beginPath(); ctx.ellipse(cx,cy+40,70,40,0,0,Math.PI); ctx.fill();
-  }else{
-    ctx.fillStyle='#16161c'; ctx.beginPath(); ctx.ellipse(cx,cy-60,92,80,0,Math.PI,0); ctx.fill(); ctx.fillRect(cx-92,cy-62,184,10);
-    ctx.fillStyle='#1d1d25'; ctx.fillRect(cx-96,cy-58,192,46);
-  }
-  // wenkbrauwen
-  ctx.strokeStyle='#2a1a10'; ctx.lineWidth=7; ctx.lineCap='round';
-  [-1,1].forEach(s=>{ctx.beginPath(); const lift=caught?-14:-Math.min(26,(scale-1)*8); ctx.moveTo(cx+s*20,cy-62+lift); ctx.quadraticCurveTo(cx+s*42,cy-74+lift,cx+s*64,cy-64+lift); ctx.stroke()});
-  // neus
-  ctx.fillStyle=SKD; ctx.beginPath(); ctx.ellipse(cx+8,cy+8,14,20,0.2,0,7); ctx.fill();
-  // blos bij hoge multiplier
-  if(!caught&&scale>1.5){ ctx.fillStyle=`rgba(240,80,90,${Math.min(.5,(scale-1.5)*.3)})`; [-1,1].forEach(s=>{ctx.beginPath();ctx.ellipse(cx+s*50,cy+18,20,12,0,0,7);ctx.fill()}) }
-  // ogen: puilen uit als langwerpige buizen richting het doel
-  const f=focusPoint();
-  const r=caught?15:Math.min(16+(scale-1)*9,44);
-  const reach=caught?0:Math.min(1,Math.max(0,(scale-1.08)/1.9));
-  [-1,1].forEach(s=>{
-    const bx=cx+s*34, by=cy-30;
-    const fy=f.y+s*60, th=Math.atan2(fy-by,f.x-bx), d=Math.hypot(f.x-bx,fy-by);
-    const boing=(!caught&&reach>0)?Math.sin(t/55+s)*8*reach+Math.sin(t/23)*3*reach:0;
-    const L=Math.max(0,reach*d*0.62+boing-(s<0?0:12*reach));
-    ctx.save(); ctx.translate(bx,by); ctx.rotate(caught?0:th*Math.min(1,reach*3));
-    // buis met ronde schaduw
-    if(L>4){
-      const tg=ctx.createLinearGradient(0,-r,0,r); tg.addColorStop(0,'#ffffff'); tg.addColorStop(.55,'#f2f0f6'); tg.addColorStop(1,'#bdb8cc');
-      ctx.fillStyle=tg; ctx.beginPath(); ctx.moveTo(0,-r*.82); ctx.lineTo(L,-r); ctx.lineTo(L,r); ctx.lineTo(0,r*.82); ctx.closePath(); ctx.fill();
-      ctx.strokeStyle='#2a1a10'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.moveTo(0,-r*.82); ctx.lineTo(L,-r); ctx.moveTo(0,r*.82); ctx.lineTo(L,r); ctx.stroke();
-      // bloedvaatjes over de lengte
-      ctx.strokeStyle=`rgba(205,30,50,${Math.min(.75,.25+reach*.5)})`; ctx.lineWidth=1.6;
-      for(let k=0;k<6;k++){ const yy=(-0.7+k*0.28)*r; ctx.beginPath(); ctx.moveTo(0,yy);
-        for(let xx=0;xx<=L;xx+=12) ctx.lineTo(xx,yy+Math.sin(xx/9+k*2+t/300)*3); ctx.stroke() }
+    const cols=['#ff4d6d','#ffffff','#3aa0ff','#ffffff','#ff4d6d','#ffffff','#3aa0ff'];
+    for(let i=0;i<7;i++){ const x=-10+i*66, top=452+Math.sin(i*1.7)*4;
+      cel(()=>{ ctx.moveTo(x,top); ctx.lineTo(x+66,top+3); ctx.lineTo(x+66,H+10); ctx.lineTo(x,H+10); ctx.closePath() }, cols[i], cols[i]==='#ffffff'?'#dfe7f1':(cols[i]==='#ff4d6d'?'#d73654':'#2a7fd0'),-6,-8,4);
     }
-    // oogkas-rand
-    ctx.fillStyle=SKD; ctx.beginPath(); ctx.ellipse(0,0,r*.38,r*1.02,0,0,7); ctx.fill();
-    // oogbol aan het eind, uitgerekt
+    for(let i=0;i<=7;i++){ const x=-10+i*66; cel(()=>ctx.roundRect(x-6,438,12,220,6),'#b9844f','#8a5a2f',-3,-3,4) }
+  }else{
+    const r=rnd(7);
+    for(let i=0;i<46;i++){ const x=r()*440-10, y=480+r()*190, rad=36+r()*30; cel(E(x,y,rad,rad*.9),'#3b3a5a','#2a2944',-6,-8,4) }
+  }
+}
+function focusPoint(){ return theme==='A'?{x:905,y:398}:{x:540,y:430} }
+
+/* de gluurder */
+function watcher(scale,caught,t){
+  const since=performance.now()-crashedAt;
+  const flee=(caught&&theme==='A'&&ending===2)?Math.min(460,Math.max(0,(since-450)*0.8)):0;
+  const lean=caught?0:Math.min(34,(scale-1)*14);
+  const bob=Math.sin(t/520)*3+(caught?Math.sin(since/30)*Math.max(0,3-since/200):0);
+  const cx=205+lean-flee, cy=368+bob+flee*.1, tilt=caught?-.06:Math.min(.14,(scale-1)*.05);
+  ctx.save(); ctx.translate(cx,cy); ctx.rotate(tilt); ctx.translate(-cx,-cy);
+  // nek + schouders achter het scherm
+  cel(()=>ctx.roundRect(cx-34,cy+60,68,60,20),SKIN,SKIND);
+  cel(()=>{ ctx.moveTo(cx-120,cy+150); ctx.quadraticCurveTo(cx-110,cy+92,cx-40,cy+92); ctx.lineTo(cx+40,cy+92); ctx.quadraticCurveTo(cx+110,cy+92,cx+120,cy+150); ctx.closePath() },'#ffd23f','#e2a91f');
+  // hawaii-bloemetjes op shirt
+  ctx.fillStyle='#ff4d6d'; [[-70,124],[60,120],[0,138]].forEach(([dx,dy])=>{ for(let k=0;k<5;k++){ ctx.beginPath(); ctx.arc(cx+dx+Math.cos(k*1.26)*7,cy+dy+Math.sin(k*1.26)*7,5,0,7); ctx.fill() } });
+  // oren
+  [-1,1].forEach(s=>{ cel(E(cx+s*80,cy-6,16,24),SKIN,SKIND,-3,-3,4); line([cx+s*80,cy-14,cx+s*76,cy+2],3,SKIND) });
+  // hoofd
+  cel(E(cx,cy,80,92),SKIN,SKIND,-12,-12);
+  // kale kruin-glans + zijhaar + kuif
+  shine(cx-26,cy-62,22,10,.6);
+  [-1,1].forEach(s=>flat(()=>{ ctx.moveTo(cx+s*58,cy-60); ctx.quadraticCurveTo(cx+s*96,cy-40,cx+s*80,cy+6); ctx.quadraticCurveTo(cx+s*70,cy-20,cx+s*60,cy-30); ctx.closePath() },'#6b3f22',4));
+  const curl=Math.sin(t/300)*4;
+  flat(()=>{ ctx.moveTo(cx-6,cy-90); ctx.bezierCurveTo(cx-10,cy-128-curl,cx+30,cy-130,cx+14,cy-104); ctx.bezierCurveTo(cx+10,cy-118,cx-2,cy-116,cx+4,cy-90) },'#6b3f22',4);
+  // wenkbrauwen: omhoog bij spanning, boos-bang bij betrapt
+  const lift=caught?-4:-Math.min(24,(scale-1)*9);
+  [-1,1].forEach(s=>flat(()=>{ ctx.moveTo(cx+s*12,cy-44+lift+(caught?s*0:0)); ctx.quadraticCurveTo(cx+s*34,cy-60+lift-(caught?-8:0),cx+s*58,cy-46+lift); ctx.quadraticCurveTo(cx+s*34,cy-52+lift,cx+s*12,cy-38+lift); ctx.closePath() },'#4a2a16',3));
+  // ogen (buizen die uitpuilen)
+  eyes(cx,cy,scale,caught,t);
+  // neus
+  cel(E(cx+8,cy+14,24,20),'#f3a985','#d07e5a',-5,-5);
+  shine(cx+2,cy+6,7,4,.7);
+  // snor
+  flat(()=>{ ctx.moveTo(cx-46,cy+40); ctx.quadraticCurveTo(cx-30,cy+22,cx+8,cy+30); ctx.quadraticCurveTo(cx+46,cy+22,cx+60,cy+40); ctx.quadraticCurveTo(cx+40,cy+46,cx+8,cy+40); ctx.quadraticCurveTo(cx-20,cy+48,cx-46,cy+40); ctx.closePath() },'#5a331b',4);
+  // mond
+  if(caught){ flat(E(cx+6,cy+64,16,20),'#5a1424',4); flat(E(cx+6,cy+72,9,7),'#ff7a8a',0) }
+  else if(scale>1.8){ const o=Math.min(18,(scale-1.8)*14); flat(()=>{ ctx.moveTo(cx-26,cy+52); ctx.quadraticCurveTo(cx+6,cy+64+o,cx+38,cy+52); ctx.quadraticCurveTo(cx+6,cy+58,cx-26,cy+52) },'#5a1424',4) }
+  else line([cx-20,cy+54,cx+6,cy+62,cx+32,cy+54],4);
+  // blos
+  if(!caught&&scale>1.4){ ctx.fillStyle=`rgba(255,80,100,${Math.min(.55,(scale-1.4)*.35)})`; [-1,1].forEach(s=>{ ctx.beginPath(); ctx.ellipse(cx+s*50,cy+22,18,10,0,0,7); ctx.fill() }) }
+  // zweetdruppels
+  if(caught||fakeUntil){ [[cx+70,cy-70],[cx-74,cy-50]].forEach(([x,y],i)=>{ const d=((performance.now()/6+i*40)%60); flat(()=>{ ctx.moveTo(x,y+d-14); ctx.quadraticCurveTo(x+10,y+d+4,x,y+d+8); ctx.quadraticCurveTo(x-10,y+d+4,x,y+d-14) },'#8fd6ff',3) }) }
+  ctx.restore();
+}
+function eyes(cx,cy,scale,caught,t){
+  const f=focusPoint(), r=caught?17:Math.min(19+(scale-1)*8,44);
+  const reach=caught?0:Math.min(1,Math.max(0,(scale-1.08)/1.9));
+  const now=performance.now(), blink=!caught&&reach<.05&&(now%3800)<120;
+  [-1,1].forEach(s=>{
+    const bx=cx+s*28, by=cy-20;
+    const fy=f.y+s*60, th=Math.atan2(fy-by,f.x-bx), d=Math.hypot(f.x-bx,fy-by);
+    const boing=reach?Math.sin(t/55+s)*8*reach+Math.sin(t/23)*3*reach:0;
+    const L=Math.max(0,reach*d*.62+boing-(s<0?0:12*reach));
+    ctx.save(); ctx.translate(bx,by); ctx.rotate(caught?0:th*Math.min(1,reach*3));
+    if(L>4){
+      // buis met cel-schaduw en bloedvaatjes
+      cel(()=>{ ctx.moveTo(0,-r*.8); ctx.lineTo(L,-r); ctx.lineTo(L,r); ctx.lineTo(0,r*.8); ctx.closePath() },'#ffffff','#d9d3e6',0,-r*.55,4);
+      ctx.strokeStyle=`rgba(220,30,60,${Math.min(.8,.3+reach*.5)})`; ctx.lineWidth=2;
+      for(let k=0;k<5;k++){ const yy=(-0.6+k*0.3)*r; ctx.beginPath(); ctx.moveTo(4,yy); for(let xx=4;xx<=L;xx+=10) ctx.lineTo(xx,yy+Math.sin(xx/8+k*2+t/250)*3); ctx.stroke() }
+      // snelheidsstreepjes langs de buis
+      if(reach>.4) for(let k=0;k<3;k++) line([L*.2+k*18,-r-10-k*4,L*.2+k*18+30,-r-10-k*4],3,'rgba(29,18,34,.6)');
+    }
     const st=1+reach*.35;
-    const eg=ctx.createRadialGradient(L+r*.2,-r*.35,r*.1,L,0,r*1.2); eg.addColorStop(0,'#fff'); eg.addColorStop(1,'#d6d2e2');
-    ctx.fillStyle=eg; ctx.beginPath(); ctx.ellipse(L,0,r*st,r,0,0,7); ctx.fill();
-    ctx.strokeStyle='#2a1a10'; ctx.lineWidth=2.5; ctx.stroke();
-    if(reach>.3){ ctx.strokeStyle='rgba(205,30,50,.6)'; ctx.lineWidth=1.4;
-      for(let k=0;k<6;k++){ const a=k*1.05; ctx.beginPath(); ctx.moveTo(L+Math.cos(a)*r*st*.95,Math.sin(a)*r*.95); ctx.lineTo(L+Math.cos(a+.15)*r*st*.6,Math.sin(a+.15)*r*.6); ctx.stroke() } }
-    // iris op de voorkant (verkort door perspectief)
-    const fwd=caught?0:Math.min(1,reach*2.2+.35);
-    const ix=L+r*st*.5*fwd, ir=r*.5;
-    const ig=ctx.createRadialGradient(ix,0,ir*.15,ix,0,ir); ig.addColorStop(0,'#8fd0f2'); ig.addColorStop(1,'#1f527d');
-    ctx.fillStyle=ig; ctx.beginPath(); ctx.ellipse(ix,0,ir*(1-fwd*.45),ir,0,0,7); ctx.fill();
-    ctx.fillStyle='#0b0b12'; ctx.beginPath(); ctx.ellipse(ix,0,ir*(caught?.25:.55)*(1-fwd*.45),ir*(caught?.25:.6),0,0,7); ctx.fill();
-    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(ix-ir*.2,-ir*.4,ir*.2,0,7); ctx.fill();
-    // bovenooglid met wimpers op de oogbol
-    ctx.strokeStyle='#2a1a10'; ctx.lineWidth=2; for(let k=-2;k<=2;k++){ ctx.beginPath(); ctx.moveTo(L+k*r*.25*st,-r*.97); ctx.lineTo(L+k*r*.33*st,-r*1.22); ctx.stroke() }
+    cel(E(L,0,r*st,r),'#ffffff','#dcd6ea',-4,-6,4);
+    if(blink){ flat(E(L,0,r*st,r),SKIN,4); line([L-r*st*.8,0,L+r*st*.8,0],4) }
+    else{
+      const fwd=caught?0:Math.min(1,reach*2.2+.35), ix=L+r*st*.45*fwd, ir=r*.52;
+      flat(E(ix,0,ir*(1-fwd*.4),ir),'#3d8fd1',3);
+      flat(E(ix,0,ir*(caught?.22:.5)*(1-fwd*.4),ir*(caught?.22:.55)),'#0e0a14',0);
+      shine(ix-ir*.2,-ir*.4,ir*.22,ir*.16,.95);
+      if(!caught&&scale>2.6){ ctx.save(); ctx.translate(ix,0); ctx.scale(.5*(1-fwd*.4),.5); heart(0,0,ir*.7,'#ff2d6f'); ctx.restore() }
+    }
     ctx.restore();
   });
-  // mond
-  ctx.strokeStyle='#7a3a2a'; ctx.lineWidth=5;
-  if(caught){ ctx.fillStyle='#5a1f1f'; ctx.beginPath(); ctx.ellipse(cx,cy+52,16,20,0,0,7); ctx.fill() }
-  else if(scale>3){ ctx.fillStyle='#5a1f1f'; ctx.beginPath(); ctx.ellipse(cx,cy+50,24,14+Math.min(10,scale),0,0,Math.PI); ctx.fill();
-    ctx.fillStyle='#9fd8ff'; ctx.beginPath(); ctx.ellipse(cx+18,cy+72+Math.sin(t/200)*4,5,9,0,0,7); ctx.fill() }
-  else { ctx.beginPath(); ctx.arc(cx,cy+34,22,0.2,Math.PI-0.2); ctx.stroke() }
-  if(caught||fakeUntil){ ctx.fillStyle='#9fd8ff'; ctx.beginPath(); ctx.ellipse(cx+96,cy-100,9,15,0,0,7); ctx.fill() }
 }
 
+/* de vrouw op het ligbed */
 function woman(caught,since){
-  const x=905, turn=caught?Math.min(1,since/160):(fakeUntil?1:0);
-  ctx.fillStyle='rgba(120,80,30,.25)'; ctx.beginPath(); ctx.ellipse(x,622,170,22,0,0,7); ctx.fill();
-  // strandstoel
-  ctx.strokeStyle='#8a5a33'; ctx.lineWidth=10;
-  ctx.beginPath(); ctx.moveTo(x-120,610); ctx.lineTo(x-90,250); ctx.moveTo(x+120,610); ctx.lineTo(x+90,250); ctx.stroke();
-  const cg=ctx.createLinearGradient(x-100,0,x+100,0);
-  for(let i=0;i<6;i++){cg.addColorStop(i/6,i%2?'#fff':'#ff6b7f'); cg.addColorStop((i+1)/6-.001,i%2?'#fff':'#ff6b7f')}
-  ctx.fillStyle=cg; rr(x-100,250,200,230,16); ctx.fill();
-  // benen (zittend, naar voren)
-  ctx.fillStyle=skin(x,520,120,SK2,SK2D);
-  [-1,1].forEach(s=>{ctx.beginPath(); ctx.moveTo(x+s*10,470); ctx.bezierCurveTo(x+s*70,480,x+s*78,520,x+s*64,560);
-    ctx.lineTo(x+s*58,640); ctx.lineTo(x+s*22,640); ctx.bezierCurveTo(x+s*28,580,x+s*10,540,x+s*2,520); ctx.fill()});
-  // bikinibroekje
-  ctx.fillStyle='#e8325a'; ctx.beginPath(); ctx.moveTo(x-62,462); ctx.quadraticCurveTo(x,452,x+62,462); ctx.lineTo(x+20,505); ctx.lineTo(x-20,505); ctx.closePath(); ctx.fill();
-  // romp met taille
-  ctx.fillStyle=skin(x,380,140,SK2,SK2D);
-  ctx.beginPath(); ctx.moveTo(x-74,330); ctx.bezierCurveTo(x-84,380,x-50,420,x-62,466);
-  ctx.lineTo(x+62,466); ctx.bezierCurveTo(x+50,420,x+84,380,x+74,330); ctx.quadraticCurveTo(x,310,x-74,330); ctx.fill();
-  // navel
-  ctx.fillStyle=SK2D; ctx.beginPath(); ctx.ellipse(x,440,3,5,0,0,7); ctx.fill();
-  // borsten met schaduw en decolleté
-  [-1,1].forEach(s=>{ const bx=x+s*30, by=388;
-    const bg=ctx.createRadialGradient(bx-s*6,by-14,4,bx,by,44); bg.addColorStop(0,'#f6c9a4'); bg.addColorStop(1,SK2D);
-    ctx.fillStyle=bg; ctx.beginPath(); ctx.ellipse(bx,by,36,32,s*0.15,0,7); ctx.fill() });
-  ctx.strokeStyle='rgba(150,90,60,.6)'; ctx.lineWidth=2.5; ctx.beginPath(); ctx.moveTo(x,368); ctx.quadraticCurveTo(x+2,392,x,404); ctx.stroke();
-  // bikinitopje
-  ctx.fillStyle='#e8325a';
-  [-1,1].forEach(s=>{ ctx.beginPath(); ctx.moveTo(x+s*6,372); ctx.quadraticCurveTo(x+s*24,354,x+s*52,368);
-    ctx.quadraticCurveTo(x+s*62,402,x+s*40,416); ctx.quadraticCurveTo(x+s*20,414,x+s*4,402); ctx.closePath(); ctx.fill() });
-  ctx.strokeStyle='#e8325a'; ctx.lineWidth=3;
-  ctx.beginPath(); ctx.moveTo(x-50,368); ctx.lineTo(x-34,312); ctx.moveTo(x+50,368); ctx.lineTo(x+34,312); ctx.stroke();
-  // armen op de leuningen
-  ctx.fillStyle=skin(x,380,140,SK2,SK2D);
-  [-1,1].forEach(s=>{ctx.beginPath(); ctx.moveTo(x+s*70,330); ctx.bezierCurveTo(x+s*100,360,x+s*104,420,x+s*96,470);
-    ctx.lineTo(x+s*78,470); ctx.bezierCurveTo(x+s*82,420,x+s*76,380,x+s*58,350); ctx.fill()});
-  // hals
-  ctx.fillStyle=skin(x,300,40,SK2,SK2D); rr(x-16,270,32,52,12); ctx.fill();
-  // hoofd: kijkt weg (profiel naar rechts) of draait om
-  const hx=x+(1-turn)*6, hy=245;
-  // achterhaar
-  ctx.fillStyle='#6b3a1e'; ctx.beginPath(); ctx.ellipse(hx-6,hy+20,58,80,0,0,7); ctx.fill();
-  ctx.fillStyle=skin(hx,hy,52,SK2,SK2D); ctx.beginPath(); ctx.ellipse(hx,hy,40,50,0,0,7); ctx.fill();
-  if(turn<0.5){
-    // profiel: neus en oog naar rechts, haar over de linkerkant
-    ctx.beginPath(); ctx.moveTo(hx+36,hy-6); ctx.lineTo(hx+50,hy+10); ctx.lineTo(hx+36,hy+14); ctx.fill();
-    ctx.fillStyle='#2a1a12'; ctx.beginPath(); ctx.ellipse(hx+22,hy-6,4,6,0,0,7); ctx.fill();
-    ctx.strokeStyle='#2a1a12'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(hx+14,hy-14); ctx.lineTo(hx+30,hy-16); ctx.stroke();
-    ctx.fillStyle='#c94a5a'; ctx.beginPath(); ctx.ellipse(hx+30,hy+26,7,4,0,0,7); ctx.fill();
-    ctx.fillStyle='#6b3a1e'; ctx.beginPath(); ctx.ellipse(hx-26,hy-8,28,50,0.25,0,7); ctx.fill();
-    ctx.strokeStyle='rgba(255,210,150,.35)'; ctx.lineWidth=2; for(let k=0;k<4;k++){ctx.beginPath(); ctx.moveTo(hx-40+k*7,hy-40); ctx.quadraticCurveTo(hx-30+k*6,hy,hx-44+k*8,hy+40); ctx.stroke()}
-    ctx.strokeStyle='#2a1a12'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(hx+25,hy-9); ctx.lineTo(hx+31,hy-14); ctx.stroke();
-  }else{
-    // vooraanzicht, boos
-    ctx.fillStyle='#fff'; [-1,1].forEach(s=>{ctx.beginPath(); ctx.ellipse(hx+s*15,hy-4,9,7,0,0,7); ctx.fill()});
-    ctx.fillStyle='#3b6e3a'; [-1,1].forEach(s=>{ctx.beginPath(); ctx.arc(hx+s*15-4,hy-3,5,0,7); ctx.fill()});
-    ctx.strokeStyle='#2a1a12'; ctx.lineWidth=4; [-1,1].forEach(s=>{ctx.beginPath(); ctx.moveTo(hx+s*26,hy-20); ctx.lineTo(hx+s*6,hy-13); ctx.stroke()});
-    ctx.fillStyle=SK2D; ctx.beginPath(); ctx.ellipse(hx,hy+10,4,7,0,0,7); ctx.fill();
-    ctx.strokeStyle='#b8384a'; ctx.lineWidth=4; ctx.beginPath(); ctx.arc(hx,hy+34,9,Math.PI*1.15,Math.PI*1.85); ctx.stroke();
-    ctx.fillStyle='#6b3a1e'; [-1,1].forEach(s=>{ctx.beginPath(); ctx.ellipse(hx+s*40,hy+18,14,52,0,0,7); ctx.fill()});
-  }
-  // cocktail in haar hand (leeg na einde 1)
-  { const gx=x-98, gy=440, full=!(caught&&ending===1);
-    ctx.strokeStyle='rgba(255,255,255,.9)'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(gx-18,gy-34); ctx.lineTo(gx,gy); ctx.lineTo(gx+18,gy-34); ctx.closePath(); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(gx,gy); ctx.lineTo(gx,gy+22); ctx.moveTo(gx-10,gy+22); ctx.lineTo(gx+10,gy+22); ctx.stroke();
-    if(full){ ctx.fillStyle='rgba(120,200,255,.85)'; ctx.beginPath(); ctx.moveTo(gx-15,gy-30); ctx.lineTo(gx,gy-3); ctx.lineTo(gx+15,gy-30); ctx.fill();
-      ctx.fillStyle='#ffd23f'; ctx.beginPath(); ctx.arc(gx+14,gy-34,7,0,7); ctx.fill() } }
-  // zonnehoed
-  const hg=ctx.createLinearGradient(0,hy-90,0,hy-30); hg.addColorStop(0,'#fff1c4'); hg.addColorStop(1,'#e7c97a');
-  ctx.fillStyle=hg; ctx.beginPath(); ctx.ellipse(hx,hy-42,92,18,-0.05,0,7); ctx.fill();
-  ctx.beginPath(); ctx.ellipse(hx,hy-60,44,34,0,Math.PI,0); ctx.fill();
-  ctx.fillStyle='#e8325a'; ctx.fillRect(hx-44,hy-62,88,10);
+  const now=performance.now(), x=905, breathe=Math.sin(now/700)*2.2, T=ease(Math.min(1,Math.max(0,herTurn)));
+  // ligbed
+  cel(()=>{ ctx.moveTo(x-150,300); ctx.lineTo(x+150,300); ctx.lineTo(x+170,560); ctx.lineTo(x-170,560); ctx.closePath() },'#2fb8a8','#1f8f83',-8,-8);
+  ctx.save(); ctx.beginPath(); ctx.moveTo(x-150,300); ctx.lineTo(x+150,300); ctx.lineTo(x+170,560); ctx.lineTo(x-170,560); ctx.closePath(); ctx.clip();
+  ctx.fillStyle='rgba(255,255,255,.85)'; for(let i=-4;i<5;i++) ctx.fillRect(x+i*40-8,280,16,300); ctx.restore();
+  line([x-150,300,x+150,300,x+170,560,x-170,560,x-150,300],5);
+  [[-160,560,-180,630],[160,560,180,630]].forEach(([a,b,c,d])=>line([x+a,b,x+c,d],10,'#7a4b2a'));
+  // benen (één over de ander) met voet die meewipt
+  const tap=Math.sin(now/260)*6;
+  cel(()=>{ ctx.moveTo(x-50,470); ctx.bezierCurveTo(x-80,520,x-70,580,x-60,628); ctx.lineTo(x-26,628); ctx.bezierCurveTo(x-30,580,x-10,520,x+4,480); ctx.closePath() },SKIN2,SKIN2D);
+  cel(()=>{ ctx.moveTo(x+40,468); ctx.bezierCurveTo(x+10,510,x-60,520,x-110,540+tap); ctx.lineTo(x-118,566+tap); ctx.bezierCurveTo(x-50,560,x+40,540,x+70,480); ctx.closePath() },SKIN2,SKIN2D);
+  flat(E(x-122,553+tap,14,18,.3),'#ff4d6d',4); flat(E(x-44,630,22,9),'#ff4d6d',4);
+  // heupen + broekje
+  cel(()=>{ ctx.moveTo(x-72,440); ctx.quadraticCurveTo(x,430+breathe*.3,x+72,440); ctx.quadraticCurveTo(x+80,478,x+56,494); ctx.quadraticCurveTo(x,506,x-56,494); ctx.quadraticCurveTo(x-80,478,x-72,440) },SKIN2,SKIN2D);
+  cel(()=>{ ctx.moveTo(x-64,452); ctx.quadraticCurveTo(x,446,x+64,452); ctx.lineTo(x+22,496); ctx.quadraticCurveTo(x,502,x-22,496); ctx.closePath() },'#ff3d6e','#d42552',-4,-5,4);
+  // romp (ademt)
+  ctx.save(); ctx.translate(x,440); ctx.scale(1,1+breathe*.006); ctx.translate(-x,-440);
+  cel(()=>{ ctx.moveTo(x-66,330); ctx.bezierCurveTo(x-80,380,x-52,410,x-66,446); ctx.lineTo(x+66,446); ctx.bezierCurveTo(x+52,410,x+80,380,x+66,330); ctx.quadraticCurveTo(x,314,x-66,330) },SKIN2,SKIN2D,-10,-6);
+  line([x-2,420,x+2,432],3,SKIN2D);
+  // borsten + topje
+  [-1,1].forEach(s=>cel(E(x+s*28,392+breathe*.4,32,28,s*.12),SKIN2,SKIN2D,-6,-7,4));
+  line([x,376,x+1,398],3,'rgba(160,90,60,.7)');
+  [-1,1].forEach(s=>cel(()=>{ ctx.moveTo(x+s*4,378); ctx.quadraticCurveTo(x+s*26,362,x+s*52,374); ctx.quadraticCurveTo(x+s*60,404,x+s*40,416); ctx.quadraticCurveTo(x+s*18,414,x+s*4,402); ctx.closePath() },'#ff3d6e','#d42552',-4,-5,4));
+  line([x-48,374,x-30,322],3,'#ff3d6e'); line([x+48,374,x+30,322],3,'#ff3d6e');
+  ctx.restore();
+  // armen; rechterarm (vanaf kijker links) houdt cocktail en neemt af en toe een slok
+  const sip=(!caught&&!fakeUntil)?Math.max(0,Math.sin(now/1500))**8:0;
+  cel(()=>{ ctx.moveTo(x+66,334); ctx.bezierCurveTo(x+104,370,x+110,430,x+100,470); ctx.lineTo(x+80,470); ctx.bezierCurveTo(x+86,430,x+76,380,x+52,354); ctx.closePath() },SKIN2,SKIN2D);
+  const hx=lerp(x-104,x-40,sip), hy=lerp(446,330,sip);
+  cel(()=>{ ctx.moveTo(x-66,334); ctx.quadraticCurveTo(x-112,380+(hy-446)*.3,hx,hy); ctx.lineTo(hx+16,hy+12); ctx.quadraticCurveTo(x-86,392,x-50,354); ctx.closePath() },SKIN2,SKIN2D);
+  // cocktail (leeg na einde 1)
+  const full=!(caught&&ending===1);
+  ctx.save(); ctx.translate(hx+6,hy-6); ctx.rotate(caught&&ending===1?-1.2*Math.min(1,since/200):lerp(0,-.5,sip));
+  flat(()=>{ ctx.moveTo(-20,-40); ctx.lineTo(20,-40); ctx.lineTo(0,-6); ctx.closePath() },full?'rgba(120,210,255,.9)':'rgba(255,255,255,.35)',3);
+  line([0,-6,0,14],3); line([-10,14,10,14],3);
+  if(full){ flat(E(16,-42,7,7),'#ffd23f',3); line([4,-38,24,-62],3,'#ff4d6d') }
+  ctx.restore();
+  // nek
+  cel(()=>ctx.roundRect(x-14,266,28,62,12),SKIN2,SKIN2D);
+  head(x,236+breathe*.5,T,caught,since);
+}
+// hoofd: T=0 profiel naar rechts (kijkt naar zee), T=1 recht vooruit richting de gluurder
+function head(x,y,T,caught,since){
+  const now=performance.now(), sway=Math.sin(now/900)*4;
+  const fx=lerp(30,-4,T), fw=lerp(.5,1,T), hb=-(1-T)*20;
+  // achterhaar (zwaait mee en zwiept bij omdraaien)
+  const whip=caught?Math.sin(Math.min(1,since/300)*Math.PI)*28:0;
+  cel(()=>{ ctx.moveTo(x-50+hb,y-20); ctx.bezierCurveTo(x-80-sway-whip+hb,y+40,x-74-whip+hb,y+110,x-40+hb,y+132); ctx.lineTo(x+40+hb*.5,y+130); ctx.bezierCurveTo(x+70+sway+hb,y+90,x+60+hb,y+20,x+40+hb,y-24); ctx.closePath() },'#f7c948','#d9a325',-8,-8);
+  // gezicht
+  cel(E(x+fx*.45,y,44,52),SKIN2,SKIN2D,-8,-8);
+  // oor (zichtbaar in profiel)
+  if(T<.7) cel(E(x-10+fx*.2,y+6,9,13),SKIN2,SKIN2D,-2,-2,3);
+  // ogen
+  const eyeY=y-4, blink=(now%4200)<110&&!caught;
+  [-1,1].forEach(s=>{
+    if(T<.35&&s<0) return; // in profiel maar één oog
+    const ex=x+fx+s*16*fw;
+    if(blink){ line([ex-9*fw,eyeY,ex+9*fw,eyeY],3); return }
+    flat(E(ex,eyeY,10*fw,12),'#fff',3);
+    const px=ex+(T>.5?-3:4)*fw;
+    flat(E(px,eyeY+1,6*fw,7),'#2f8a5a',0); flat(E(px,eyeY+1,3*fw,3.5),'#0e0a14',0); shine(px-2,eyeY-2,1.8,1.4,.95);
+    // wimpers
+    line([ex+s*7*fw,eyeY-9,ex+s*13*fw,eyeY-14],3);
+    // wenkbrauw
+    const ang=caught?(s<0?8:8):0;
+    line([ex-11*fw,eyeY-18-(caught&&s>0?-2:0)+(caught?(s<0?6:-0):0),ex+11*fw,eyeY-18+(caught?(s<0?-2:6):0)],4);
+  });
+  // neus
+  line([x+fx+4*fw+ (T<.4?14:0),y+4,x+fx+8*fw+(T<.4?18:0),y+16,x+fx+(T<.4?12:0),y+18],3,SKIN2D);
+  // mond: glimlach, of open schreeuw bij betrapt
+  if(caught&&T>.5) { flat(E(x+fx,y+32,11,13),'#5a1424',3); flat(E(x+fx,y+38,6,4),'#ff7a8a',0) }
+  else line([x+fx-8*fw,y+30,x+fx,y+34,x+fx+8*fw,y+30],3,'#c2405a');
+  if(caught&&T>.6){ ctx.fillStyle='rgba(255,60,80,.35)'; [-1,1].forEach(s=>{ ctx.beginPath(); ctx.ellipse(x+fx+s*28,y+18,10,6,0,0,7); ctx.fill() }) }
+  // pony + zonnehoed
+  cel(()=>{ ctx.moveTo(x-46,y-18); ctx.quadraticCurveTo(x-10+fx*.4,y-64,x+48,y-20); ctx.quadraticCurveTo(x+20+fx*.5,y-38,x-6,y-30); ctx.quadraticCurveTo(x-24,y-36,x-46,y-18) },'#f7c948','#d9a325',-4,-6,4);
+  ctx.save(); ctx.translate(x,y-46); ctx.rotate(lerp(.12,-.06,T)+Math.sin(now/800)*.02);
+  cel(E(0,0,104,20),'#fff1c4','#e4c98a',-6,-6);
+  cel(()=>{ ctx.moveTo(-48,0); ctx.quadraticCurveTo(-46,-50,0,-52); ctx.quadraticCurveTo(46,-50,48,0); ctx.closePath() },'#fff1c4','#e4c98a',-6,-6);
+  flat(()=>ctx.rect(-48,-14,96,12),'#ff3d6e',4);
+  ctx.restore();
+}
+
+function boyfriend(since){
+  const rise=ease(Math.min(1,since/600)), x=640, y=480-rise*230;
+  ctx.save(); ctx.beginPath(); ctx.rect(0,0,W,438); ctx.clip();
+  const B='#c98a5e', BD='#9a5f38';
+  cel(()=>{ ctx.moveTo(x-120,y+40); ctx.lineTo(x+120,y+40); ctx.lineTo(x+66,y+240); ctx.lineTo(x-66,y+240); ctx.closePath() },B,BD,-10,-10);
+  [-1,1].forEach(s=>{ cel(E(x+s*136,y+40,50,42),B,BD); cel(E(x+s*160,y+0,40,56,s*-.6),B,BD); cel(E(x+s*172,y-62,30,30),B,BD) });
+  line([x,y+56,x,y+210],4,BD); [110,150,190].forEach(yy=>line([x-40,y+yy,x+40,y+yy],4,BD));
+  [-1,1].forEach(s=>cel(E(x+s*42,y+80,40,26),B,BD,-5,-5,4));
+  cel(E(x,y-22,38,44),B,BD,-6,-6);
+  flat(()=>ctx.roundRect(x-40,y-66,80,22,8),'#1a120c',4);
+  [-1,1].forEach(s=>{ line([x+s*28,y-40,x+s*6,y-28],5); flat(E(x+s*14,y-18,6,6),'#fff',3) });
+  flat(E(x,y+14,12,9),'#5a1424',3);
+  ctx.restore();
+  ctx.fillStyle='#fff'; for(let i=0;i<9;i++){ ctx.beginPath(); ctx.arc(x-140+i*35,438,9+Math.sin(since/70+i)*5,0,7); ctx.fill() }
 }
 
 function guard(caught,since){
@@ -626,8 +693,10 @@ function frame(now){
   if(phase==='crash'&&now-crashedAt>PAUSE_MS) newBetPhase();
   if(phase==='bet'&&now>nextTick){ const left=BET_MS-(now-phaseStart); sfx(left<3000?'tock':'tick'); nextTick=now+(left<3000?500:1000) }
   const caught=phase==='crash', s=1+Math.log(Math.max(1,mult))*0.62;
+  { const tgt=caught?1:(fakeUntil?.62:0); herTurn+=(tgt-herTurn)*(caught?.22:.16) }
   ctx.save();
   if(!reduce){ const amp=caught?Math.max(0,22*(1-(now-crashedAt)/500)):(phase==='run'?Math.pow(inten(),2)*7:0); if(amp>0) ctx.translate((Math.random()-.5)*amp,(Math.random()-.5)*amp) }
+  if(!reduce&&phase==='run'){ const z=1+inten()*.07; ctx.translate(W*.4,H*.55); ctx.scale(z,z); ctx.translate(-W*.4,-H*.55) }
   scene(now); if(caught&&theme==='A'&&ending===2) boyfriend(now-crashedAt); target(caught,now-crashedAt); watcher(phase==='bet'?1:s,caught,now); hedge(); extras(phase==='bet'?1:s,caught,now); overlays(now); hud(now);
   ctx.restore();
   requestAnimationFrame(frame);
@@ -743,25 +812,6 @@ function heart(x,y,r,col){
   ctx.fillStyle=col; ctx.beginPath(); ctx.moveTo(x,y+r*.9);
   ctx.bezierCurveTo(x-r*1.6,y-r*.2,x-r*.6,y-r*1.4,x,y-r*.45);
   ctx.bezierCurveTo(x+r*.6,y-r*1.4,x+r*1.6,y-r*.2,x,y+r*.9); ctx.fill();
-}
-function boyfriend(since){
-  const rise=Math.min(1,since/600), x=640, y=470-rise*210;
-  ctx.save(); ctx.beginPath(); ctx.rect(0,0,W,440); ctx.clip();
-  const g=skin(x,y+60,150,'#c98a5e','#8a5432');
-  ctx.fillStyle=g;
-  ctx.beginPath(); ctx.moveTo(x-110,y+40); ctx.lineTo(x+110,y+40); ctx.lineTo(x+60,y+230); ctx.lineTo(x-60,y+230); ctx.fill();   // romp
-  [-1,1].forEach(s=>{ ctx.beginPath(); ctx.ellipse(x+s*130,y+40,46,40,0,0,7); ctx.fill();                                     // schouders
-    ctx.beginPath(); ctx.ellipse(x+s*150,y+10,36,50,s*-.6,0,7); ctx.fill();                                                     // biceps omhoog
-    ctx.beginPath(); ctx.arc(x+s*160,y-50,26,0,7); ctx.fill() });                                                               // vuisten
-  ctx.strokeStyle='rgba(90,50,30,.5)'; ctx.lineWidth=3;
-  ctx.beginPath(); ctx.moveTo(x,y+50); ctx.lineTo(x,y+200); ctx.moveTo(x-40,y+110); ctx.lineTo(x+40,y+110); ctx.moveTo(x-34,y+150); ctx.lineTo(x+34,y+150); ctx.stroke();
-  ctx.fillStyle=g; ctx.beginPath(); ctx.ellipse(x,y-20,34,40,0,0,7); ctx.fill();
-  ctx.fillStyle='#1a120c'; ctx.fillRect(x-34,y-58,68,14);
-  ctx.strokeStyle='#1a120c'; ctx.lineWidth=5; [-1,1].forEach(s=>{ctx.beginPath(); ctx.moveTo(x+s*24,y-36); ctx.lineTo(x+s*6,y-26); ctx.stroke()});
-  ctx.fillStyle='#fff'; [-1,1].forEach(s=>{ctx.beginPath(); ctx.arc(x+s*13,y-18,5,0,7); ctx.fill()});
-  ctx.strokeStyle='#5a1f1f'; ctx.lineWidth=4; ctx.beginPath(); ctx.arc(x,y+12,10,Math.PI*1.15,Math.PI*1.85); ctx.stroke();
-  ctx.restore();
-  ctx.fillStyle='rgba(255,255,255,.7)'; for(let i=0;i<8;i++){ctx.beginPath(); ctx.arc(x-120+i*34,440,8+Math.sin(since/80+i)*4,0,7); ctx.fill()}
 }
 function extras(scale,caught,now){
   const since=now-crashedAt;
