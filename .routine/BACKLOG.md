@@ -1,7 +1,7 @@
 # Backlog Caught Games (bovenste eerst)
 
-- Glass Ascent mobiel (390px): het speelpaneel loopt rechts buiten beeld, STAKE-vak en knop vallen gedeeltelijk weg.
-- Alle games mobiel nalopen op 360px breed (kleinste Android).
-- Laadsnelheid: art/*.webp formaat en lazy loading van iframes op index.html.
+- Laadsnelheid: art/*.webp formaat verkleinen (iframes op index.html zijn al lazy).
 - og:image per game-pagina (nu overal art/bg.webp).
 - Game-feel: spanning opbouwen boven 10x (geluid/visueel) in PEEK! en Vault Heist.
+- SONAR 360px: "Caught Games"-knop raakt de bovenrand van het uitlegvenster net; uitlegvenster iets lager zetten op smalle schermen.
+- PEEK! kale pagina (peek.html zonder hash): toont naast de arcade nog de oude pitch; nagaan of die tekst overeenkomt met index.html.

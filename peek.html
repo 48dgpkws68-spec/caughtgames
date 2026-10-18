@@ -142,7 +142,7 @@ ul.pts{padding-left:18px;margin:8px 0 0;max-width:68ch} ul.pts li{margin-bottom:
 
     <div class="side">
       <div class="panel">
-        <div class="bal"><span class="note" data-t="play">Speelgeld</span><b id="bal">1.000,00</b></div>
+        <div class="bal"><span class="note" data-t="play">Speelgeld</span><b id="bal">1,000.00</b></div>
         <label for="bet" data-t="stake">Inzet</label>
         <div class="field">
           <input id="bet" type="number" min="1" step="1" value="10">
@@ -256,13 +256,13 @@ const L={nl:{hey:'HÉ!',stop:'STOP!',bets:'ZET IN',caught:'BETRAPT!',bet:'INZETT
  logoA:'PEEK!',logoB:'VAULT HEIST!',tagA:'The longer you peek, the bigger the win. Cash out before she turns around.',tagB:'The longer you grab, the bigger the win. Cash out before the guard wakes up.',
  thA:'Peek',inplay:'in play',plN:'players',cashed:'cashed out',sealed:'SEED COMMITTED',snrk:'SNRK?!',oi:'HEY, YOU!',close:'CLOSE CALL!',sndOn:'Sound: on',sndOff:'Sound: off',thB:'Vault Heist',play:'Play money',stake:'Stake',auto:'Auto cash-out at (0 = off)',pl:'Players this round',sim:'Other players are simulated for the demo.',
  nh:'Hash of the next server seed (committed in advance)',ps:'Previous round: seed and result',none:'no round played yet',ver:'Verify previous round'}};
-const EMBED=location.hash==='#embed', PLAY=location.hash.match(/^#play-(peek|vault)$/); let lang=(EMBED||PLAY||location.hash==='#en')?'en':'nl';
+const EMBED=location.hash==='#embed', PLAY=location.hash.match(/^#play-(peek|vault)$/); let lang=location.hash==='#nl'?'nl':'en'; const LOC=lang==='nl'?'nl-NL':'en-US';
 const T=(k,...a)=>{const v=L[lang][k];return typeof v==='function'?v(...a):v};
 
 const $=id=>document.getElementById(id);
 const cv=$('cv'), ctx=cv.getContext('2d');
-const fmt=n=>n.toLocaleString('nl-NL',{minimumFractionDigits:2,maximumFractionDigits:2});
-const eur=n=>'€'+Math.round(n).toLocaleString('nl-NL');
+const fmt=n=>n.toLocaleString(LOC,{minimumFractionDigits:2,maximumFractionDigits:2});
+const eur=n=>'€'+Math.round(n).toLocaleString(LOC);
 const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* ---------- provably fair ---------- */
@@ -1227,7 +1227,7 @@ function probTable(){
   $('probT').querySelector('tbody').innerHTML=xs.map(x=>{
     const p=RTP/x, sec=Math.log(x)/GROWTH/1000;
     const t=sec<60?sec.toFixed(1)+' s':(sec/60).toFixed(1)+' min';
-    return `<tr><td>${x.toLocaleString('nl-NL')}×</td><td>${(p*100).toLocaleString('nl-NL',{maximumFractionDigits:p<.001?3:1})}%</td><td>${Math.round(1/p).toLocaleString('nl-NL')}</td><td>${t}</td><td><span class="bar" style="width:${Math.max(2,p*90)}px"></span></td></tr>`;
+    return `<tr><td>${x.toLocaleString(LOC)}×</td><td>${(p*100).toLocaleString(LOC,{maximumFractionDigits:p<.001?3:1})}%</td><td>${Math.round(1/p).toLocaleString(LOC)}</td><td>${t}</td><td><span class="bar" style="width:${Math.max(2,p*90)}px"></span></td></tr>`;
   }).join('');
 }
 function calc(){
@@ -1235,8 +1235,8 @@ function calc(){
   const turn=(+$('cP').value||0)*(+$('cB').value||0)*190;
   const ggr=turn*(1-r);
   $('oT').textContent=eur(turn); $('oG').textContent=eur(ggr); $('oD').textContent=eur(ggr*18); $('oM').textContent=eur(ggr*18*30);
-  $('kRtp').textContent=(r*100).toLocaleString('nl-NL',{minimumFractionDigits:1})+'%';
-  $('kEdge').textContent=((1-r)*100).toLocaleString('nl-NL',{minimumFractionDigits:1})+'%';
+  $('kRtp').textContent=(r*100).toLocaleString(LOC,{minimumFractionDigits:1})+'%';
+  $('kEdge').textContent=((1-r)*100).toLocaleString(LOC,{minimumFractionDigits:1})+'%';
   RTP=r; probTable();
 }
 ['cP','cB','cH'].forEach(id=>$(id).addEventListener('input',calc));
