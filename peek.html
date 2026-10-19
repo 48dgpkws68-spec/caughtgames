@@ -1,6 +1,17 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PEEK! · Caught Games</title>
+<meta name="description" content="PEEK! and Vault Heist by Caught Games: crash games with a story. The longer you peek, the bigger the win. Cash out before you get caught. Play money demo, 97% RTP.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Caught Games">
+<meta property="og:title" content="PEEK! · Crash game demo by Caught Games">
+<meta property="og:description" content="PEEK! and Vault Heist by Caught Games: crash games with a story. The longer you peek, the bigger the win. Cash out before you get caught. Play money demo, 97% RTP.">
+<meta property="og:url" content="https://caughtgames.com/peek.html">
+<meta property="og:image" content="https://caughtgames.com/art/og-peek.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://caughtgames.com/peek.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bungee&family=Rubik:wght@400;500;700&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
@@ -128,7 +139,7 @@ ul.pts{padding-left:18px;margin:8px 0 0;max-width:68ch} ul.pts li{margin-bottom:
       <span class="eye"><svg width="26" height="26" viewBox="0 0 64 64" aria-hidden="true"><path d="M8 32c8-12 16-17 24-17s16 5 24 17c-8 12-16 17-24 17S16 44 8 32z" fill="none" stroke="#e9c46a" stroke-width="4"/><circle cx="32" cy="32" r="9" fill="#ff2d6f"/><circle cx="35" cy="29" r="3" fill="#fff"/></svg></span>
       <div><span class="lt">GLUREN!</span><small id="tagline">Hoe langer je gluurt, hoe hoger je winst. Cash uit voordat ze omkijkt.</small></div>
     </div>
-    <div class="themes" role="group" aria-label="Thema">
+    <div class="themes" role="group" aria-label="Theme">
       <button id="thA" aria-pressed="true" data-t="thA">Gluren</button>
       <button id="thB" aria-pressed="false" data-t="thB">Kluiskraak</button>
     </div>
@@ -136,8 +147,8 @@ ul.pts{padding-left:18px;margin:8px 0 0;max-width:68ch} ul.pts li{margin-bottom:
 
   <div class="game">
     <div class="stage">
-      <div class="hist" id="hist" aria-label="Vorige rondes" data-empty="…"></div>
-      <canvas id="cv" width="1200" height="640" aria-label="Speelveld"></canvas>
+      <div class="hist" id="hist" aria-label="Previous rounds" data-empty="No rounds yet"></div>
+      <canvas id="cv" width="1200" height="640" aria-label="Game field"></canvas>
     </div>
 
     <div class="side">
@@ -1213,6 +1224,7 @@ function setTheme(t){
 }
 $('thA').onclick=()=>setTheme('A'); $('thB').onclick=()=>setTheme('B');
 document.querySelectorAll('[data-t]').forEach(e=>e.textContent=T(e.dataset.t));
+if(lang==='nl'){ document.documentElement.lang='nl'; document.querySelector('.themes').setAttribute('aria-label','Thema'); const h=document.getElementById('hist'); h.setAttribute('aria-label','Vorige rondes'); h.dataset.empty='Nog geen rondes'; document.getElementById('cv').setAttribute('aria-label','Speelveld') }
 if(EMBED){ $('pitch').hidden=true; document.querySelector('.wrap').style.paddingBlock='8px' }
 if(PLAY){ $('pitch').hidden=true; document.querySelector('.themes').style.display='none';
   const bar=document.createElement('a'); bar.className='backbar'; bar.href='index.html#'+(PLAY[1]==='vault'?'games':'games'); bar.innerHTML='<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 3L5 8l5 5"/></svg> Caught Games';
