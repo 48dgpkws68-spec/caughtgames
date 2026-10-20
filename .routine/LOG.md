@@ -16,3 +16,11 @@
 - Gedaan: index-nav toont tussen 1180 en 1360px 7 links en breekt niet meer; PEEK! labels Engels (NL via #nl), lege geschiedenis "No rounds yet"; en-dash in SONAR vervangen door middot.
 - Idee voor later: spanning boven 10x in PEEK!/Vault; toegankelijkheid PEEK! en Glass; art/*.webp kleiner.
 - Voor Nick: niets
+
+## 2026-10-20
+- Gevonden: rooktest volledig ok (12/12), geen console-fouten; peek.html zonder hash toonde de hele pitch (KPI's, rekenmodel, simulatie, waarom spelers blijven) nog in het Nederlands op de Engelse site; ongebruikte variabele q in SONAR-debrief.
+- Gedaan: PEEK! en Vault Heist krijgen mijlpalen bij 10x, 25x, 50x, 100x ... 5.000x: oplopend akkoord (hoger per mijlpaal), gouden flits, muntenregen en een "25×!"-stempel onder de multiplier, plus een glans die vanaf 25x over de multiplier trekt (uit bij reduced motion). Waarom: spanning bleef boven 10x gelijk omdat de intensiteit al rond 25x maximaal was. Headless getest met geforceerde ronde, testpagina verwijderd. RTP ongewijzigd.
+- Gedaan: pitch op peek.html in het Engels (cijfers gelijk aan de game sheet op index), Nederlandse versie blijft via #nl (template), simulatie-uitkomst tweetalig en aria-live.
+- Gedaan: SONAR ongebruikte variabele q verwijderd. Backlogpunt webp-verkleinen geschrapt: art is al ~1 MB totaal op weergavemaat, herencoderen scheelt maar ~17% met extra kwaliteitsverlies.
+- Idee voor later: mijlpalen ook in Glass Ascent; terugknop op kale peek.html; mijlpalen aankondigen voor schermlezers.
+- Voor Nick: niets
