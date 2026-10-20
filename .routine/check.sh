@@ -9,7 +9,7 @@ PORT=$(python3 -c "import socket;s=socket.socket();s.bind(('',0));print(s.getsoc
 python3 -m http.server $PORT --bind 127.0.0.1 >/dev/null 2>&1 & SRV=$!
 sleep 1
 FAIL=0
-for p in index peek glass sonar; do
+for p in index peek sonar; do
   code=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:$PORT/$p.html")
   [ "$code" != 200 ] && { echo "FOUT $p: HTTP $code"; FAIL=1; continue; }
   for size in "1440,900:desk" "390,844:mob" "360,780:mob360"; do

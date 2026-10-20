@@ -6,7 +6,7 @@
 <title>Caught Games · Crash and instant-win game studio</title>
 <meta name="description" content="Caught Games builds crash and instant-win casino games for operators. Transparent RTP math, provably fair rounds, branded reskins and custom games on request.">
 <meta property="og:title" content="Caught Games · Crash games your players can't look away from">
-<meta property="og:description" content="B2B casino game studio. Play PEEK!, Vault Heist, Glass Ascent and SONAR live, explore the math and order a custom game.">
+<meta property="og:description" content="B2B casino game studio. Play PEEK!, Vault Heist and SONAR, a new kind of mines game, explore the math and order a custom game.">
 <meta property="og:url" content="https://caughtgames.com/">
 <meta property="og:image" content="https://caughtgames.com/art/og-index.jpg">
 <meta property="og:image:width" content="1200">
@@ -195,7 +195,7 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
   .sheet td,.sheet th{padding:9px 6px;font-size:12px}
 }
 /* game sheets */
-.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:44px}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:44px}
 @media (max-width:1100px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:760px){.tiles{grid-template-columns:minmax(0,1fr)}}
 .tile{position:relative;display:flex;flex-direction:column;justify-content:flex-end;gap:4px;aspect-ratio:16/10;border-radius:20px;overflow:hidden;padding:18px;text-decoration:none;border:1px solid var(--line2);background:var(--img) var(--pos)/cover no-repeat,#13101d;box-shadow:0 30px 60px -30px rgba(0,0,0,.8);transition:transform .3s,box-shadow .3s}
@@ -221,6 +221,13 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 .step .n{position:absolute;top:0;left:0;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--bg);border:1px solid var(--gold);font:700 14px var(--mono);color:var(--gold)}
 .step p{color:var(--muted);font-size:15px;margin-top:10px}
 .step .t{display:inline-block;margin-top:14px;font:600 12px var(--mono);color:var(--mint)}
+.newtag{display:inline-block;margin-left:6px;padding:2px 7px;border-radius:99px;background:#3ff0d0;color:#04201b;font:700 10px/1.4 var(--mono);letter-spacing:.06em;vertical-align:middle}
+.steps.s5{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media (max-width:1100px){.steps.s5{grid-template-columns:repeat(3,minmax(0,1fr))}.steps.s5::before{display:none}}
+@media (max-width:760px){.steps.s5{grid-template-columns:minmax(0,1fr)}}
+.steps.s5 .n{border-color:#3ff0d0;color:#3ff0d0}
+.vs table{width:100%;border-collapse:collapse}.vs th{text-align:left;font-size:15px}.vs td,.vs th{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top}.vs tr:last-child td{border-bottom:0}.vs td:nth-child(2){color:var(--muted)}.vs td:nth-child(3){color:var(--text,#fff)}.vs th:nth-child(3){color:#3ff0d0}
+@media (max-width:760px){.vs td,.vs th{padding:9px 6px;font-size:12px}}@media (min-width:761px){.vs td:first-child{white-space:nowrap;padding-right:28px}.vs td,.vs th{padding-top:12px;padding-bottom:12px}}
 
 /* concepts */
 .rail{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(280px,340px);gap:20px;overflow-x:auto;padding:8px 20px 28px;margin-top:56px;scroll-snap-type:x mandatory;scrollbar-width:thin;scrollbar-color:var(--line2) transparent;max-width:1240px;margin-inline:auto}
@@ -316,7 +323,7 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
       <svg class="eye" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#b8862b"/><stop offset=".5" stop-color="#f8e3a3"/><stop offset="1" stop-color="#e9c46a"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="#13101d" stroke="#2a2438"/><g class="lid"><path d="M8 32c8-12 16-17 24-17s16 5 24 17c-8 12-16 17-24 17S16 44 8 32z" fill="none" stroke="url(#g1)" stroke-width="3.5"/><circle cx="32" cy="32" r="9" fill="#ff2d6f"/><circle cx="35" cy="29" r="3" fill="#fff"/></g></svg>
       <span>CAUGHT GAMES<small>CASINO GAME STUDIO</small></span>
     </a>
-    <div class="nl"><a href="#games">PEEK!</a><a href="#glass">Glass Ascent</a><a href="#sonar">SONAR</a><a href="#lab">Math lab</a><a href="#fair">Provably fair</a><a href="#sheets">Game sheets</a><a href="#custom">Custom builds</a><a href="#revenue">Revenue</a><a href="#models">Partnership</a></div>
+    <div class="nl"><a href="#games">PEEK!</a><a href="#games">Vault Heist</a><a href="#sonar">SONAR <span class="newtag">NEW</span></a><a href="#lab">Math lab</a><a href="#fair">Provably fair</a><a href="#sheets">Game sheets</a><a href="#custom">Custom builds</a><a href="#revenue">Revenue</a><a href="#models">Partnership</a></div>
     <a class="btn gold-b" href="#contact">Book a demo</a>
   </div>
 </nav>
@@ -327,10 +334,10 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
   <div class="w">
     <span class="eyebrow">B2B crash &amp; instant-win studio</span>
     <h1><span class="ln"><span>Games your</span></span><span class="ln"><span>players can't</span></span><span class="ln"><span class="gold">look away from.</span></span></h1>
-    <p class="lead">Caught Games designs, builds and supplies crash games for online casinos. Every title ships with transparent RTP math, provably fair rounds and a story players get in one second. Want something nobody else has? We build it for you.</p>
+    <p class="lead">Caught Games designs, builds and supplies crash and instant games for online casinos. Every title ships with transparent RTP math, provably fair rounds and a story players get in one second. Want something nobody else has? We build it for you.</p>
     <div class="cta">
       <a class="btn gold-b" href="#games">Play PEEK! live <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
-      <a class="btn ghost" href="#sheets">See all games</a>
+      <a class="btn ghost" href="#sonar">Discover SONAR <span class="newtag">NEW GAME TYPE</span></a>
     </div>
     <div class="livebar" aria-live="off">
       <div><b id="lvRounds">0</b><span><i class="dot"></i>rounds simulated in your browser</span></div>
@@ -362,39 +369,52 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
 </section>
 
 
-<section id="glass" style="padding-top:0">
-  <div class="w feat">
-    <div class="device rv" style="box-shadow:0 40px 120px -30px rgba(143,227,255,.35),0 0 0 1px var(--line2),inset 0 1px 0 rgba(255,255,255,.08)"><iframe src="glass.html#embed" title="Glass Ascent playable demo with play money" loading="lazy" style="height:640px"></iframe></div>
-    <div class="rv">
-      <span class="eyebrow">Second title · real-time 3D</span>
-      <h2>GLASS ASCENT <span class="gold">Pure light. Pure nerve.</span></h2>
-      <p class="lead">A crash game with no cartoon at all: a glass crystal rises through rings of light while the world rushes past. The higher it climbs, the hotter it glows. Hold too long and it shatters into a hundred shards in slow motion.</p>
-      <ul class="bul">
-        <li><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><path d="M12 2l5 9-5 11-5-11z"/></svg></span><div><b>Rendered live in WebGL</b><span>Real refraction, reflections and bloom. No video, no sprites: it is computed every frame.</span></div></li>
-        <li><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span><div><b>Same engine, same math</b><span>97% RTP, provably fair rounds and the identical wallet API as PEEK!.</span></div></li>
-        <li><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></span><div><b>Built for every lobby</b><span>Neutral, premium and brand-safe. Recolour the light to your palette in a day.</span></div></li>
-      </ul>
-      <div class="skins"><span class="chip on">GLASS ASCENT</span><span class="chip">YOUR COLOURS</span></div>
-      <div class="playbar"><a class="btn gold-b" href="glass.html">Play Glass Ascent <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a></div>
-    </div>
-  </div>
-</section>
-
 <section id="sonar" style="padding-top:0">
   <div class="w">
-    <div class="feat" style="align-items:end;margin-bottom:40px">
+    <div class="feat sonarhead" style="align-items:end;margin-bottom:40px">
       <div class="rv">
-        <span class="eyebrow">Third title · skill-read instant game</span>
-        <h2>SONAR <span class="gold">Read the sea. Dive cheap.</span></h2>
+        <span class="eyebrow">Brand-new game type · skill-read mines <span class="newtag">NEW</span></span>
+        <h2>SONAR <span class="gold">Mines that finally talk back.</span></h2>
       </div>
-      <p class="lead rv" style="margin:0">Mines, reinvented. Every tile you open reveals a sonar number: how many mines touch it. Players reason their way through the water instead of guessing, and every tile pays its exact true odds minus a risk fee. Sharp readers climb on cheap, low-risk tiles. Blind clickers pay for it. The house edge never drops below 2.5%.</p>
-      <div class="playbar" style="grid-column:1/-1;margin-top:0"><a class="btn gold-b" href="sonar.html">Play SONAR <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a></div>
+      <div class="rv">
+        <p class="lead" style="margin:0">Every Mines game on the market is the same blind guess on a grid. SONAR is not a reskin of that. It is a new game: every tile you open shows a sonar number, the count of mines touching it. Players read the sea, prove tiles safe and choose how much risk to buy. Every tile is priced live from its exact odds, so skill changes how you play but never the house edge.</p>
+        <div class="playbar" style="margin-top:24px"><a class="btn gold-b" href="sonar.html">Play SONAR <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a><a class="btn ghost" href="#sonar-how">How it works</a></div>
+      </div>
     </div>
     <div class="device rv" style="box-shadow:0 40px 120px -30px rgba(63,240,208,.35),0 0 0 1px var(--line2),inset 0 1px 0 rgba(255,255,255,.08)"><iframe class="sonar-frame" src="sonar.html#embed" title="SONAR playable demo with play money" loading="lazy"></iframe></div>
-    <ul class="bul rv" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px;margin-top:40px">
-      <li><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v4"/></svg></span><div><b>Real skill, provable edge</b><span>Exact Bayesian odds per tile. Every step has EV of at most 1, so no strategy beats 97.5% RTP.</span></div></li>
-      <li><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></span><div><b>Pings and replays</b><span>Buy a warm/cold sonar ping when stuck. After every dive a debrief shows the safest tile at each move.</span></div></li>
-      <li><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 12l3 3 5-6"/></svg></span><div><b>Mastery that brings players back</b><span>A reading score per dive turns losses into lessons and gives players a reason for one more round.</span></div></li>
+
+    <div id="sonar-how" style="margin-top:90px">
+      <span class="eyebrow rv">How a dive works</span>
+      <h3 class="rv" style="font:800 clamp(28px,4vw,44px)/1.05 var(--display,inherit);margin-top:12px">Five steps. <span class="gold">Learned in one round.</span></h3>
+      <div class="steps s5">
+        <div class="step rv"><span class="n">01</span><h3>Pick your sea</h3><p>Choose a stake and how many mines hide under the 6×6 grid: 3, 5, 8 or 12. More mines, bigger multipliers.</p><span class="t">Player sets volatility</span></div>
+        <div class="step rv"><span class="n">02</span><h3>First dive</h3><p>The first tile is blind and places the stake. Survive it and the sonar switches on.</p><span class="t">Pays 0.975 ÷ p</span></div>
+        <div class="step rv"><span class="n">03</span><h3>Read the number</h3><p>Each open tile shows how many of its 8 neighbours hide a mine. A 0 clears its whole area for free.</p><span class="t">Real information, every click</span></div>
+        <div class="step rv"><span class="n">04</span><h3>Buy your risk</h3><p>Risky tiles pay more, tiles the numbers prove safe pay ×1.00 but reveal more sonar. Stuck? A ping (10% of stake) reads one tile warm or cold.</p><span class="t">Up to 3 pings per dive</span></div>
+        <div class="step rv"><span class="n">05</span><h3>Cash out</h3><p>Stop any time and take the multiplier. Hit a mine and the dive is lost. Afterwards the debrief replays every move.</p><span class="t">Max win 5,000×</span></div>
+      </div>
+    </div>
+
+    <div style="margin-top:90px">
+      <span class="eyebrow rv">Why it is new</span>
+      <h3 class="rv" style="font:800 clamp(28px,4vw,44px)/1.05 var(--display,inherit);margin-top:12px">Classic Mines versus <span class="gold">SONAR.</span></h3>
+      <div class="tbl sheet vs rv"><table>
+        <thead><tr><th></th><th>Classic Mines</th><th>SONAR</th></tr></thead>
+        <tbody>
+          <tr><td>What a click tells you</td><td>Safe or not, nothing more</td><td>The number of mines around that tile</td></tr>
+          <tr><td>How you choose a tile</td><td>Pure guess</td><td>Deduction, like the minesweeper everyone grew up with</td></tr>
+          <tr><td>Payout</td><td>Fixed ladder per click</td><td>Priced per tile from its exact Bayesian odds</td></tr>
+          <tr><td>Extra decisions</td><td>Click or cash out</td><td>Which risk to take, when to ping, when to stop</td></tr>
+          <tr><td>After a loss</td><td>Start again</td><td>Debrief with the safest tile at every move and a reading score</td></tr>
+          <tr><td>House edge</td><td>Fixed by the ladder</td><td>Proven cap of 97.5% RTP for any strategy, also for solvers</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <ul class="bul rv" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px;margin-top:56px">
+      <li><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v4"/></svg></span><div><b>Real skill, safe edge</b><span>Each tile pays (1/p) × e<sup>−0.25·ln(p)²</sup>. Every step has an expected value of at most 1, so no strategy, bot or solver beats 97.5% RTP. Tested against brute force.</span></div></li>
+      <li><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg></span><div><b>Built for one more dive</b><span>The reading score and replay turn a loss into a lesson. Players come back to read better, not just to chase.</span></div></li>
+      <li><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 12l3 3 5-6"/></svg></span><div><b>Stands out in any lobby</b><span>Mines is one of the most played instant games. SONAR gives your lobby a version players have never seen elsewhere.</span></div></li>
     </ul>
   </div>
 </section>
@@ -405,7 +425,7 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
       <div><b data-count="97" data-suf="%">97%</b><span>default RTP, configurable from 95 to 99%</span></div>
       <div><b data-count="10000" data-suf="×">10,000×</b><span>maximum multiplier per round</span></div>
       <div><b data-count="190" data-pre="~">~190</b><span>rounds per hour, every hour, per table</span></div>
-      <div><b data-count="4">4</b><span>playable titles, one tested math core</span></div>
+      <div><b data-count="3">3</b><span>playable titles, including one brand-new game type</span></div>
     </div>
   </div>
 </section>
@@ -485,32 +505,31 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
   <div class="w">
     <span class="eyebrow rv">Game sheets</span>
     <h2 class="rv">The numbers your <span class="gold">team will ask for.</span></h2>
-    <p class="lead rv">Four titles, one tested math core. Every value below is configurable per market; these are the defaults in the live demos.</p>
+    <p class="lead rv">Three titles: two crash skins on one tested engine and SONAR, a new game type. Every value below is configurable per market; these are the defaults in the live demos.</p>
     <div class="tiles rv">
       <a class="tile" href="peek.html#play-peek" style="--img:url(art/bg.webp);--pos:62% 40%"><span class="tt">PEEK!</span><span class="ts">Crash · comedy</span></a>
       <a class="tile" href="peek.html#play-vault" style="--img:url(art/vault_bg.webp);--pos:55% 45%"><span class="tt">VAULT HEIST</span><span class="ts">Crash · neutral skin</span></a>
-      <a class="tile glass-tile" href="glass.html"><span class="tt">GLASS ASCENT</span><span class="ts">Crash · real-time 3D</span></a>
-      <a class="tile" href="sonar.html" style="--img:url(art/og-sonar.jpg);--pos:50% 50%"><span class="tt">SONAR</span><span class="ts">Mines · skill-read</span></a>
+      <a class="tile" href="sonar.html" style="--img:url(art/og-sonar.jpg);--pos:50% 50%"><span class="tt">SONAR</span><span class="ts">New game type · skill-read mines</span></a>
     </div>
     <div class="tbl sheet rv"><table>
-      <thead><tr><th>Specification</th><th>PEEK!</th><th>Vault Heist</th><th>Glass Ascent</th><th>SONAR</th></tr></thead>
+      <thead><tr><th>Specification</th><th>PEEK!</th><th>Vault Heist</th><th>SONAR</th></tr></thead>
       <tbody>
-        <tr><td>Game type</td><td>Crash, single cash-out</td><td>Crash, single cash-out</td><td>Crash, single cash-out</td><td>Instant, player-paced</td></tr>
-        <tr><td>Default RTP</td><td>97.00%</td><td>97.00%</td><td>97.00%</td><td>Up to 97.50%, skill-based</td></tr>
-        <tr><td>RTP range</td><td>95.0 to 99.0%</td><td>95.0 to 99.0%</td><td>95.0 to 99.0%</td><td>Hard cap 97.5% for any strategy</td></tr>
-        <tr><td>Max multiplier</td><td>10,000×</td><td>10,000×</td><td>10,000×</td><td>5,000×</td></tr>
-        <tr><td>Volatility</td><td>High</td><td>High</td><td>High</td><td>Player-chosen (3 to 12 mines)</td></tr>
-        <tr><td>Hit frequency at 2×</td><td>48.5%</td><td>48.5%</td><td>48.5%</td><td>Depends on mines and reading</td></tr>
-        <tr><td>Instant bust (1.00×)</td><td>3.0%</td><td>3.0%</td><td>3.0%</td><td>8.3 to 33% (blind first tile)</td></tr>
-        <tr><td>Betting window</td><td>6 s</td><td>6 s</td><td>6 s</td><td>None, start any time</td></tr>
-        <tr><td>Average round</td><td>13 s</td><td>13 s</td><td>13 s</td><td>20 to 60 s</td></tr>
-        <tr><td>Rounds per hour</td><td>~190</td><td>~190</td><td>~190</td><td>~90</td></tr>
-        <tr><td>Auto cash-out</td><td>Yes</td><td>Yes</td><td>Yes</td><td>At max win or cleared sea</td></tr>
-        <tr><td>Fairness</td><td>Provably fair, SHA-256 / HMAC</td><td>Provably fair, SHA-256 / HMAC</td><td>Provably fair, SHA-256 / HMAC</td><td>Provably fair, SHA-256 / HMAC</td></tr>
-        <tr><td>Rendering</td><td>HTML5 canvas, illustrated</td><td>HTML5 canvas, illustrated</td><td>WebGL, real-time 3D</td><td>HTML5 canvas, procedural</td></tr>
-        <tr><td>Orientation</td><td>Landscape and portrait</td><td>Landscape and portrait</td><td>Landscape and portrait</td><td>Landscape and portrait</td></tr>
-        <tr><td>Languages</td><td>EN, NL (more on request)</td><td>EN, NL (more on request)</td><td>EN (more on request)</td><td>EN (more on request)</td></tr>
-        <tr><td>Status</td><td>Playable demo</td><td>Playable demo</td><td>Playable demo</td><td>Playable demo</td></tr>
+        <tr><td>Game type</td><td>Crash, single cash-out</td><td>Crash, single cash-out</td><td>Instant, player-paced</td></tr>
+        <tr><td>Default RTP</td><td>97.00%</td><td>97.00%</td><td>Up to 97.50%, skill-based</td></tr>
+        <tr><td>RTP range</td><td>95.0 to 99.0%</td><td>95.0 to 99.0%</td><td>Hard cap 97.5% for any strategy</td></tr>
+        <tr><td>Max multiplier</td><td>10,000×</td><td>10,000×</td><td>5,000×</td></tr>
+        <tr><td>Volatility</td><td>High</td><td>High</td><td>Player-chosen (3 to 12 mines)</td></tr>
+        <tr><td>Hit frequency at 2×</td><td>48.5%</td><td>48.5%</td><td>Depends on mines and reading</td></tr>
+        <tr><td>Instant bust (1.00×)</td><td>3.0%</td><td>3.0%</td><td>8.3 to 33% (blind first tile)</td></tr>
+        <tr><td>Betting window</td><td>6 s</td><td>6 s</td><td>None, start any time</td></tr>
+        <tr><td>Average round</td><td>13 s</td><td>13 s</td><td>20 to 60 s</td></tr>
+        <tr><td>Rounds per hour</td><td>~190</td><td>~190</td><td>~90</td></tr>
+        <tr><td>Auto cash-out</td><td>Yes</td><td>Yes</td><td>At max win or cleared sea</td></tr>
+        <tr><td>Fairness</td><td>Provably fair, SHA-256 / HMAC</td><td>Provably fair, SHA-256 / HMAC</td><td>Provably fair, SHA-256 / HMAC</td></tr>
+        <tr><td>Rendering</td><td>HTML5 canvas, illustrated</td><td>HTML5 canvas, illustrated</td><td>HTML5 canvas, procedural</td></tr>
+        <tr><td>Orientation</td><td>Landscape and portrait</td><td>Landscape and portrait</td><td>Landscape and portrait</td></tr>
+        <tr><td>Languages</td><td>EN, NL (more on request)</td><td>EN, NL (more on request)</td><td>EN (more on request)</td></tr>
+        <tr><td>Status</td><td>Playable demo</td><td>Playable demo</td><td>Playable demo</td></tr>
       </tbody>
     </table></div>
     <p class="note rv" style="margin-top:14px">Certification by an accredited lab (GLI, BMM or iTech Labs) is part of the launch plan for your markets. Demo RNG runs in the browser; the live version runs server-side.</p>
@@ -532,8 +551,7 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
   <div class="rail" id="rail" aria-label="Game concepts">
     <article class="concept" style="position:relative"><span class="tag live">PLAYABLE</span><canvas data-anim="peek" width="680" height="510"></canvas><div class="tx"><h3>PEEK!</h3><p>His eyes stretch, the hearts pile up. Cash out before she turns around.</p><span class="m">Crash · 97% RTP · 10,000×</span></div></article>
     <article class="concept" style="position:relative"><span class="tag">CONCEPT</span><canvas data-anim="balloon" width="680" height="510"></canvas><div class="tx"><h3>Balloon Bash</h3><p>Every pump inflates the balloon and the payout. Nerves of steel or a loud pop.</p><span class="m">Crash · player-paced</span></div></article>
-    <article class="concept" style="position:relative"><span class="tag live">PLAYABLE</span><canvas data-anim="glass" width="680" height="510"></canvas><div class="tx"><h3>Glass Ascent</h3><p>A glass crystal rises through rings of light. Hold too long and it shatters.</p><span class="m">Crash · real-time 3D</span></div></article>
-    <article class="concept" style="position:relative"><span class="tag live">PLAYABLE</span><canvas data-anim="sonar" width="680" height="510"></canvas><div class="tx"><h3>SONAR</h3><p>Read the sonar numbers, dive the safe water, cash out before you hit a mine.</p><span class="m">Skill-read mines · 97.5% max RTP</span></div></article>
+    <article class="concept" style="position:relative"><span class="tag live">NEW GAME TYPE</span><canvas data-anim="sonar" width="680" height="510"></canvas><div class="tx"><h3>SONAR</h3><p>Read the sonar numbers, dive the safe water, cash out before you hit a mine.</p><span class="m">Skill-read mines · 97.5% max RTP</span></div></article>
     <article class="concept" style="position:relative"><span class="tag">CONCEPT</span><canvas data-anim="speed" width="680" height="510"></canvas><div class="tx"><h3>Speed Trap</h3><p>Floor it past a sleeping speed camera. Brake before the flash.</p><span class="m">Crash · twin cash-out</span></div></article>
     <article class="concept" style="position:relative"><span class="tag">VAULT HEIST</span><canvas data-anim="vault" width="680" height="510"></canvas><div class="tx"><h3>Vault Heist</h3><p>Grab gold bars while the guard sleeps. Same engine as PEEK!, neutral theme.</p><span class="m">Crash · reskin</span></div></article>
   </div>
@@ -577,7 +595,7 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
     <h2 class="rv">Three ways to <span class="gold">work with us.</span></h2>
     <div class="models">
       <div class="card spot model rv"><span class="for">Catalogue</span><h3>Revenue share</h3><p>Add our titles to your lobby and pay a share of the GGR they generate.</p><ul><li>No upfront cost</li><li>All current and future titles</li><li>Monthly reporting</li></ul><a class="btn ghost" href="#contact">Ask for terms</a></div>
-      <div class="card spot model hl rv"><span class="for">Most chosen</span><h3>Branded reskin</h3><p>PEEK!, Vault Heist, Glass Ascent or SONAR in your brand, exclusive to your casino in your markets.</p><ul><li>Your mascot, colours and name</li><li>Exclusivity per market</li><li>Proven, tested math</li></ul><a class="btn gold-b" href="#contact">Start a reskin</a></div>
+      <div class="card spot model hl rv"><span class="for">Most chosen</span><h3>Branded reskin</h3><p>PEEK!, Vault Heist or SONAR in your brand, exclusive to your casino in your markets.</p><ul><li>Your mascot, colours and name</li><li>Exclusivity per market</li><li>Proven, tested math</li></ul><a class="btn gold-b" href="#contact">Start a reskin</a></div>
       <div class="card spot model rv"><span class="for">Exclusive</span><h3>Custom build</h3><p>A brand-new game from idea to launch, built only for you.</p><ul><li>Concept, math, art and sound</li><li>Playable prototype in weeks</li><li>Optional full IP transfer</li></ul><a class="btn ghost" href="#contact">Pitch your idea</a></div>
     </div>
   </div>
@@ -589,7 +607,9 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
     <h2 class="rv">Questions operators ask.</h2>
     <div class="faq">
       <details><summary>Can players beat the house edge with a strategy?</summary><p>No. The chance of reaching x is exactly RTP ÷ x, so the expected return is the same for every cash-out target. Early cash-outs win more often but pay less. Late cash-outs win rarely but pay more. The math lab above proves it with live simulations.</p></details>
-      <details><summary>Can we change the RTP?</summary><p>Yes. RTP is configurable per market, typically between 95% and 99%. The theme, animations and fairness system stay the same.</p></details>
+      <details><summary>Can skilled players beat SONAR?</summary><p>No. Skilled players lose less per tile than blind clickers because they pick cheaper, safer tiles, but every tile pays at most its true odds. The proven ceiling is 97.5% RTP for any strategy, including a perfect solver.</p></details>
+      <details><summary>Is SONAR just Mines with a new skin?</summary><p>No. Classic Mines gives no information between clicks. In SONAR every open tile shows how many mines touch it, payouts are priced per tile from the exact odds, and players can buy pings. It is a different game with its own math.</p></details>
+      <details><summary>Can we change the RTP?</summary><p>Yes. RTP is configurable per market, typically between 95% and 99%. The theme, animations and fairness system stay the same. SONAR has a hard RTP cap per market instead of a fixed RTP.</p></details>
       <details><summary>Is the theme of PEEK! suitable for our market?</summary><p>PEEK! is a cartoon comedy game. For operators who prefer a neutral lobby we supply Vault Heist with identical math, or we build a branded skin around your own mascot.</p></details>
       <details><summary>How long does a custom game take?</summary><p>A playable prototype typically takes two to four weeks. Certification and integration timing depends on the lab and the markets you launch in.</p></details>
       <details><summary>Who owns the game?</summary><p>For catalogue titles we keep the IP and license it to you. For custom builds an exclusive license or a full IP transfer can be agreed.</p></details>
@@ -601,14 +621,14 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
   <div class="w cgrid">
     <div class="rv">
       <span class="eyebrow">Book a demo</span>
-      <h2>Put PEEK! <span class="gold">in your lobby.</span></h2>
+      <h2>Put PEEK! or SONAR <span class="gold">in your lobby.</span></h2>
       <p class="lead">Tell us about your casino or platform. We reply within one business day with a private demo link, the full math sheet and a proposal. Prefer email? Write to <a href="mailto:nick@caughtgames.com" style="color:var(--gold,#e9c46a)">nick@caughtgames.com</a>.</p>
     </div>
     <form id="form" class="rv" novalidate>
       <div><label for="fn">Name</label><input id="fn" name="name" required autocomplete="name"></div>
       <div><label for="fc">Casino or company</label><input id="fc" name="company" required autocomplete="organization"></div>
       <div><label for="fe">Work email</label><input id="fe" name="email" type="email" required autocomplete="email"></div>
-      <div><label for="fi">Interested in</label><select id="fi" name="interest"><option>PEEK! / Vault Heist</option><option>Branded reskin</option><option>Custom game</option><option>Full catalogue</option><option>Publishing or distribution partner</option></select></div>
+      <div><label for="fi">Interested in</label><select id="fi" name="interest"><option>PEEK! / Vault Heist</option><option>SONAR</option><option>Branded reskin</option><option>Custom game</option><option>Full catalogue</option><option>Publishing or distribution partner</option></select></div>
       <div class="full"><label for="fm">Message</label><textarea id="fm" name="message" placeholder="Markets, expected traffic, your game idea..."></textarea></div>
       <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
       <div class="full"><button class="btn gold-b" type="submit">Send request <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg></button><p class="fmsg" id="fmsg" aria-live="polite"></p></div>
@@ -619,7 +639,7 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
 
 <footer>
   <div class="w">
-    <span>© 2026 Caught Games · <a href="mailto:nick@caughtgames.com" style="color:inherit">nick@caughtgames.com</a> · PEEK! · Vault Heist · Glass Ascent · SONAR</span>
+    <span>© 2026 Caught Games · <a href="mailto:nick@caughtgames.com" style="color:inherit">nick@caughtgames.com</a> · PEEK! · Vault Heist · SONAR</span>
     <span><span class="age">18+</span>Supplied to licensed operators only. All demos on this site use play money; no real-money gambling is offered here.</span>
   </div>
 </footer>
@@ -737,7 +757,7 @@ if('IntersectionObserver' in window&&!reduce){
 /* ---------- marquee feed ---------- */
 (function feed(){
   const names=['Kees_88','Fenna','Jayden','Mo','Tessa.v','Bram','Luuk','Sanne','Rik','Ilse','Daan','Yara','Lars','Noor','Milan','Sophie','Ahmed','Julia'];
-  const games=['PEEK!','VAULT HEIST','GLASS ASCENT','SONAR'];
+  const games=['PEEK!','VAULT HEIST','SONAR'];
   let h='';
   for(let i=0;i<26;i++){ const c=crash(.97,10000), bet=[1,2,5,10,20,50][i%6], win=Math.random()<.2;
     const m=win?Math.max(1.2,Math.min(c,2+Math.random()*40)):c;
