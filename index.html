@@ -602,7 +602,7 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
     <div class="rv">
       <span class="eyebrow">Book a demo</span>
       <h2>Put PEEK! <span class="gold">in your lobby.</span></h2>
-      <p class="lead">Tell us about your casino or platform. We reply within one business day with a private demo link, the full math sheet and a proposal.</p>
+      <p class="lead">Tell us about your casino or platform. We reply within one business day with a private demo link, the full math sheet and a proposal. Prefer email? Write to <a href="mailto:nick@caughtgames.com" style="color:var(--gold,#e9c46a)">nick@caughtgames.com</a>.</p>
     </div>
     <form id="form" class="rv" novalidate>
       <div><label for="fn">Name</label><input id="fn" name="name" required autocomplete="name"></div>
@@ -619,7 +619,7 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
 
 <footer>
   <div class="w">
-    <span>© 2026 Caught Games · caughtgames.com · PEEK! · Vault Heist · Glass Ascent · SONAR</span>
+    <span>© 2026 Caught Games · <a href="mailto:nick@caughtgames.com" style="color:inherit">nick@caughtgames.com</a> · PEEK! · Vault Heist · Glass Ascent · SONAR</span>
     <span><span class="age">18+</span>Supplied to licensed operators only. All demos on this site use play money; no real-money gambling is offered here.</span>
   </div>
 </footer>
@@ -933,12 +933,12 @@ $('form').addEventListener('submit',async e=>{
   if(!f.checkValidity()){ msg.style.color='var(--pink)'; msg.textContent='Please fill in your name, company and a valid work email.'; return }
   const sb=f.querySelector('button[type=submit]'); if(sb.disabled) return; sb.disabled=true; msg.style.color='var(--muted)'; msg.textContent='Sending...';
   const data=Object.fromEntries(new FormData(f)); if(data._honey) return; data._subject='Caught Games demo request: '+data.company; data._template='table';
-  try{ const r=await fetch('https://formsubmit.co/ajax/nick@4neon.nl',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(data)});
+  try{ const r=await fetch('https://formsubmit.co/ajax/nick@caughtgames.com',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(data)});
     const j=await r.json().catch(()=>({}));
     // FormSubmit answers 200 with success "false" when the address is not activated yet: never show a false "thanks"
     if(!r.ok||String(j.success)!=='true') throw 0;
     msg.style.color='var(--mint)'; msg.textContent='Thanks. We will be in touch within one business day.'; f.reset();
-  }catch(_){ msg.style.color='var(--pink)'; msg.innerHTML='Sending failed. Please email us directly at <a href="mailto:nick@4neon.nl?subject=Caught%20Games" style="color:inherit">nick@4neon.nl</a>.' }
+  }catch(_){ msg.style.color='var(--pink)'; msg.innerHTML='Sending failed. Please email us directly at <a href="mailto:nick@caughtgames.com?subject=Caught%20Games" style="color:inherit">nick@caughtgames.com</a>.' }
   finally{ sb.disabled=false }
 });
 })();
