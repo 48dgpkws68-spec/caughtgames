@@ -24,3 +24,9 @@
 - Gedaan: SONAR ongebruikte variabele q verwijderd. Backlogpunt webp-verkleinen geschrapt: art is al ~1 MB totaal op weergavemaat, herencoderen scheelt maar ~17% met extra kwaliteitsverlies.
 - Idee voor later: mijlpalen ook in Glass Ascent; terugknop op kale peek.html; mijlpalen aankondigen voor schermlezers.
 - Voor Nick: niets
+
+## 2026-10-20 (handmatige eindcheck, dagsessie)
+- Gedaan: claims eerlijk gemaakt voor studio-partners: "certified math core" weg (nog niets gecertificeerd), 4 titels i.p.v. 3, integratie/compliance-teksten als ontwerp i.p.v. bestaand product, nep-subdomein verify.caughtgames.com weg.
+- Gedaan: formulier toont geen valse "Thanks" meer als FormSubmit niet geactiveerd is (success "false"), knop blokkeert dubbel verzenden, fallback mailto nick@4neon.nl; optie "Publishing or distribution partner".
+- Gedaan: PEEK!, Vault Heist en Glass betalen altijd uit bij 10.000x; leeg speelgeld wordt automatisch aangevuld (ook SONAR); Glass cash-knop toont exact uitbetaalbedrag; terugknop op kale peek.html; SONAR-tegel bij game sheets; 404.html.
+- Voor Nick: FormSubmit activeren; eigen mailadres op caughtgames.com.

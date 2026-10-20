@@ -213,7 +213,7 @@ let phase='bet', t0=performance.now(), crashAt=1, mult=1, bal=1000, myBet=null, 
 const say=m=>{$('msg').textContent=m};
 function setBal(){ $('bal').textContent=fmt(bal) }
 function btn(){ const b=$('act'); b.className='act';
-  if(phase==='run'&&myBet&&!myBet.out){ b.classList.add('cash'); b.textContent='CASH OUT '+fmt((myBet.amt*mult))+''; return }
+  if(phase==='run'&&myBet&&!myBet.out){ b.classList.add('cash'); b.textContent='CASH OUT '+fmt(myBet.amt*Math.floor(mult*100)/100); return }
   b.textContent=queued?'CANCEL':(phase==='bet'?'PLACE BET':'BET NEXT ROUND') }
 $('act').onclick=()=>{ au();
   if(phase==='run'&&myBet&&!myBet.out) return cash();
@@ -227,7 +227,7 @@ function bust(){ phase='bust'; bustAt=performance.now(); mult=crashAt; hist.unsh
   $('hist').innerHTML=hist.map(c=>`<span class="chip" style="color:${c<2?'#ff8fb3':c<10?'#ffe08a':'#5cf2c4'}">${fmt(c)}×</span>`).join('');
   $('mult').classList.add('bust'); $('mult').textContent=fmt(crashAt)+'×'; $('sub').textContent='SHATTERED'; if(myBet&&!myBet.out) say('Shattered at '+fmt(crashAt)+'×. Stake lost.');
   shatterSnd(); explode(); btn() }
-function newBet(){ phase='bet'; if(drone){ drone.os.forEach(o=>o.detune.setTargetAtTime(0,ac.currentTime,.3)) } t0=performance.now(); myBet=null; crystal.visible=true; crystal.scale.setScalar(1); glassMat.opacity=1; shards.forEach(s=>s.m.visible=false); $('mult').classList.remove('bust'); $('mult').textContent='1.00×'; btn() }
+function newBet(){ phase='bet'; if(bal<1&&!queued){ bal=1000; setBal(); say('Out of play money. Your balance is topped up to 1,000.') } if(drone){ drone.os.forEach(o=>o.detune.setTargetAtTime(0,ac.currentTime,.3)) } t0=performance.now(); myBet=null; crystal.visible=true; crystal.scale.setScalar(1); glassMat.opacity=1; shards.forEach(s=>s.m.visible=false); $('mult').classList.remove('bust'); $('mult').textContent='1.00×'; btn() }
 function explode(){ crystal.visible=false; const p=crystal.position; wave.visible=true; wave.position.copy(p); wave.scale.setScalar(.2); flashSpr.position.copy(p);
   shards.forEach((s,i)=>{ s.m.visible=true; s.m.position.copy(p).add(new THREE.Vector3((Math.random()-.5)*1.4,(Math.random()-.5)*2,(Math.random()-.5)*1.4));
     const d=s.m.position.clone().sub(p).normalize(); s.v.copy(d.multiplyScalar(4+Math.random()*9)); s.v.y+=2; s.w.set(Math.random()*12-6,Math.random()*12-6,Math.random()*12-6) }) }
@@ -241,6 +241,7 @@ function frame(){ const now=performance.now();
   if(phase==='bet'){ const left=Math.max(0,BET_MS-(now-t0)); $('sub').textContent='PLACE YOUR BETS · '+(left/1000).toFixed(1)+'s'; if(left<=0) start() }
   else if(phase==='run'){ mult=Math.min(10000,Math.max(1,Math.floor(Math.exp(GROWTH*Math.max(0,now-t0))*100)/100)); I=Math.min(1,Math.log(mult)/Math.log(25));
     const a=+$('auto').value; if(myBet&&!myBet.out&&a>=1.01&&mult>=a&&a<=crashAt){ mult=a; cash() }
+    if(mult>=10000&&myBet&&!myBet.out) cash(); // max win always pays
     if(mult>=crashAt) bust(); else { $('mult').textContent=fmt(mult)+'×'; if(myBet&&!myBet.out) btn() }
     if(!crackUntil&&now>crackAt&&mult<crashAt*.85){ crackUntil=now+520; crackAt=now+3500+Math.random()*5000; shake=.25; $('sub').textContent='CRACKING…'; if(ac&&!muted){ tone(1800,300,.35,.12,'sawtooth'); tone(90,60,.3,.25,'square') } }
     if(crackUntil&&now>crackUntil){ crackUntil=0; $('sub').textContent='ASCENDING' }

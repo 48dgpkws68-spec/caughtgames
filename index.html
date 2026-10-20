@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Caught Games</title>
+<title>Caught Games · Crash and instant-win game studio</title>
 <meta name="description" content="Caught Games builds crash and instant-win casino games for operators. Transparent RTP math, provably fair rounds, branded reskins and custom games on request.">
 <meta property="og:title" content="Caught Games · Crash games your players can't look away from">
 <meta property="og:description" content="B2B casino game studio. Play PEEK!, Vault Heist, Glass Ascent and SONAR live, explore the math and order a custom game.">
@@ -195,7 +195,8 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
   .sheet td,.sheet th{padding:9px 6px;font-size:12px}
 }
 /* game sheets */
-.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:44px}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:44px}
+@media (max-width:1100px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:760px){.tiles{grid-template-columns:minmax(0,1fr)}}
 .tile{position:relative;display:flex;flex-direction:column;justify-content:flex-end;gap:4px;aspect-ratio:16/10;border-radius:20px;overflow:hidden;padding:18px;text-decoration:none;border:1px solid var(--line2);background:var(--img) var(--pos)/cover no-repeat,#13101d;box-shadow:0 30px 60px -30px rgba(0,0,0,.8);transition:transform .3s,box-shadow .3s}
 .tile::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(7,6,11,0) 35%,rgba(7,6,11,.92));pointer-events:none}
@@ -404,7 +405,7 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
       <div><b data-count="97" data-suf="%">97%</b><span>default RTP, configurable from 95 to 99%</span></div>
       <div><b data-count="10000" data-suf="×">10,000×</b><span>maximum multiplier per round</span></div>
       <div><b data-count="190" data-pre="~">~190</b><span>rounds per hour, every hour, per table</span></div>
-      <div><b data-count="3">3</b><span>playable titles on one certified math core</span></div>
+      <div><b data-count="4">4</b><span>playable titles, one tested math core</span></div>
     </div>
   </div>
 </section>
@@ -445,7 +446,7 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
       <p class="lead">The server seed is hashed with SHA-256 and published before betting opens. After the round the seed is revealed, so any player, regulator or auditor can recompute the crash point. Try it: change the client seed or nonce and watch the result follow.</p>
     </div>
     <div class="term rv" aria-label="Provably fair verifier">
-      <div class="bar"><i></i><i></i><i></i><span>verify.caughtgames.com</span></div>
+      <div class="bar"><i></i><i></i><i></i><span>fairness check · runs in your browser</span></div>
       <div class="body">
         <div><label for="fSeed">Server seed (revealed after round)</label><input id="fSeed" spellcheck="false"></div>
         <div><label>SHA-256 commitment (published before round)</label><div class="hash" id="fHash">...</div></div>
@@ -484,11 +485,12 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
   <div class="w">
     <span class="eyebrow rv">Game sheets</span>
     <h2 class="rv">The numbers your <span class="gold">team will ask for.</span></h2>
-    <p class="lead rv">Three titles, one certified math core. Every value below is configurable per market; these are the defaults in the live demos.</p>
+    <p class="lead rv">Four titles, one tested math core. Every value below is configurable per market; these are the defaults in the live demos.</p>
     <div class="tiles rv">
       <a class="tile" href="peek.html#play-peek" style="--img:url(art/bg.webp);--pos:62% 40%"><span class="tt">PEEK!</span><span class="ts">Crash · comedy</span></a>
       <a class="tile" href="peek.html#play-vault" style="--img:url(art/vault_bg.webp);--pos:55% 45%"><span class="tt">VAULT HEIST</span><span class="ts">Crash · neutral skin</span></a>
       <a class="tile glass-tile" href="glass.html"><span class="tt">GLASS ASCENT</span><span class="ts">Crash · real-time 3D</span></a>
+      <a class="tile" href="sonar.html" style="--img:url(art/og-sonar.jpg);--pos:50% 50%"><span class="tt">SONAR</span><span class="ts">Mines · skill-read</span></a>
     </div>
     <div class="tbl sheet rv"><table>
       <thead><tr><th>Specification</th><th>PEEK!</th><th>Vault Heist</th><th>Glass Ascent</th><th>SONAR</th></tr></thead>
@@ -541,15 +543,15 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
   <div class="w integ">
     <div class="rv">
       <span class="eyebrow">Integration</span>
-      <h2>Live in your lobby <span class="gold">without a rebuild.</span></h2>
-      <p class="lead">One launch URL, a standard seamless-wallet API and a reporting feed. Your platform keeps the balance, we run the rounds.</p>
+      <h2>Built to plug <span class="gold">into your platform.</span></h2>
+      <p class="lead">Game logic and presentation are fully separated: every outcome comes from one seeded function. For real money that function runs on a remote game server, ours or a partner RGS, and your platform keeps the balance.</p>
       <div class="feats" style="margin-top:32px">
-        <div><b>Seamless wallet</b><span>Bet, win and rollback calls against your existing wallet.</span></div>
-        <div><b>Aggregator ready</b><span>Packaged for the major game aggregators or a direct link.</span></div>
+        <div><b>Seamless wallet flow</b><span>Bet, win and rollback events defined per round.</span></div>
+        <div><b>RGS ready</b><span>Designed to run on a partner remote game server or a direct link.</span></div>
         <div><b>Mobile first</b><span>Lightweight HTML5 canvas, built for portrait phones.</span></div>
         <div><b>Per-market config</b><span>RTP, limits, max win, currencies and languages.</span></div>
-        <div><b>Responsible gaming</b><span>Reality checks, loss limits and session timers hook into your RG tools.</span></div>
-        <div><b>Round-level reporting</b><span>Every bet, seed and result logged and exportable.</span></div>
+        <div><b>Responsible gaming</b><span>Hooks for reality checks, loss limits and session timers from your RG tools.</span></div>
+        <div><b>Round-level reporting</b><span>Every bet, seed and result designed to be logged and exported.</span></div>
       </div>
     </div>
     <div class="term rv"><div class="bar"><i></i><i></i><i></i><span>wallet-callback.json</span></div><pre class="code" id="code"></pre></div>
@@ -559,12 +561,12 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
 <section>
   <div class="w">
     <span class="eyebrow rv">Compliance</span>
-    <h2 class="rv">Built to pass <span class="gold">the hardest tests.</span></h2>
+    <h2 class="rv">Built for <span class="gold">certification.</span></h2>
     <div class="comp">
       <div class="card spot rv"><div class="seal"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg></div><b>RNG</b><p>Cryptographic RNG and full math documentation prepared for testing labs such as GLI and BMM.</p></div>
       <div class="card spot rv"><div class="seal"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg></div><b>Multi-market</b><p>Settings per jurisdiction, from RTP floors to max stake, for regulated markets such as the Netherlands, Malta and the UK.</p></div>
       <div class="card spot rv"><div class="seal"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg></div><b>Player safety</b><p>Auto cash-out, visible history, session time and loss limit hooks. No hidden mechanics.</p></div>
-      <div class="card spot rv"><div class="seal"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg></div><b>Audit trail</b><p>Every seed, hash and payout stored per round. Answer any regulator question in minutes.</p></div>
+      <div class="card spot rv"><div class="seal"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg></div><b>Audit trail</b><p>Every seed, hash and payout can be stored per round, so any round can be replayed and checked.</p></div>
     </div>
   </div>
 </section>
@@ -600,13 +602,13 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
     <div class="rv">
       <span class="eyebrow">Book a demo</span>
       <h2>Put PEEK! <span class="gold">in your lobby.</span></h2>
-      <p class="lead">Tell us about your casino. We reply within one business day with a private demo link, the full math sheet and a proposal.</p>
+      <p class="lead">Tell us about your casino or platform. We reply within one business day with a private demo link, the full math sheet and a proposal.</p>
     </div>
     <form id="form" class="rv" novalidate>
       <div><label for="fn">Name</label><input id="fn" name="name" required autocomplete="name"></div>
       <div><label for="fc">Casino or company</label><input id="fc" name="company" required autocomplete="organization"></div>
       <div><label for="fe">Work email</label><input id="fe" name="email" type="email" required autocomplete="email"></div>
-      <div><label for="fi">Interested in</label><select id="fi" name="interest"><option>PEEK! / Vault Heist</option><option>Branded reskin</option><option>Custom game</option><option>Full catalogue</option></select></div>
+      <div><label for="fi">Interested in</label><select id="fi" name="interest"><option>PEEK! / Vault Heist</option><option>Branded reskin</option><option>Custom game</option><option>Full catalogue</option><option>Publishing or distribution partner</option></select></div>
       <div class="full"><label for="fm">Message</label><textarea id="fm" name="message" placeholder="Markets, expected traffic, your game idea..."></textarea></div>
       <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
       <div class="full"><button class="btn gold-b" type="submit">Send request <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg></button><p class="fmsg" id="fmsg" aria-live="polite"></p></div>
@@ -929,11 +931,15 @@ const CODE=[['c','// 1. Launch PEEK! for a player\n'],['k','const '],['','game =
 $('form').addEventListener('submit',async e=>{
   e.preventDefault(); const f=e.target, msg=$('fmsg');
   if(!f.checkValidity()){ msg.style.color='var(--pink)'; msg.textContent='Please fill in your name, company and a valid work email.'; return }
-  msg.style.color='var(--muted)'; msg.textContent='Sending...';
-  const data=Object.fromEntries(new FormData(f)); data._subject='Caught Games demo request: '+data.company; data._template='table';
+  const sb=f.querySelector('button[type=submit]'); if(sb.disabled) return; sb.disabled=true; msg.style.color='var(--muted)'; msg.textContent='Sending...';
+  const data=Object.fromEntries(new FormData(f)); if(data._honey) return; data._subject='Caught Games demo request: '+data.company; data._template='table';
   try{ const r=await fetch('https://formsubmit.co/ajax/nick@4neon.nl',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(data)});
-    if(!r.ok) throw 0; msg.style.color='var(--mint)'; msg.textContent='Thanks. We will be in touch within one business day.'; f.reset();
-  }catch(_){ msg.style.color='var(--pink)'; msg.textContent='Sending failed. Please try again in a moment.' }
+    const j=await r.json().catch(()=>({}));
+    // FormSubmit answers 200 with success "false" when the address is not activated yet: never show a false "thanks"
+    if(!r.ok||String(j.success)!=='true') throw 0;
+    msg.style.color='var(--mint)'; msg.textContent='Thanks. We will be in touch within one business day.'; f.reset();
+  }catch(_){ msg.style.color='var(--pink)'; msg.innerHTML='Sending failed. Please email us directly at <a href="mailto:nick@4neon.nl?subject=Caught%20Games" style="color:inherit">nick@4neon.nl</a>.' }
+  finally{ sb.disabled=false }
 });
 })();
 </script>

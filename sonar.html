@@ -302,7 +302,7 @@ $('dbl').onclick=()=>{ $('bet').value=Math.min(bal,500,readStake()*2); readStake
 /* ---------- game flow ---------- */
 function newBoard(){ dbId++; resetTiles(); revealed=new Map(); pings=new Map(); pingsUsed=0; pingArm=false; moves=[]; bustIdx=-1; review=null; feeLog=0; mult=1; first=true; phase='idle'; mines=new Set();
   $('debrief').classList.remove('on'); $('hint').style.display=''; redTint=0; flash=0; parts.length=0; rips.length=0; $('state').textContent='READY TO DIVE'; $('state').style.color=''; multUI(''); actUI(); sweepBoost=1 }
-function start(){ stake=readStake(); if(bal<stake||stake<=0){ toast('Not enough play money. <b>Reload</b> to refill.'); return false } bal-=stake; setBal(); mines=layMines(M); phase='run'; $('state').textContent='DIVING · '+M+' MINES'; return true }
+function start(){ if(bal<1){ bal=1000; setBal(); toast('Out of play money. Balance topped up to <b>1,000</b>.') } stake=readStake(); if(bal<stake||stake<=0){ toast('Not enough play money for this stake.'); return false } bal-=stake; setBal(); mines=layMines(M); phase='run'; $('state').textContent='DIVING · '+M+' MINES'; return true }
 function dive(i){
   if(phase==='done'||phase==='bust'){ newBoard() }
   if(tiles[i].rev) return;
