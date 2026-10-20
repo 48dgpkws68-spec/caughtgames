@@ -348,7 +348,6 @@ $('ping').onclick=()=>{ if(phase!=='run') return; pingArm=!pingArm; actUI(); sTi
 let dbId=0;
 function debrief(){
   const scored=moves.filter(m=>!m.first&&m.p<1-1e-9);
-  let q=scored.length?scored.reduce((s,m)=>s+Math.max(0,1-(m.bestRisky-m.p)/Math.max(.02,1-m.p+ (m.bestRisky-m.p)))*1,0)/scored.length:1;
   const sharp=scored.filter(m=>m.p>=m.bestRisky-1e-6&&m.bestRisky<1).length;
   const score=Math.round((scored.length?sharp/scored.length:1)*100);
   const free=tiles.filter(T=>T.rev&&!T.mine&&T.free).length, tilesN=tiles.filter(T=>T.rev&&!T.mine).length;
