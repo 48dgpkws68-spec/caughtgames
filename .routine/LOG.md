@@ -30,3 +30,10 @@
 - Gedaan: formulier toont geen valse "Thanks" meer als FormSubmit niet geactiveerd is (success "false"), knop blokkeert dubbel verzenden, fallback mailto nick@4neon.nl; optie "Publishing or distribution partner".
 - Gedaan: PEEK!, Vault Heist en Glass betalen altijd uit bij 10.000x; leeg speelgeld wordt automatisch aangevuld (ook SONAR); Glass cash-knop toont exact uitbetaalbedrag; terugknop op kale peek.html; SONAR-tegel bij game sheets; 404.html.
 - Voor Nick: FormSubmit activeren (nu nick@caughtgames.com).
+
+## 2026-10-21
+- Gevonden: rooktest volledig ok (9/9), geen console-fouten, screenshots netjes. Codecheck index: game sheet noemde "Instant bust (1.00×) 3.0%" terwijl de echte kans op een 1.00×-crash 3.96% is (de math lab op dezelfde pagina toonde al 3.96%); tegenstrijdig voor een casino-wiskundige. PEEK!: geen meldingen voor schermlezers bij rondestart, mijlpalen of crash; spatietoets kaapte ook gefocuste knoppen (bijv. Sound) en auto-repeat.
+- Gedaan: game sheet PEEK!/Vault instant bust 3.96% (= 1 - 0.97/1.01, RTP ongewijzigd). Waarom: cijfers moeten onderling kloppen voor een operator.
+- Gedaan: PEEK! toegankelijkheid: verborgen aria-live-regel meldt "Betting is open", "Round started", mijlpalen ("25× reached") en het einde van de ronde (NL via #nl); canvas role=img, geschiedenis als lijst; spatie start/cash alleen buiten knoppen/velden en zonder auto-repeat. Headless getest (melding verschijnt), geen testhooks achtergelaten.
+- Idee voor later: aria-labels op inzetknoppen PEEK!; nav-link Vault Heist eigen doel; SONAR-uitlegvenster op 360px compacter (past nu net).
+- Voor Nick: niets
