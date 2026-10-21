@@ -64,6 +64,7 @@ label{display:block;font:600 11px var(--mono);letter-spacing:.12em;text-transfor
 input[type=number]{width:100%;background:var(--bg);border:1px solid var(--line);color:var(--fg);font:600 16px var(--mono);padding:10px 12px;border-radius:10px;transition:border-color .2s}
 input[type=number]::-webkit-inner-spin-button{opacity:.4}
 input:focus-visible,button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.vh{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 input[type=number]:focus{border-color:var(--acc);outline:none}
 .mini{border:1px solid var(--line);background:var(--surface2);color:var(--fg);border-radius:8px;font:600 13px var(--mono);padding:0 10px;cursor:pointer}
 .big{margin-top:16px;width:100%;border:0;border-radius:14px;padding:17px;font:19px var(--display);letter-spacing:.5px;cursor:pointer;background:var(--goldg);background-size:200% 100%;color:#1b1406;box-shadow:0 10px 36px -10px rgba(233,196,106,.6),inset 0 1px 0 rgba(255,255,255,.6);transition:transform .08s,box-shadow .2s,background-position .4s}
@@ -147,8 +148,9 @@ ul.pts{padding-left:18px;margin:8px 0 0;max-width:68ch} ul.pts li{margin-bottom:
 
   <div class="game">
     <div class="stage">
-      <div class="hist" id="hist" aria-label="Previous rounds" data-empty="No rounds yet"></div>
-      <canvas id="cv" width="1200" height="640" aria-label="Game field"></canvas>
+      <div class="hist" id="hist" role="list" aria-label="Previous rounds" data-empty="No rounds yet"></div>
+      <canvas id="cv" width="1200" height="640" role="img" aria-label="Game field"></canvas>
+      <p class="vh" id="sr" aria-live="polite" aria-atomic="true"></p>
     </div>
 
     <div class="side">
@@ -320,6 +322,7 @@ const L={nl:{hey:'HÉ!',stop:'STOP!',bets:'ZET IN',caught:'BETRAPT!',bet:'INZETT
  first:'Speel eerst een ronde.',ok:c=>`Klopt: hash komt overeen en de seed geeft ${c}×.`,bad:'Komt niet overeen.',
  logoA:'GLUREN!',logoB:'KLUISKRAAK!',tagA:'Hoe langer je gluurt, hoe hoger je winst. Cash uit voordat ze omkijkt.',tagB:'Hoe langer je graait, hoe hoger je winst. Cash uit voordat de bewaker wakker wordt.',
  thA:'Gluren',inplay:'speelt',plN:'spelers',cashed:'uitgecasht',sealed:'SEED VASTGELEGD',snrk:'SNURK?!',oi:'HÉ, JIJ!',close:'BIJNA BETRAPT!',sndOn:'Geluid: aan',sndOff:'Geluid: uit',thB:'Kluiskraak',play:'Speelgeld',stake:'Inzet',auto:'Automatisch uitcashen bij (0 = uit)',pl:'Spelers deze ronde',sim:'Andere spelers zijn gesimuleerd voor de demo.',
+ srBet:'Inzetten geopend. Druk op spatie om in te zetten.',srRun:'Ronde gestart.',srMile:m=>`${m}× bereikt.`,srEnd:x=>`Ronde voorbij bij ${x}×.`,
  nh:'Hash van de volgende server-seed (vooraf vastgelegd)',ps:'Vorige ronde: seed en uitkomst',none:'nog geen ronde gespeeld',ver:'Controleer vorige ronde'},
  en:{hey:'HEY!',stop:'STOP!',bets:'PLACE BETS',caught:'BUSTED!',bet:'PLACE BET',cash:'CASH OUT',cancel:'CANCEL',next:'BET NEXT ROUND',
  lost:'lost',you:'You',caughtMsg:x=>`Caught at ${x}×. Stake lost.`,outMsg:(x,w)=>`Cashed out at ${x}×: +${w}`,cancelled:'Bet cancelled.',
@@ -327,6 +330,7 @@ const L={nl:{hey:'HÉ!',stop:'STOP!',bets:'ZET IN',caught:'BETRAPT!',bet:'INZETT
  first:'Play a round first.',ok:c=>`Verified: hash matches and the seed gives ${c}×.`,bad:'Does not match.',
  logoA:'PEEK!',logoB:'VAULT HEIST!',tagA:'The longer you peek, the bigger the win. Cash out before she turns around.',tagB:'The longer you grab, the bigger the win. Cash out before the guard wakes up.',
  thA:'Peek',inplay:'in play',plN:'players',cashed:'cashed out',sealed:'SEED COMMITTED',snrk:'SNRK?!',oi:'HEY, YOU!',close:'CLOSE CALL!',sndOn:'Sound: on',sndOff:'Sound: off',thB:'Vault Heist',play:'Play money',stake:'Stake',auto:'Auto cash-out at (0 = off)',pl:'Players this round',sim:'Other players are simulated for the demo.',
+ srBet:'Betting is open. Press Space to bet.',srRun:'Round started.',srMile:m=>`${m}× reached.`,srEnd:x=>`Round over at ${x}×.`,
  nh:'Hash of the next server seed (committed in advance)',ps:'Previous round: seed and result',none:'no round played yet',ver:'Verify previous round'}};
 const EMBED=location.hash==='#embed', PLAY=location.hash.match(/^#play-(peek|vault)$/); let lang=location.hash==='#nl'?'nl':'en'; const LOC=lang==='nl'?'nl-NL':'en-US';
 const T=(k,...a)=>{const v=L[lang][k];return typeof v==='function'?v(...a):v};
@@ -406,7 +410,7 @@ function renderPlayers(){
   $('plc').textContent=phase==='bet'?`${n} ${T('plN')}`:`${out}/${n} ${T('cashed')}`;
 }
 function renderHist(){
-  $('hist').innerHTML=history.slice(-30).reverse().map(c=>`<span class="chip ${c<2?'lo':c<10?'mid':'hi'}">${c.toFixed(2)}×</span>`).join('');
+  $('hist').innerHTML=history.slice(-30).reverse().map(c=>`<span role="listitem" class="chip ${c<2?'lo':c<10?'mid':'hi'}">${c.toFixed(2)}×</span>`).join('');
 }
 function setBal(){ $('bal').textContent=fmt(bal) }
 
@@ -419,17 +423,17 @@ async function startRun(){
   await prepSeed();
   if(queued){ myBet={amt:queued,out:null}; queued=null }
   phase='run'; phaseStart=performance.now(); mult=1; mileIdx=0; mile=null; musicStart(); fakeAt=phaseStart+2500+Math.random()*5000; fakeUntil=0;
-  updateBtn(); renderPlayers();
+  updateBtn(); renderPlayers(); sr(T('srRun'));
 }
 function crash(){
   phase='crash'; crashedAt=performance.now(); mult=crashAt; fakeUntil=0; ending=2; sfx('bust'); flash=.32; flashCol='255,255,255'; if(theme==='A'){ sfx(ending===1?'splash':'boing') } else { sfx('alarm'); if(vaultReady()){ const sp=sackPos(); burst(sp.x,sp.y+40,45,true) } }
   history.push(crashAt); renderHist();
-  if(myBet&&!myBet.out) say(T('caughtMsg',crashAt.toFixed(2)));
+  if(myBet&&!myBet.out) say(T('caughtMsg',crashAt.toFixed(2))); else sr(T('srEnd',crashAt.toFixed(2)));
   $('prevSeed').textContent=`seed ${prev.seed} · nonce ${prev.nonce} · ${prev.crash.toFixed(2)}×`;
   renderPlayers(); updateBtn();
 }
 function newBetPhase(){
-  phase='bet'; phaseStart=performance.now(); myBet=null; makeBots(); renderPlayers(); updateBtn();
+  phase='bet'; phaseStart=performance.now(); myBet=null; makeBots(); renderPlayers(); updateBtn(); sr(T('srBet'));
   if(bal<1&&!queued){ bal=1000; setBal(); say(T('refill')) }
 }
 function cashOut(){
@@ -440,6 +444,7 @@ function cashOut(){
   renderPlayers(); updateBtn();
 }
 function say(t){ $('msg').textContent=t }
+function sr(t){ $('sr').textContent=t } // schermlezer: fase en mijlpalen
 function updateBtn(){
   const b=$('act');
   b.className='big';
@@ -463,7 +468,7 @@ $('act').onclick=()=>{ audio();
 $('quick').onclick=e=>{ const v=e.target.dataset.v; if(v) $('bet').value=v };
 $('half').onclick=()=>{$('bet').value=Math.max(1,Math.floor(+$('bet').value/2))};
 $('dbl').onclick=()=>{$('bet').value=Math.min(Math.floor(bal),Math.floor(+$('bet').value*2))||1};
-document.addEventListener('keydown',e=>{ if(e.code==='Space'&&e.target.tagName!=='INPUT'){e.preventDefault();$('act').click()} });
+document.addEventListener('keydown',e=>{ if(e.code==='Space'&&!e.repeat&&!/^(INPUT|TEXTAREA|SELECT|BUTTON|A)$/.test(e.target.tagName)){e.preventDefault();$('act').click()} });
 
 $('verify').onclick=async()=>{
   if(!prev) return $('vmsg').textContent=T('first');
@@ -1116,7 +1121,7 @@ function frame(){ const now=performance.now();
     if(mult>=MAXM&&myBet&&!myBet.out) cashOut(); // max win always pays
     if(mult>=crashAt) crash();
     // mijlpalen boven 10x: stoot, gouden flits en een stempel onder de multiplier
-    while(phase==='run'&&mileIdx<MILES.length&&mult>=MILES[mileIdx]){ mile={m:MILES[mileIdx],t:now}; sfx('mile'); mileIdx++; flash=.2; flashCol='255,214,90'; burst(W/2,110,18+mileIdx*4,true) }
+    while(phase==='run'&&mileIdx<MILES.length&&mult>=MILES[mileIdx]){ mile={m:MILES[mileIdx],t:now}; sr(T('srMile',MILES[mileIdx].toLocaleString(LOC))); sfx('mile'); mileIdx++; flash=.2; flashCol='255,214,90'; burst(W/2,110,18+mileIdx*4,true) }
   }
   if(phase==='crash'&&now-crashedAt>PAUSE_MS) newBetPhase();
   if(phase==='bet'&&now>nextTick){ const left=BET_MS-(now-phaseStart); sfx(left<3000?'tock':'tick'); nextTick=now+(left<3000?500:1000) }
