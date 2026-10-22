@@ -37,3 +37,11 @@
 - Gedaan: PEEK! toegankelijkheid: verborgen aria-live-regel meldt "Betting is open", "Round started", mijlpalen ("25× reached") en het einde van de ronde (NL via #nl); canvas role=img, geschiedenis als lijst; spatie start/cash alleen buiten knoppen/velden en zonder auto-repeat. Headless getest (melding verschijnt), geen testhooks achtergelaten.
 - Idee voor later: aria-labels op inzetknoppen PEEK!; nav-link Vault Heist eigen doel; SONAR-uitlegvenster op 360px compacter (past nu net).
 - Voor Nick: niets
+
+## 2026-10-22
+- Gevonden: rooktest volledig ok (9/9), geen console-fouten, screenshots netjes. Codecheck SONAR: dezelfde tegel twee keer pingen overschreef de eerste meting, waardoor de engine met minder informatie rekende dan de speler had (twee gelijke pings geven een veel scherpere kans dan de prijs aannam, dus uitbuitbaar boven de 97,5%); spatie cashte uit terwijl een knop (bijv. Sound) focus had, en reageerde op auto-repeat.
+- Gedaan: SONAR weigert een tweede ping op dezelfde tegel ("Already pinged", geen kosten, teller gelijk). Waarom: payout moet altijd op alle info van de speler rekenen, RTP-plafond blijft gegarandeerd. Headless getest, testpagina verwijderd.
+- Gedaan: SONAR spatie cash't alleen buiten knoppen/velden/links en zonder auto-repeat (zoals PEEK! sinds 21 okt). Headless getest.
+- Gedaan: backlog: PEEK! inzetknoppen aria-labels ("Halve stake", "Stake 25", NL via #nl); nav-link Vault Heist op index gaat direct naar peek.html#play-vault.
+- Idee voor later: bewezen mijnen tijdens het spel tonen in SONAR; SONAR-uitlegvenster 360px compacter; schermlezer-meldingen bij PEEK! mijlpalen op Vault-skin controleren.
+- Voor Nick: niets
