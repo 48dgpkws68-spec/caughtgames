@@ -326,7 +326,7 @@ function dive(i){
 }
 function flood(i){ const q=[i], seen=new Set([i]); let d=0;
   while(q.length){ const a=q.shift(); if(revealed.get(a)!==0) continue; for(const j of E.NB[a]){ if(seen.has(j)||revealed.has(j)) continue; seen.add(j); const n=E.sonarAt(mines,j); revealed.set(j,n); d++; Object.assign(tiles[j],{rev:1,n,t0:now+d*55,free:true}); const tl=tiles; setTimeout(()=>{ if(tl===tiles){ ripple(j,.45); sFree() } },d*55); q.push(j) } } }
-function doPing(i){ const cost=Math.round(stake*PING_COST*100)/100; if(bal<cost){ pingArm=false; actUI(); return } bal-=cost; setBal(); pingsUsed++; pingArm=false;
+function doPing(i){ if(pings.has(i)){ pingArm=false; actUI(); toast('Already pinged · pick <b>another tile</b>'); return } const cost=Math.round(stake*PING_COST*100)/100; if(bal<cost){ pingArm=false; actUI(); return } bal-=cost; setBal(); pingsUsed++; pingArm=false;
   const truth=mines.has(i), honest=rnd(CLIENT+':'+nonce+':ping:'+pingsUsed)<.8, warm=honest?truth:!truth;
   pings.set(i,warm); Object.assign(tiles[i],{ping:warm,pt:now}); beam(i,warm); warm?sWarm():sCold();
   toast(warm?'<b style="color:var(--warm)">WARM</b> · echo bounced back':'<b style="color:var(--cold)">COLD</b> · clear water',2200); actUI() }
@@ -537,7 +537,7 @@ $('snd').onclick=()=>{ muted=!muted; $('snd').textContent=muted?'SOUND OFF':'SOU
 $('howBtn').onclick=()=>{ $('how').hidden=false; $('act2').focus() };
 $('act2').onclick=()=>{ $('how').hidden=true; au(); sPing(.12); try{ localStorage.setItem('sonar-how','1') }catch(e){} };
 $('how').onclick=e=>{ if(e.target.id==='how') $('how').hidden=true };
-addEventListener('keydown',e=>{ if(e.key==='Escape'){ $('how').hidden=true; $('fairBox').hidden=true; if(pingArm){ pingArm=false; actUI() } } if(e.key===' '&&phase==='run'&&!first&&document.activeElement.tagName!=='INPUT'){ e.preventDefault(); cashOut() } });
+addEventListener('keydown',e=>{ if(e.key==='Escape'){ $('how').hidden=true; $('fairBox').hidden=true; if(pingArm){ pingArm=false; actUI() } } if(e.key===' '&&phase==='run'&&!first&&!e.repeat&&!/^(INPUT|BUTTON|SELECT|TEXTAREA|A|SUMMARY)$/.test(document.activeElement.tagName)){ e.preventDefault(); cashOut() } });
 let seen=false; try{ seen=localStorage.getItem('sonar-how')==='1' }catch(e){} if(!seen&&!embed){ $('how').hidden=false; setTimeout(()=>$('act2').focus({preventScroll:true}),0) }
 new ResizeObserver(size).observe(cv); addEventListener('resize',size2);
 document.fonts&&document.fonts.ready.then(()=>{ size() });

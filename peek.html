@@ -159,9 +159,9 @@ ul.pts{padding-left:18px;margin:8px 0 0;max-width:68ch} ul.pts li{margin-bottom:
         <label for="bet" data-t="stake">Inzet</label>
         <div class="field">
           <input id="bet" type="number" min="1" step="1" value="10">
-          <div class="seg"><button class="mini" id="half">½</button><button class="mini" id="dbl">2×</button></div>
+          <div class="seg"><button class="mini" id="half" aria-label="Halve stake">½</button><button class="mini" id="dbl" aria-label="Double stake">2×</button></div>
         </div>
-        <div class="quick" id="quick"><button data-v="1">1</button><button data-v="5">5</button><button data-v="10">10</button><button data-v="25">25</button><button data-v="100">100</button></div>
+        <div class="quick" id="quick"><button data-v="1" aria-label="Stake 1">1</button><button data-v="5" aria-label="Stake 5">5</button><button data-v="10" aria-label="Stake 10">10</button><button data-v="25" aria-label="Stake 25">25</button><button data-v="100" aria-label="Stake 100">100</button></div>
         <label for="auto" data-t="auto">Automatisch uitcashen bij (0 = uit)</label>
         <input id="auto" type="number" min="0" step="0.1" value="0">
         <button class="big" id="act">INZETTEN</button>
@@ -1303,7 +1303,7 @@ function setTheme(t){
 }
 $('thA').onclick=()=>setTheme('A'); $('thB').onclick=()=>setTheme('B');
 document.querySelectorAll('[data-t]').forEach(e=>e.textContent=T(e.dataset.t));
-if(lang==='nl'){ document.documentElement.lang='nl'; document.querySelector('.themes').setAttribute('aria-label','Thema'); const h=document.getElementById('hist'); h.setAttribute('aria-label','Vorige rondes'); h.dataset.empty='Nog geen rondes'; document.getElementById('cv').setAttribute('aria-label','Speelveld') }
+if(lang==='nl'){ document.documentElement.lang='nl'; document.querySelector('.themes').setAttribute('aria-label','Thema'); const h=document.getElementById('hist'); h.setAttribute('aria-label','Vorige rondes'); h.dataset.empty='Nog geen rondes'; document.getElementById('cv').setAttribute('aria-label','Speelveld'); document.getElementById('half').setAttribute('aria-label','Inzet halveren'); document.getElementById('dbl').setAttribute('aria-label','Inzet verdubbelen'); document.querySelectorAll('#quick button').forEach(b=>b.setAttribute('aria-label','Inzet '+b.dataset.v)) }
 if(lang==='nl') $('pitch').innerHTML=$('pitchNl').innerHTML;
 if(EMBED){ $('pitch').hidden=true; document.querySelector('.wrap').style.paddingBlock='8px' }
 if(!EMBED){ // terugknop naar de studio-site, ook op de kale pagina
