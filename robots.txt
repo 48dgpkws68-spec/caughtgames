@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /glass.html
+
+Sitemap: https://caughtgames.com/sitemap.xml
