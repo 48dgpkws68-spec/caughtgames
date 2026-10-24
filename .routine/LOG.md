@@ -45,3 +45,10 @@
 - Gedaan: backlog: PEEK! inzetknoppen aria-labels ("Halve stake", "Stake 25", NL via #nl); nav-link Vault Heist op index gaat direct naar peek.html#play-vault.
 - Idee voor later: bewezen mijnen tijdens het spel tonen in SONAR; SONAR-uitlegvenster 360px compacter; schermlezer-meldingen bij PEEK! mijlpalen op Vault-skin controleren.
 - Voor Nick: niets
+
+## 2026-10-24
+- Gevonden: rooktest volledig ok (9/9), geen console-fouten, screenshots netjes. SONAR-uitlegvenster paste op 360px maar net (backlog).
+- Gedaan: SONAR markeert tijdens de duik tegels die de cijfers als mijn bewijzen (rood gestippeld + "MINE", fade-in); duiken op zo'n tegel vraagt een tweede tik binnen 3s; pingen op een bewezen mijn of bewezen veilige tegel wordt geweigerd zonder kosten; schermlezer zegt "proven mine". Waarom: spelers gooiden geld weg aan pings en duiken die de info al uitsloot; payout rekende al met die info, RTP ongewijzigd. Headless getest met vaste mijnen, testpagina verwijderd.
+- Gedaan: SONAR-uitlegvenster onder 380px compacter (kleinere kop, marges, cirkels). Waarom: meer lucht op kleine telefoons.
+- Idee voor later: PEEK! codecheck; uitleg-zin over bewezen mijnen; bewezen veilige tegels ook subtiel tonen.
+- Voor Nick: niets
