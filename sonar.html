@@ -152,6 +152,7 @@ body.embed .brand{display:none}
   .how{place-items:start center;overflow-y:auto;padding:60px 12px 16px}
   .how .glass{padding:22px 20px 18px}
 }
+@media(max-width:380px){.how .glass{padding:18px 16px 16px}.how h2{font-size:21px}.how ol{margin-top:12px;gap:9px}.how li{grid-template-columns:26px 1fr;gap:10px;font-size:13.5px;line-height:1.45}.how li::before{width:26px;height:26px}.how .go{margin-top:16px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 <style>.backlink{position:fixed;left:14px;bottom:14px;z-index:30;display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:999px;font:600 12px system-ui,sans-serif;color:#f4f2ff;text-decoration:none;background:rgba(10,8,20,.6);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}.backlink:hover{border-color:#e9c46a}@media(max-width:640px){.backlink{left:auto;right:12px;top:12px;bottom:auto}}</style>
@@ -275,7 +276,7 @@ function stopAmb(){ if(!amb) return; const a=amb; amb=null; a.g.gain.linearRampT
 /* ---------- state ---------- */
 let bal=1000, mines=new Set(), M=5, phase='idle', stake=10, mult=1, first=true, revealed=new Map(), pings=new Map(), pingsUsed=0, pingArm=false;
 let moves=[], tiles=[], hover=-1, bustIdx=-1, review=null, hist=[], feeLog=0;
-function resetTiles(){ tiles=[...Array(C)].map(()=>({rev:0,n:0,t0:0,mine:false,boom:false,ping:null,pt:0,flash:0,free:false})) }
+function resetTiles(){ tiles=[...Array(C)].map(()=>({rev:0,n:0,t0:0,mine:false,boom:false,ping:null,pt:0,flash:0,free:false,proven:0,prt:0})) }
 resetTiles();
 
 /* ---------- UI builders ---------- */
@@ -308,6 +309,8 @@ function dive(i){
   if(tiles[i].rev) return;
   au();
   if(pingArm){ doPing(i); return }
+  if(phase==='run'&&tiles[i].proven===1&&!(mineArm===i&&performance.now()-mineArmT<3000)){ mineArm=i; mineArmT=performance.now(); toast('<b style="color:var(--hot)">The numbers prove a mine here</b> · tap again to dive anyway',2600); return }
+  mineArm=-1;
   if(phase==='idle'&&!start()) return;
   const P=E.mineProbs(revealed,M,pings), p=1-P[i], g=E.stepGain(p,first);
   const safeTiles=[]; for(let j=0;j<C;j++) if(!tiles[j].rev) safeTiles.push(j);
@@ -321,15 +324,18 @@ function dive(i){
   mult*=g; first=false; multUI(); ripple(i, p>=1-1e-9?.6:1);
   if(p>=1-1e-9){ sFree(); toast('Proven safe · <b>free read</b> ×1.00') } else { sPing(.12); sReveal(n); toast((p*100).toFixed(1)+'% safe · <b>×'+fmt(g,3)+'</b>') }
   if(n===0) flood(i);
-  depthUI(); actUI();
+  deduce(); depthUI(); actUI();
   if(stake*mult>=stake*E.MAX_WIN){ mult=E.MAX_WIN; cashOut('MAX WIN') } else if(revealed.size===C-M) cashOut('SEA CLEARED');
 }
+/* mark tiles the readings already settle: 1 = proven mine, 2 = proven safe (only mines are drawn) */
+function deduce(){ if(phase!=='run') return; const P=E.mineProbs(revealed,M,pings); for(let j=0;j<C;j++){ const T=tiles[j]; if(T.rev){ T.proven=0; continue } const v=P[j]>=1-1e-9?1:P[j]<=1e-9?2:0; if(v!==T.proven){ T.proven=v; T.prt=now } } }
+let mineArm=-1, mineArmT=0;
 function flood(i){ const q=[i], seen=new Set([i]); let d=0;
   while(q.length){ const a=q.shift(); if(revealed.get(a)!==0) continue; for(const j of E.NB[a]){ if(seen.has(j)||revealed.has(j)) continue; seen.add(j); const n=E.sonarAt(mines,j); revealed.set(j,n); d++; Object.assign(tiles[j],{rev:1,n,t0:now+d*55,free:true}); const tl=tiles; setTimeout(()=>{ if(tl===tiles){ ripple(j,.45); sFree() } },d*55); q.push(j) } } }
-function doPing(i){ if(pings.has(i)){ pingArm=false; actUI(); toast('Already pinged · pick <b>another tile</b>'); return } const cost=Math.round(stake*PING_COST*100)/100; if(bal<cost){ pingArm=false; actUI(); return } bal-=cost; setBal(); pingsUsed++; pingArm=false;
+function doPing(i){ if(pings.has(i)){ pingArm=false; actUI(); toast('Already pinged · pick <b>another tile</b>'); return } if(tiles[i].proven){ pingArm=false; actUI(); toast('The numbers already prove this tile '+(tiles[i].proven===1?'is a <b>mine</b>':'is <b>safe</b>')+' · no ping needed'); return } const cost=Math.round(stake*PING_COST*100)/100; if(bal<cost){ pingArm=false; actUI(); return } bal-=cost; setBal(); pingsUsed++; pingArm=false;
   const truth=mines.has(i), honest=rnd(CLIENT+':'+nonce+':ping:'+pingsUsed)<.8, warm=honest?truth:!truth;
   pings.set(i,warm); Object.assign(tiles[i],{ping:warm,pt:now}); beam(i,warm); warm?sWarm():sCold();
-  toast(warm?'<b style="color:var(--warm)">WARM</b> · echo bounced back':'<b style="color:var(--cold)">COLD</b> · clear water',2200); actUI() }
+  toast(warm?'<b style="color:var(--warm)">WARM</b> · echo bounced back':'<b style="color:var(--cold)">COLD</b> · clear water',2200); deduce(); actUI() }
 function bust(i){ phase='bust'; bustIdx=i; Object.assign(tiles[i],{rev:1,mine:true,boom:true,t0:now}); explode(i); sBoom();
   const tl=tiles; mines.forEach(j=>{ if(j!==i) setTimeout(()=>{ Object.assign(tl[j],{rev:1,mine:true,t0:performance.now()}) },500+Math.random()*900) });
   $('state').textContent='MINE HIT'; $('state').style.color='var(--hot)'; mult=0; $('mult').textContent='0.00×'; $('mult').className='bust'; $('win').innerHTML='lost <b>'+fmt(stake)+'</b>';
@@ -405,7 +411,7 @@ let lastHov=0; const sTickHover=()=>{ const t=performance.now(); if(ac&&t-lastHo
 cv.addEventListener('pointerleave',()=>{ if(document.activeElement!==cv) hover=-1 });
 /* keyboard play: arrows move a cursor over the 6x6 board, Enter dives (or pings when armed) */
 let kb=-1, kbOn=false; // kbOn: cursor only shows for keyboard focus, never after a mouse or touch tap
-const tileSay=i=>{ const T=tiles[i]; return 'Row '+(((i/N)|0)+1)+', column '+(i%N+1)+': '+(T.rev?(T.mine?'mine':'sonar '+T.n):'hidden'+(T.ping!==null?', pinged '+(T.ping?'warm':'cold'):'')) };
+const tileSay=i=>{ const T=tiles[i]; return 'Row '+(((i/N)|0)+1)+', column '+(i%N+1)+': '+(T.rev?(T.mine?'mine':'sonar '+T.n):'hidden'+(T.ping!==null?', pinged '+(T.ping?'warm':'cold'):'')+(T.proven===1&&phase==='run'?', proven mine':'')) };
 cv.addEventListener('focus',()=>{ kbOn=cv.matches(':focus-visible'); if(!kbOn) return; if(kb<0) kb=14; hover=kb; $('sr').textContent=tileSay(kb) });
 cv.addEventListener('pointerdown',()=>{ kbOn=false });
 cv.addEventListener('blur',()=>{ kbOn=false; hover=-1 });
@@ -479,6 +485,10 @@ function draw(t){ const dt=Math.min(50,t-now); now=t; const w=W; if(!w) return;
         const pg=cx.createRadialGradient(cxp,cyp,0,cxp,cyp,s*.6); pg.addColorStop(0,'rgba('+col+','+(.38*pa)+')'); pg.addColorStop(1,'rgba('+col+',0)'); cx.fillStyle=pg; rr(cx,x+p,y+p,s,s,s*.16); cx.fill();
         cx.strokeStyle='rgba('+col+','+(.5+pul*.4)*pa+')'; cx.lineWidth=W*.0025; rr(cx,x+p+W*.003,y+p+W*.003,s-W*.006,s-W*.006,s*.14); cx.stroke();
         cx.fillStyle='rgba('+col+',.95)'; cx.font='700 '+Math.round(s*.15)+'px JetBrains Mono, monospace'; cx.textAlign='center'; cx.textBaseline='middle'; cx.fillText(T.ping?'WARM':'COLD',cxp,cyp+s*.3) }
+      if(T.proven===1&&phase==='run'&&!T.rev){ const ma=Math.min(1,(t-T.prt)/600), arm=mineArm===i&&performance.now()-mineArmT<3000;
+        cx.fillStyle='rgba(255,79,109,'+(arm?.2:.1)*ma+')'; rr(cx,x+p,y+p,s,s,s*.16); cx.fill();
+        cx.strokeStyle='rgba(255,79,109,'+(arm?.9:.5)*ma+')'; cx.lineWidth=W*.0022; cx.setLineDash([W*.006,W*.005]); rr(cx,x+p+W*.003,y+p+W*.003,s-W*.006,s-W*.006,s*.14); cx.stroke(); cx.setLineDash([]);
+        cx.fillStyle='rgba(255,120,140,'+.9*ma+')'; cx.font='700 '+Math.round(s*.13)+'px JetBrains Mono, monospace'; cx.textAlign='center'; cx.textBaseline='middle'; cx.fillText('MINE',cxp,cyp-s*.3) }
       cx.restore() }
     if(T.rev&&age>0){ const k=T.rev?age:0;
       cx.save(); cx.translate(cxp,cyp); cx.scale(1,Math.max(.02,k)); cx.translate(-cxp,-cyp);
