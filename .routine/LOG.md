@@ -52,3 +52,10 @@
 - Gedaan: SONAR-uitlegvenster onder 380px compacter (kleinere kop, marges, cirkels). Waarom: meer lucht op kleine telefoons.
 - Idee voor later: PEEK! codecheck; uitleg-zin over bewezen mijnen; bewezen veilige tegels ook subtiel tonen.
 - Voor Nick: niets
+
+## 2026-10-25
+- Gevonden: rooktest volledig ok (9/9), geen console-fouten, screenshots netjes. Codecheck PEEK!: wie inzette en het tabblad ~2,5 min verborg, kreeg bij terugkomst altijd 10.000x uitbetaald (multiplier sprong naar het plafond en de max-win-uitbetaling liep vóór de crashcontrole), ook als de ronde op 1,09x had moeten crashen. Uitbuitbaar voor elke speler.
+- Gedaan: PEEK!/Vault: multiplier wordt nooit hoger dan het crashpunt van de ronde en de 10.000x-uitbetaling geldt alleen als het crashpunt echt 10.000x is. Headless bewezen: oude code saldo 100.990 na tabblad-sprong, nieuwe code "Caught at 1.09x", saldo 990. RTP ongewijzigd (uitkomst blijft de seed). Testpagina's verwijderd.
+- Gedaan: SONAR-uitlegvenster stap 2 noemt de rode MINE-markering voor bewezen mijnen (backlog). Past nog op 360px.
+- Idee voor later: Glass dezelfde fix als het ooit terugkomt; 10.000x-bedragen op 360px; max-win-regel in game sheet.
+- Voor Nick: niets

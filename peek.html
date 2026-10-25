@@ -1111,6 +1111,7 @@ function frame(){ const now=performance.now();
   if(phase==='bet'&&now-phaseStart>=BET_MS&&!starting){ starting=true; startRun().finally(()=>starting=false) }
   if(phase==='run'){
     mult=Math.min(MAXM,Math.max(1,Math.floor(Math.exp(GROWTH*Math.max(0,now-phaseStart))*100)/100));
+    if(mult>crashAt) mult=crashAt; // na een verborgen tabblad nooit voorbij de crash springen
     const a=+$('auto').value;
     if(myBet&&!myBet.out&&a>=1.01&&mult>=a&&a<=crashAt){ mult=a; cashOut() }
     bots.forEach(b=>{ if(!b.done&&mult>=b.out&&b.out<=crashAt){ b.done=true; renderPlayers() } });
@@ -1118,7 +1119,7 @@ function frame(){ const now=performance.now();
     if(!fakeUntil&&now>fakeAt&&mult<crashAt*0.85){ fakeUntil=now+650; fakeAt=now+4000+Math.random()*6000; sfx('gasp'); flash=.25; flashCol='255,255,255' }
     if(fakeUntil&&now>fakeUntil) fakeUntil=0;
     if(now>nextBeat){ sfx('beat'); beatPulse=1; nextBeat=now+Math.max(230,950/Math.sqrt(mult)) }
-    if(mult>=MAXM&&myBet&&!myBet.out) cashOut(); // max win always pays
+    if(crashAt>=MAXM&&mult>=MAXM&&myBet&&!myBet.out) cashOut(); // max win always pays
     if(mult>=crashAt) crash();
     // mijlpalen boven 10x: stoot, gouden flits en een stempel onder de multiplier
     while(phase==='run'&&mileIdx<MILES.length&&mult>=MILES[mileIdx]){ mile={m:MILES[mileIdx],t:now}; sr(T('srMile',MILES[mileIdx].toLocaleString(LOC))); sfx('mile'); mileIdx++; flash=.2; flashCol='255,214,90'; burst(W/2,110,18+mileIdx*4,true) }
