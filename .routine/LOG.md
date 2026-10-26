@@ -59,3 +59,11 @@
 - Gedaan: SONAR-uitlegvenster stap 2 noemt de rode MINE-markering voor bewezen mijnen (backlog). Past nog op 360px.
 - Idee voor later: Glass dezelfde fix als het ooit terugkomt; 10.000x-bedragen op 360px; max-win-regel in game sheet.
 - Voor Nick: niets
+
+## 2026-10-26
+- Gevonden: rooktest volledig ok (9/9), geen console-fouten, screenshots netjes. Codecheck index: de live cash-out-feed koos de game met games[i%4] terwijl er maar 3 games zijn, dus elk 4e bericht eindigde op "on undefined" (zichtbaar voor elke bezoeker in de marquee); SONAR-verliezen heetten "got CAUGHT at 1.27×", wat niet bij een mijnenspel past.
+- Gedaan: feed gebruikt games[i%games.length] en verlies-tekst per game (PEEK! CAUGHT, Vault Heist BUSTED, SONAR "hit a MINE"). Headless DOM gecontroleerd via lokale server: geen "undefined" meer.
+- Gedaan: game sheet regel "Max win payout: Always paid at 10,000× / 5,000×" (backlog). Waarom: operators vragen expliciet of max win gegarandeerd uitbetaald wordt.
+- Gedaan: backlogpunt PEEK! 10.000x op 360px afgevinkt na codecheck: chips scrollen horizontaal (nowrap), naamkolom spelerslijst kapt af (minmax(0,1fr) + ellipsis), bedragen passen.
+- Idee voor later: check.sh ook DOM-inhoud laten controleren; compactere max-teller hero op 360px; SONAR codecheck morgen.
+- Voor Nick: niets
