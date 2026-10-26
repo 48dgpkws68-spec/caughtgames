@@ -518,6 +518,7 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
         <tr><td>Default RTP</td><td>97.00%</td><td>97.00%</td><td>Up to 97.50%, skill-based</td></tr>
         <tr><td>RTP range</td><td>95.0 to 99.0%</td><td>95.0 to 99.0%</td><td>Hard cap 97.5% for any strategy</td></tr>
         <tr><td>Max multiplier</td><td>10,000×</td><td>10,000×</td><td>5,000×</td></tr>
+        <tr><td>Max win payout</td><td>Always paid at 10,000×</td><td>Always paid at 10,000×</td><td>Always paid at 5,000×</td></tr>
         <tr><td>Volatility</td><td>High</td><td>High</td><td>Player-chosen (3 to 12 mines)</td></tr>
         <tr><td>Hit frequency at 2×</td><td>48.5%</td><td>48.5%</td><td>Depends on mines and reading</td></tr>
         <tr><td>Instant bust (1.00×)</td><td>3.96%</td><td>3.96%</td><td>8.3 to 33% (blind first tile)</td></tr>
@@ -761,7 +762,8 @@ if('IntersectionObserver' in window&&!reduce){
   let h='';
   for(let i=0;i<26;i++){ const c=crash(.97,10000), bet=[1,2,5,10,20,50][i%6], win=Math.random()<.2;
     const m=win?Math.max(1.2,Math.min(c,2+Math.random()*40)):c;
-    h+= win||m>=1.5 ? `<span>${names[i%names.length]} cashed out <b>${fmt(m,2)}×</b> on ${games[i%4]} · €${fmt(bet*m,2)}</span>` : `<span>${names[i%names.length]} got <i>CAUGHT</i> at ${fmt(m,2)}× on ${games[i%4]}</span>`;
+    const g=games[i%games.length], lost=g==='SONAR'?'hit a <i>MINE</i>':g==='VAULT HEIST'?'got <i>BUSTED</i>':'got <i>CAUGHT</i>';
+    h+= win||m>=1.5 ? `<span>${names[i%names.length]} cashed out <b>${fmt(m,2)}×</b> on ${g} · €${fmt(bet*m,2)}</span>` : `<span>${names[i%names.length]} ${lost} at ${fmt(m,2)}× on ${g}</span>`;
   }
   $('feed').innerHTML=h+h+'<span style="color:var(--dim)">Simulated feed</span>';
 })();
