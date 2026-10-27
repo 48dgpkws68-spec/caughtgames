@@ -67,3 +67,10 @@
 - Gedaan: backlogpunt PEEK! 10.000x op 360px afgevinkt na codecheck: chips scrollen horizontaal (nowrap), naamkolom spelerslijst kapt af (minmax(0,1fr) + ellipsis), bedragen passen.
 - Idee voor later: check.sh ook DOM-inhoud laten controleren; compactere max-teller hero op 360px; SONAR codecheck morgen.
 - Voor Nick: niets
+
+## 2026-10-27
+- Gevonden: rooktest volledig ok (9/9), geen console-fouten, screenshots netjes. Codecheck SONAR: schermlezer hoorde na een duik alleen "% safe · ×" maar niet het sonargetal (de kern van het spel), en niets bij een mijntreffer, cash-out, max win of leeg gespeelde zee; Enter op het bord deed na een ronde niets, dus toetsenbordspelers moesten naar de Dive-knop tabben. Geen RTP- of uitbetalingsfouten gevonden.
+- Gedaan: SONAR aria-live meldt nu "Sonar 2. 86.1% safe · ×1.132. Multiplier 1.13×" (plus aantal gratis geopende tegels bij een 0), "Mine hit. Lost 10.00" en "Cashed out at 3.20×. Won 32.00"; Enter na een ronde start een nieuw bord. Waarom: zonder het getal is het spel voor schermlezers onspeelbaar. Headless getest via toetsenbord-events, testpagina verwijderd. RTP ongewijzigd.
+- Gedaan: check.sh dumpt per pagina de DOM na 6s en faalt bij "undefined", "NaN" of "[object Object]" in zichtbare tekst (scripts/styles/templates genegeerd). Waarom: de "on undefined"-fout van 26 okt was op screenshots niet te zien (backlog). Negatieftest bevestigd.
+- Idee voor later: PEEK! toetsenbordflow na crash; SONAR samenvatting rond cursor; check.sh ook de Vault-skin (#play-vault) dumpen.
+- Voor Nick: niets
