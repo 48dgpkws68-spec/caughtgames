@@ -34,6 +34,15 @@ for p in index peek sonar; do
     errs=$(grep -E "CONSOLE.*(Error|Uncaught)|Failed to load" "$OUT/$p-$tag.log" | grep -v favicon)
     if [ -n "$errs" ]; then echo "FOUT $p ($tag):"; echo "$errs" | head -5; FAIL=1; else echo "ok   $p ($tag)"; fi
   done
+  # DOM-inhoud na 6s (live-feed, tellers): zichtbare tekst mag geen undefined/NaN/[object Object] bevatten
+  rm -rf "$PROF"; mkdir -p "$PROF"
+  "$CHROME" --headless=new --user-data-dir="$PROF" --use-angle=swiftshader --enable-unsafe-swiftshader --window-size=1440,900 \
+    --virtual-time-budget=6000 --dump-dom "http://127.0.0.1:$PORT/$p.html" > "$OUT/$p-dom.html" 2>/dev/null &
+  CPID=$!; for i in {1..90}; do kill -0 $CPID 2>/dev/null || break; sleep 1; done
+  if kill -0 $CPID 2>/dev/null; then pkill -P $CPID 2>/dev/null; kill $CPID 2>/dev/null; sleep 1; fi
+  if [ ! -s "$OUT/$p-dom.html" ]; then echo "FOUT $p (dom): geen DOM-dump"; FAIL=1; continue; fi
+  bad=$(python3 -c "import re,sys;t=open(sys.argv[1],encoding='utf-8',errors='replace').read();t=re.sub(r'(?is)<(script|style|template)\b.*?</\1>','',t);t=re.sub(r'<[^>]+>',' ',t);print('\n'.join(sorted(set(m.group(0) for m in re.finditer(r'.{0,40}\b(undefined|NaN|\[object Object\])\b.{0,20}',t)))))" "$OUT/$p-dom.html")
+  if [ -n "$bad" ]; then echo "FOUT $p (dom):"; echo "$bad" | head -5; FAIL=1; else echo "ok   $p (dom)"; fi
 done
 kill $SRV; rm -rf "$PROF"
 echo "Screenshots: $OUT"

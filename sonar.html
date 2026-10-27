@@ -295,6 +295,7 @@ function actUI(){ const a=$('act');
   $('pingTx').textContent=pingArm?'TAP A TILE TO PING':'PING A TILE · '+fmt(stake*PING_COST);
   $('pingDots').innerHTML=[...Array(PING_MAX)].map((_,i)=>'<i class="'+(i<pingsUsed?'u':'')+'"></i>').join('');
   $('bet').disabled=$('half').disabled=$('dbl').disabled=phase==='run'; segUI(); winUI() }
+const say=s=>{ $('sr').textContent=s }; // screen-reader line, overrides the toast text when more needs saying
 let toastT=0; function toast(h,ms=1800){ const t=$('toast'); t.innerHTML=h; $('sr').textContent=t.textContent; t.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('on'),ms) }
 function readStake(){ let v=parseFloat($('bet').value); if(!isFinite(v)||v<1) v=1; v=Math.min(v,bal,500); v=Math.round(v*100)/100; $('bet').value=v; return v }
 $('half').onclick=()=>{ $('bet').value=Math.max(1,Math.round(readStake()/2*100)/100); sTickSafe() };
@@ -323,7 +324,8 @@ function dive(i){
   if(p<1-1e-9) feeLog+=first?-Math.log(E.FIRST):E.H*Math.log(p)**2;
   mult*=g; first=false; multUI(); ripple(i, p>=1-1e-9?.6:1);
   if(p>=1-1e-9){ sFree(); toast('Proven safe · <b>free read</b> ×1.00') } else { sPing(.12); sReveal(n); toast((p*100).toFixed(1)+'% safe · <b>×'+fmt(g,3)+'</b>') }
-  if(n===0) flood(i);
+  const opened=n===0?flood(i):0;
+  say('Sonar '+n+'. '+$('toast').textContent+'. Multiplier '+fmt(mult)+'×'+(opened?'. '+opened+' tiles opened free':''));
   deduce(); depthUI(); actUI();
   if(stake*mult>=stake*E.MAX_WIN){ mult=E.MAX_WIN; cashOut('MAX WIN') } else if(revealed.size===C-M) cashOut('SEA CLEARED');
 }
@@ -331,7 +333,7 @@ function dive(i){
 function deduce(){ if(phase!=='run') return; const P=E.mineProbs(revealed,M,pings); for(let j=0;j<C;j++){ const T=tiles[j]; if(T.rev){ T.proven=0; continue } const v=P[j]>=1-1e-9?1:P[j]<=1e-9?2:0; if(v!==T.proven){ T.proven=v; T.prt=now } } }
 let mineArm=-1, mineArmT=0;
 function flood(i){ const q=[i], seen=new Set([i]); let d=0;
-  while(q.length){ const a=q.shift(); if(revealed.get(a)!==0) continue; for(const j of E.NB[a]){ if(seen.has(j)||revealed.has(j)) continue; seen.add(j); const n=E.sonarAt(mines,j); revealed.set(j,n); d++; Object.assign(tiles[j],{rev:1,n,t0:now+d*55,free:true}); const tl=tiles; setTimeout(()=>{ if(tl===tiles){ ripple(j,.45); sFree() } },d*55); q.push(j) } } }
+  while(q.length){ const a=q.shift(); if(revealed.get(a)!==0) continue; for(const j of E.NB[a]){ if(seen.has(j)||revealed.has(j)) continue; seen.add(j); const n=E.sonarAt(mines,j); revealed.set(j,n); d++; Object.assign(tiles[j],{rev:1,n,t0:now+d*55,free:true}); const tl=tiles; setTimeout(()=>{ if(tl===tiles){ ripple(j,.45); sFree() } },d*55); q.push(j) } } return d }
 function doPing(i){ if(pings.has(i)){ pingArm=false; actUI(); toast('Already pinged · pick <b>another tile</b>'); return } if(tiles[i].proven){ pingArm=false; actUI(); toast('The numbers already prove this tile '+(tiles[i].proven===1?'is a <b>mine</b>':'is <b>safe</b>')+' · no ping needed'); return } const cost=Math.round(stake*PING_COST*100)/100; if(bal<cost){ pingArm=false; actUI(); return } bal-=cost; setBal(); pingsUsed++; pingArm=false;
   const truth=mines.has(i), honest=rnd(CLIENT+':'+nonce+':ping:'+pingsUsed)<.8, warm=honest?truth:!truth;
   pings.set(i,warm); Object.assign(tiles[i],{ping:warm,pt:now}); beam(i,warm); warm?sWarm():sCold();
@@ -339,11 +341,11 @@ function doPing(i){ if(pings.has(i)){ pingArm=false; actUI(); toast('Already pin
 function bust(i){ phase='bust'; bustIdx=i; Object.assign(tiles[i],{rev:1,mine:true,boom:true,t0:now}); explode(i); sBoom();
   const tl=tiles; mines.forEach(j=>{ if(j!==i) setTimeout(()=>{ Object.assign(tl[j],{rev:1,mine:true,t0:performance.now()}) },500+Math.random()*900) });
   $('state').textContent='MINE HIT'; $('state').style.color='var(--hot)'; mult=0; $('mult').textContent='0.00×'; $('mult').className='bust'; $('win').innerHTML='lost <b>'+fmt(stake)+'</b>';
-  pushHist(0); finish(); }
+  pushHist(0); finish(); say('Mine hit. Lost '+fmt(stake)+'. Press Enter or Dive for a new board.') }
 function cashOut(why){ if(phase!=='run'||first) return; au(); const w=Math.round(stake*mult*100)/100; bal+=w; setBal(); phase='done'; sCash(); coins(w/stake);
   const tl=tiles; mines.forEach(j=>setTimeout(()=>Object.assign(tl[j],{rev:1,mine:true,t0:performance.now()}),200+Math.random()*700));
   $('state').textContent=why||'CASHED OUT'; $('state').style.color='var(--gold)'; $('mult').className='won'; $('win').innerHTML='won <b style="color:var(--gold2)">'+fmt(w)+'</b>';
-  pushHist(mult); finish() }
+  pushHist(mult); finish(); say((why?why.charAt(0)+why.slice(1).toLowerCase():'Cashed out')+' at '+fmt(mult)+'×. Won '+fmt(w)+'. Press Enter or Dive for a new board.') }
 function finish(){ rotateSeed(mines); actUI(); debrief() }
 function pushHist(x){ hist.unshift(x); const el=document.createElement('span'); el.className='chip'; el.textContent=x?fmt(x)+'×':'MINE'; el.style.color=x?(x>=5?'var(--gold2)':'var(--sea2)'):'var(--hot)'; $('hist').prepend(el); while($('hist').children.length>14) $('hist').lastChild.remove() }
 $('act').onclick=()=>{ au(); if(phase==='run'){ cashOut() } else { newBoard(); sPing(.1); toast('New board · pick your <b>first tile</b>') } };
@@ -417,7 +419,7 @@ cv.addEventListener('pointerdown',()=>{ kbOn=false });
 cv.addEventListener('blur',()=>{ kbOn=false; hover=-1 });
 cv.addEventListener('keydown',e=>{ const d={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];
   if(d){ e.preventDefault(); kbOn=true; if(kb<0) kb=14; const x=Math.max(0,Math.min(N-1,kb%N+d[0])), y=Math.max(0,Math.min(N-1,((kb/N)|0)+d[1])); kb=y*N+x; hover=kb; if(!tiles[kb].rev&&(phase==='run'||phase==='idle')) sTickHover(); $('sr').textContent=tileSay(kb); return }
-  if(e.key==='Enter'&&kb>=0&&kbOn){ e.preventDefault(); if(phase==='bust'||phase==='done') return; dive(kb) } });
+  if(e.key==='Enter'&&kb>=0&&kbOn){ e.preventDefault(); if(phase==='bust'||phase==='done'){ $('act').click(); $('sr').textContent=$('toast').textContent; return } dive(kb) } });
 cv.addEventListener('click',e=>{ const i=pick(e); if(i<0) return; if(phase==='bust'||phase==='done'){ return } dive(i) });
 
 /* fx state */
