@@ -74,3 +74,11 @@
 - Gedaan: check.sh dumpt per pagina de DOM na 6s en faalt bij "undefined", "NaN" of "[object Object]" in zichtbare tekst (scripts/styles/templates genegeerd). Waarom: de "on undefined"-fout van 26 okt was op screenshots niet te zien (backlog). Negatieftest bevestigd.
 - Idee voor later: PEEK! toetsenbordflow na crash; SONAR samenvatting rond cursor; check.sh ook de Vault-skin (#play-vault) dumpen.
 - Voor Nick: niets
+
+## 2026-10-28
+- Gevonden: rooktest volledig ok (12/12), geen console-fouten, screenshots netjes. Codecheck PEEK!: startRun() zette de seed van de lopende ronde al in "prev", dus "Verify previous round" tijdens een ronde verklapte het crashpunt van die ronde ("seed gives 11.63×"), waarna je precies daarvoor kon uitcashen. Uitbuitbaar en fout voor een provably-fair-demo.
+- Gedaan: PEEK!/Vault houden de lopende ronde apart (cur) en geven de seed pas na de crash vrij (prev=cur). Headless bewezen: tijdens ronde 2 (echt 11.63×) toont Verify ronde 1 (1.02×), vóór de eerste crash "Play a round first". RTP ongewijzigd. Testpagina verwijderd.
+- Gedaan: PEEK! Enter in het inzetveld zet in (stake typen + Enter), Space-flow na crash gecontroleerd en ok (backlog).
+- Gedaan: index hero-teller toont boven 1.000× zonder decimalen (10,000× i.p.v. 10,000.00×), past ruim op 360px (backlog).
+- Idee voor later: SONAR FAIR-paneel op dezelfde lek controleren; Vault-skin in check.sh; PEEK! auto cash-out-veld Enter-gedrag.
+- Voor Nick: niets

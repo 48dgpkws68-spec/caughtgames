@@ -379,7 +379,7 @@ function crashFromHash(h,rtp){
   return Math.min(MAXM,Math.max(1,c));
 }
 const CLIENT_SEED='gluren-demo-client';
-let nonce=0, nextSeed=null, nextHash='', prev=null;
+let nonce=0, nextSeed=null, nextHash='', prev=null, cur=null; // prev = laatste afgelopen ronde, cur = lopende ronde (nooit tonen)
 async function prepSeed(){
   nextSeed=hex(crypto.getRandomValues(new Uint8Array(32)));
   nextHash=await sha256(nextSeed);
@@ -419,7 +419,7 @@ async function startRun(){
   const seed=nextSeed, h=nextHash;
   const out=await hmac(seed,`${CLIENT_SEED}:${nonce}`);
   crashAt=crashFromHash(out,RTP);
-  prev={seed,hash:h,nonce,crash:crashAt,rtp:RTP};
+  cur={seed,hash:h,nonce,crash:crashAt,rtp:RTP};
   await prepSeed();
   if(queued){ myBet={amt:queued,out:null}; queued=null }
   phase='run'; phaseStart=performance.now(); mult=1; mileIdx=0; mile=null; musicStart(); fakeAt=phaseStart+2500+Math.random()*5000; fakeUntil=0;
@@ -427,7 +427,7 @@ async function startRun(){
 }
 function crash(){
   phase='crash'; crashedAt=performance.now(); mult=crashAt; fakeUntil=0; ending=2; sfx('bust'); flash=.32; flashCol='255,255,255'; if(theme==='A'){ sfx(ending===1?'splash':'boing') } else { sfx('alarm'); if(vaultReady()){ const sp=sackPos(); burst(sp.x,sp.y+40,45,true) } }
-  history.push(crashAt); renderHist();
+  history.push(crashAt); renderHist(); prev=cur; // seed pas na de crash vrijgeven, anders verklapt Verify het crashpunt
   if(myBet&&!myBet.out) say(T('caughtMsg',crashAt.toFixed(2))); else sr(T('srEnd',crashAt.toFixed(2)));
   $('prevSeed').textContent=`seed ${prev.seed} · nonce ${prev.nonce} · ${prev.crash.toFixed(2)}×`;
   renderPlayers(); updateBtn();
@@ -468,6 +468,7 @@ $('act').onclick=()=>{ audio();
 $('quick').onclick=e=>{ const v=e.target.dataset.v; if(v) $('bet').value=v };
 $('half').onclick=()=>{$('bet').value=Math.max(1,Math.floor(+$('bet').value/2))};
 $('dbl').onclick=()=>{$('bet').value=Math.min(Math.floor(bal),Math.floor(+$('bet').value*2))||1};
+$('bet').addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.repeat){ e.preventDefault(); $('act').click() } }); // stake typen + Enter = inzetten
 document.addEventListener('keydown',e=>{ if(e.code==='Space'&&!e.repeat&&!/^(INPUT|TEXTAREA|SELECT|BUTTON|A)$/.test(e.target.tagName)){e.preventDefault();$('act').click()} });
 
 $('verify').onclick=async()=>{

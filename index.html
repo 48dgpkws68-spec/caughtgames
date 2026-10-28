@@ -749,7 +749,7 @@ if('IntersectionObserver' in window&&!reduce){
   function step(){
     for(let i=0;i<2500;i++){ const c=crash(.97,10000), target=1.01+Math.pow(Math.random(),3)*20; if(c>=target) paid+=target; if(c>max) max=c; n++ }
     $('lvRounds').textContent=fmt(n); $('lvRtp').textContent=(paid/n*100).toFixed(2)+'%';
-    $('lvMax').textContent=fmt(max,2)+'×'; $('lvGgr').textContent='€'+fmt(Math.round(n-paid));
+    $('lvMax').textContent=fmt(max,max>=1000?0:2)+'×'; // 10,000× i.p.v. 10,000.00× past op 360px $('lvGgr').textContent='€'+fmt(Math.round(n-paid));
     if(!reduce) setTimeout(step,120);
   }
   step();
