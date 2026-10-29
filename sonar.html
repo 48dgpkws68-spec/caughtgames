@@ -250,7 +250,7 @@ const hex=b=>[...b].map(x=>x.toString(16).padStart(2,'0')).join(''), enc=s=>new 
 const CLIENT='sonar-demo-client'; let nonce=0, seed=hex(crypto.getRandomValues(new Uint8Array(32))), seedHash=hex(sha256js(enc(seed))), prev=null;
 const rnd=(msg)=>new DataView(hmacjs(enc(seed),enc(msg)).buffer).getUint32(0)/2**32;
 function layMines(m){ nonce++; const a=[...Array(C).keys()]; for(let i=C-1;i>0;i--){ const j=Math.floor(rnd(CLIENT+':'+nonce+':'+i)*(i+1)); [a[i],a[j]]=[a[j],a[i]] } return new Set(a.slice(0,m)) }
-function fairUI(){ $('fairHash').textContent=seedHash.slice(0,12)+'…'; $('fairFull').textContent='next dive seed hash: '+seedHash; if(prev) $('fairPrev').textContent='dive '+prev.nonce+' · seed '+prev.seed+' · mines at '+prev.mines.join(', ') }
+function fairUI(){ $('fairHash').textContent=seedHash.slice(0,12)+'…'; $('fairFull').textContent=(phase==='run'?'this dive':'next dive')+' seed hash: '+seedHash; if(prev) $('fairPrev').textContent='dive '+prev.nonce+' · seed '+prev.seed+' · mines at '+prev.mines.join(', ') }
 function rotateSeed(m){ prev={seed,nonce,mines:[...m].sort((a,b)=>a-b)}; seed=hex(crypto.getRandomValues(new Uint8Array(32))); seedHash=hex(sha256js(enc(seed))); fairUI() }
 
 /* ---------- audio ---------- */
@@ -304,7 +304,7 @@ $('dbl').onclick=()=>{ $('bet').value=Math.min(bal,500,readStake()*2); readStake
 /* ---------- game flow ---------- */
 function newBoard(){ dbId++; resetTiles(); revealed=new Map(); pings=new Map(); pingsUsed=0; pingArm=false; moves=[]; bustIdx=-1; review=null; feeLog=0; mult=1; first=true; phase='idle'; mines=new Set();
   $('debrief').classList.remove('on'); $('hint').style.display=''; redTint=0; flash=0; parts.length=0; rips.length=0; $('state').textContent='READY TO DIVE'; $('state').style.color=''; multUI(''); actUI(); sweepBoost=1 }
-function start(){ if(bal<1){ bal=1000; setBal(); toast('Out of play money. Balance topped up to <b>1,000</b>.') } stake=readStake(); if(bal<stake||stake<=0){ toast('Not enough play money for this stake.'); return false } bal-=stake; setBal(); mines=layMines(M); phase='run'; $('state').textContent='DIVING · '+M+' MINES'; return true }
+function start(){ if(bal<1){ bal=1000; setBal(); toast('Out of play money. Balance topped up to <b>1,000</b>.') } stake=readStake(); if(bal<stake||stake<=0){ toast('Not enough play money for this stake.'); return false } bal-=stake; setBal(); mines=layMines(M); phase='run'; fairUI(); $('state').textContent='DIVING · '+M+' MINES'; return true }
 function dive(i){
   if(phase==='done'||phase==='bust'){ newBoard() }
   if(tiles[i].rev) return;
@@ -324,8 +324,11 @@ function dive(i){
   if(p<1-1e-9) feeLog+=first?-Math.log(E.FIRST):E.H*Math.log(p)**2;
   mult*=g; first=false; multUI(); ripple(i, p>=1-1e-9?.6:1);
   if(p>=1-1e-9){ sFree(); toast('Proven safe · <b>free read</b> ×1.00') } else { sPing(.12); sReveal(n); toast((p*100).toFixed(1)+'% safe · <b>×'+fmt(g,3)+'</b>') }
-  const opened=n===0?flood(i):0;
-  say('Sonar '+n+'. '+$('toast').textContent+'. Multiplier '+fmt(mult)+'×'+(opened?'. '+opened+' tiles opened free':''));
+  const before=new Set(revealed.keys()), opened=n===0?flood(i):0;
+  // schermlezer: vat de randgetallen van een flood-fill samen ("Edge: 3 tiles show 1, 1 tile shows 2")
+  const edge={}; if(opened) for(const [j,v] of revealed) if(!before.has(j)&&v>0) edge[v]=(edge[v]||0)+1;
+  const edgeTxt=Object.keys(edge).sort().map(v=>edge[v]+(edge[v]>1?' tiles show ':' tile shows ')+v).join(', ');
+  say('Sonar '+n+'. '+$('toast').textContent+'. Multiplier '+fmt(mult)+'×'+(opened?'. '+opened+' tiles opened free'+(edgeTxt?'. Edge: '+edgeTxt:''):''));
   deduce(); depthUI(); actUI();
   if(stake*mult>=stake*E.MAX_WIN){ mult=E.MAX_WIN; cashOut('MAX WIN') } else if(revealed.size===C-M) cashOut('SEA CLEARED');
 }

@@ -82,3 +82,11 @@
 - Gedaan: index hero-teller toont boven 1.000× zonder decimalen (10,000× i.p.v. 10,000.00×), past ruim op 360px (backlog).
 - Idee voor later: SONAR FAIR-paneel op dezelfde lek controleren; Vault-skin in check.sh; PEEK! auto cash-out-veld Enter-gedrag.
 - Voor Nick: niets
+
+## 2026-10-29
+- Gevonden: rooktest volledig ok (12/12), geen console-fouten, screenshots netjes. Codecheck index: geen fouten; de seed-verifier rekent identiek aan PEEK! (2M trekkingen vergeleken). SONAR FAIR-paneel lekt niet (seed pas vrij na de duik, backlog), maar het paneel noemde de hash van de lopende duik "next dive seed hash", verwarrend voor wie wil controleren.
+- Gedaan: SONAR FAIR-paneel toont tijdens een duik "this dive seed hash" en daarna weer "next dive". Waarom: een operator moet zien welke hash bij welke duik hoort. Headless getest.
+- Gedaan: SONAR schermlezer vat na een flood-fill de randgetallen samen ("29 tiles opened free. Edge: 1 tile shows 1, 2 tiles show 2, 3 tiles show 3") (backlog). Headless getest met vaste mijnen, telling klopt, testpagina verwijderd. RTP ongewijzigd.
+- Gedaan: check.sh controleert nu ook de Vault-skin (peek.html#play-vault): screenshot, console-fouten, DOM-dump en of de skin echt actief is (titel "Vault Heist") (backlog).
+- Idee voor later: client seed in PEEK! FAIR-paneel tonen voor de verifier; Vault-skin op 360px in check.sh; PEEK! auto cash-out Enter.
+- Voor Nick: niets
