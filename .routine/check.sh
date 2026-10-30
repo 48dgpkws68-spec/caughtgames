@@ -53,6 +53,15 @@ if kill -0 $CPID 2>/dev/null; then pkill -P $CPID 2>/dev/null; kill $CPID 2>/dev
 errs=$(grep -E "CONSOLE.*(Error|Uncaught)|Failed to load" "$OUT/vault-desk.log" 2>/dev/null | grep -v favicon)
 if [ ! -s "$OUT/vault-desk.png" ]; then echo "FOUT vault (desk): geen screenshot"; FAIL=1
 elif [ -n "$errs" ]; then echo "FOUT vault (desk):"; echo "$errs" | head -5; FAIL=1; else echo "ok   vault (desk)"; fi
+# Vault-skin op 360px (via frame.html, net als de andere mobiele screenshots)
+rm -rf "$PROF"; mkdir -p "$PROF"; rm -f "$OUT/vault-mob360.png"
+"$CHROME" --headless=new --user-data-dir="$PROF" --use-angle=swiftshader --enable-unsafe-swiftshader --hide-scrollbars --window-size=360,780 \
+  --virtual-time-budget=6000 --enable-logging=stderr --v=0 --screenshot="$OUT/vault-mob360.png" "http://127.0.0.1:$PORT/.routine/frame.html?p=peek&w=360&h=780&hash=play-vault" 2> "$OUT/vault-mob360.log" >/dev/null &
+CPID=$!; for i in {1..90}; do kill -0 $CPID 2>/dev/null || break; sleep 1; done
+if kill -0 $CPID 2>/dev/null; then pkill -P $CPID 2>/dev/null; kill $CPID 2>/dev/null; sleep 1; fi
+errs=$(grep -E "CONSOLE.*(Error|Uncaught)|Failed to load" "$OUT/vault-mob360.log" 2>/dev/null | grep -v favicon)
+if [ ! -s "$OUT/vault-mob360.png" ]; then echo "FOUT vault (mob360): geen screenshot"; FAIL=1
+elif [ -n "$errs" ]; then echo "FOUT vault (mob360):"; echo "$errs" | head -5; FAIL=1; else echo "ok   vault (mob360)"; fi
 rm -rf "$PROF"; mkdir -p "$PROF"
 "$CHROME" --headless=new --user-data-dir="$PROF" --use-angle=swiftshader --enable-unsafe-swiftshader --window-size=1440,900 \
   --virtual-time-budget=6000 --dump-dom "http://127.0.0.1:$PORT/peek.html#play-vault" > "$OUT/vault-dom.html" 2>/dev/null &

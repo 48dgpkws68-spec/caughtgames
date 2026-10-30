@@ -182,6 +182,7 @@ ul.pts{padding-left:18px;margin:8px 0 0;max-width:68ch} ul.pts li{margin-bottom:
             <span class="note" data-t="ps">Vorige ronde: seed en uitkomst</span>
             <code id="prevSeed" data-t="none">nog geen ronde gespeeld</code>
             <button class="mini" id="verify" data-t="ver">Controleer vorige ronde</button>
+            <a class="mini" id="vlink" hidden target="_blank" rel="noopener" data-t="vopen" style="text-decoration:none">Open in de verifier</a>
             <div class="msg" id="vmsg"></div>
           </div>
         </details>
@@ -324,7 +325,7 @@ const L={nl:{hey:'HÉ!',stop:'STOP!',bets:'ZET IN',caught:'BETRAPT!',bet:'INZETT
  logoA:'GLUREN!',logoB:'KLUISKRAAK!',tagA:'Hoe langer je gluurt, hoe hoger je winst. Cash uit voordat ze omkijkt.',tagB:'Hoe langer je graait, hoe hoger je winst. Cash uit voordat de bewaker wakker wordt.',
  thA:'Gluren',inplay:'speelt',plN:'spelers',cashed:'uitgecasht',sealed:'SEED VASTGELEGD',snrk:'SNURK?!',oi:'HÉ, JIJ!',close:'BIJNA BETRAPT!',sndOn:'Geluid: aan',sndOff:'Geluid: uit',thB:'Kluiskraak',play:'Speelgeld',stake:'Inzet',auto:'Automatisch uitcashen bij (0 = uit)',pl:'Spelers deze ronde',sim:'Andere spelers zijn gesimuleerd voor de demo.',
  srBet:'Inzetten geopend. Druk op spatie om in te zetten.',srRun:'Ronde gestart.',srMile:m=>`${m}× bereikt.`,srEnd:x=>`Ronde voorbij bij ${x}×.`,
- nh:'Hash van de volgende server-seed (vooraf vastgelegd)',ps:'Vorige ronde: seed en uitkomst',none:'nog geen ronde gespeeld',ver:'Controleer vorige ronde'},
+ nh:'Hash van de volgende server-seed (vooraf vastgelegd)',ps:'Vorige ronde: seed en uitkomst',none:'nog geen ronde gespeeld',ver:'Controleer vorige ronde',vopen:'Open in de verifier',cl:'client'},
  en:{hey:'HEY!',stop:'STOP!',bets:'PLACE BETS',caught:'BUSTED!',bet:'PLACE BET',cash:'CASH OUT',cancel:'CANCEL',next:'BET NEXT ROUND',
  lost:'lost',you:'You',caughtMsg:x=>`Caught at ${x}×. Stake lost.`,outMsg:(x,w)=>`Cashed out at ${x}×: +${w}`,cancelled:'Bet cancelled.',
  min:'Minimum stake is 1.',refill:'Out of play money. Your balance is topped up to 1,000.',broke:'Not enough play money for this stake.',ready:a=>`Bet of ${a} is ready.`,queued:a=>`Bet of ${a} goes into the next round.`,
@@ -332,7 +333,7 @@ const L={nl:{hey:'HÉ!',stop:'STOP!',bets:'ZET IN',caught:'BETRAPT!',bet:'INZETT
  logoA:'PEEK!',logoB:'VAULT HEIST!',tagA:'The longer you peek, the bigger the win. Cash out before she turns around.',tagB:'The longer you grab, the bigger the win. Cash out before the guard wakes up.',
  thA:'Peek',inplay:'in play',plN:'players',cashed:'cashed out',sealed:'SEED COMMITTED',snrk:'SNRK?!',oi:'HEY, YOU!',close:'CLOSE CALL!',sndOn:'Sound: on',sndOff:'Sound: off',thB:'Vault Heist',play:'Play money',stake:'Stake',auto:'Auto cash-out at (0 = off)',pl:'Players this round',sim:'Other players are simulated for the demo.',
  srBet:'Betting is open. Press Space to bet.',srRun:'Round started.',srMile:m=>`${m}× reached.`,srEnd:x=>`Round over at ${x}×.`,
- nh:'Hash of the next server seed (committed in advance)',ps:'Previous round: seed and result',none:'no round played yet',ver:'Verify previous round'}};
+ nh:'Hash of the next server seed (committed in advance)',ps:'Previous round: seed and result',none:'no round played yet',ver:'Verify previous round',vopen:'Open in the verifier',cl:'client'}};
 const EMBED=location.hash==='#embed', PLAY=location.hash.match(/^#play-(peek|vault)$/); let lang=location.hash==='#nl'?'nl':'en'; const LOC=lang==='nl'?'nl-NL':'en-US';
 const T=(k,...a)=>{const v=L[lang][k];return typeof v==='function'?v(...a):v};
 
@@ -430,7 +431,8 @@ function crash(){
   phase='crash'; crashedAt=performance.now(); mult=crashAt; fakeUntil=0; ending=2; sfx('bust'); flash=.32; flashCol='255,255,255'; if(theme==='A'){ sfx(ending===1?'splash':'boing') } else { sfx('alarm'); if(vaultReady()){ const sp=sackPos(); burst(sp.x,sp.y+40,45,true) } }
   history.push(crashAt); renderHist(); prev=cur; // seed pas na de crash vrijgeven, anders verklapt Verify het crashpunt
   if(myBet&&!myBet.out) say(T('caughtMsg',crashAt.toFixed(2))); else sr(T('srEnd',crashAt.toFixed(2)));
-  $('prevSeed').textContent=`seed ${prev.seed} · nonce ${prev.nonce} · ${prev.crash.toFixed(2)}×`;
+  $('prevSeed').textContent=`seed ${prev.seed} · ${T('cl')} ${CLIENT_SEED} · nonce ${prev.nonce} · ${prev.crash.toFixed(2)}×`;
+  const vl=$('vlink'); vl.href=`index.html?seed=${prev.seed}&client=${encodeURIComponent(CLIENT_SEED)}&nonce=${prev.nonce}&rtp=${prev.rtp}#fair`; vl.hidden=false; // zelfde ronde 1-op-1 in de verifier op de homepage
   renderPlayers(); updateBtn();
 }
 function newBetPhase(){
@@ -469,7 +471,9 @@ $('act').onclick=()=>{ audio();
 $('quick').onclick=e=>{ const v=e.target.dataset.v; if(v) $('bet').value=v };
 $('half').onclick=()=>{$('bet').value=Math.max(1,Math.floor(+$('bet').value/2))};
 $('dbl').onclick=()=>{$('bet').value=Math.min(Math.floor(bal),Math.floor(+$('bet').value*2))||1};
-$('bet').addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.repeat){ e.preventDefault(); $('act').click() } }); // stake typen + Enter = inzetten
+// stake of auto cash-out typen + Enter = inzetten; met een lopende inzet alleen bevestigen (nooit per ongeluk annuleren of uitcashen)
+['bet','auto'].forEach(id=>$(id).addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.repeat){ e.preventDefault(); if((!myBet||myBet.out)&&!queued) $('act').click(); else e.target.blur() } }));
+$('auto').addEventListener('change',()=>{ const a=+$('auto').value; $('auto').value=!(a>0)?0:Math.min(MAXM,Math.max(1.01,Math.round(a*100)/100)) }); // 0 = uit, anders 1.01 tot 10.000
 document.addEventListener('keydown',e=>{ if(e.code==='Space'&&!e.repeat&&!/^(INPUT|TEXTAREA|SELECT|BUTTON|A)$/.test(e.target.tagName)){e.preventDefault();$('act').click()} });
 
 $('verify').onclick=async()=>{

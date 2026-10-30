@@ -841,10 +841,13 @@ async function fair(){
   $('fHash').textContent=hex(sha256js(enc(seed)));
   const h=hex(hmacjs(enc(seed),enc(cl+':'+n)));
   $('fHmac').textContent=h;
-  const r=parseInt(h.slice(0,13),16)/2**52, c=Math.min(10000,Math.max(1,Math.floor(97/(1-r))/100));
+  const r=parseInt(h.slice(0,13),16)/2**52, c=Math.min(10000,Math.max(1,Math.floor(100*fRtp/(1-r))/100));
   const el=$('fRes'); el.textContent=fmt(c,2)+'×'; el.style.color=c<2?'var(--pink)':c<10?'var(--gold)':'var(--mint)';
 }
 $('fSeed').value=hex(crypto.getRandomValues(new Uint8Array(32)));
+// "Open in the verifier" vanuit PEEK!/Vault: ?seed=&client=&nonce=&rtp=(fractie, zelfde double als PEEK!) vult een gespeelde ronde in
+let fRtp=0.97; { const q=new URLSearchParams(location.search), qs=q.get('seed');
+  if(qs&&/^[0-9a-f]{64}$/i.test(qs)){ $('fSeed').value=qs; if(q.get('client')) $('fClient').value=q.get('client').slice(0,80); const n=parseInt(q.get('nonce'),10); if(n>=0) $('fNonce').value=n; const r=parseFloat(q.get('rtp')); if(r>=.9&&r<=.995) fRtp=r } }
 ['fSeed','fClient','fNonce'].forEach(id=>$(id).addEventListener('input',fair)); fair();
 
 /* ---------- revenue Monte Carlo ---------- */

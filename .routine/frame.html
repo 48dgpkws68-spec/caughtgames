@@ -2,4 +2,4 @@
 <!-- Headless Chrome heeft een minimale viewport van 500px; een iframe geeft wél een echte smalle viewport. -->
 <style>html,body{margin:0;background:#000;overflow:hidden}iframe{border:0;display:block}</style>
 <iframe id="f"></iframe>
-<script>const q=new URLSearchParams(location.search),f=document.getElementById('f');f.style.width=q.get('w')+'px';f.style.height=q.get('h')+'px';f.src='../'+q.get('p')+'.html'</script>
+<script>const q=new URLSearchParams(location.search),f=document.getElementById('f');f.style.width=q.get('w')+'px';f.style.height=q.get('h')+'px';f.src='../'+q.get('p')+'.html'+(q.get('hash')?'#'+q.get('hash'):'')</script>
