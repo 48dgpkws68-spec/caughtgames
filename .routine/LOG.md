@@ -90,3 +90,11 @@
 - Gedaan: check.sh controleert nu ook de Vault-skin (peek.html#play-vault): screenshot, console-fouten, DOM-dump en of de skin echt actief is (titel "Vault Heist") (backlog).
 - Idee voor later: client seed in PEEK! FAIR-paneel tonen voor de verifier; Vault-skin op 360px in check.sh; PEEK! auto cash-out Enter.
 - Voor Nick: niets
+
+## 2026-10-30
+- Gevonden: rooktest volledig ok (14/14), geen console-fouten, screenshots netjes. Codecheck SONAR: geen fouten in uitbetaling, ping-kans (80% eerlijk, gelijk aan de engine), seed-commit of toetsenbordflow. PEEK! Enter in het inzetveld annuleerde een al geplaatste inzet; het auto cash-out-veld reageerde niet op Enter en accepteerde waarden onder 1.01 die stilletjes niets deden.
+- Gedaan: PEEK!/Vault FAIR-paneel toont nu ook de client seed ("seed … · client gluren-demo-client · nonce 1 · 1.71×") plus knop "Open in the verifier" die index.html?seed=&client=&nonce=&rtp=#fair vooraf invult; de verifier rekent nu met dezelfde RTP-double als het spel. Waarom: een operator kan een gespeelde ronde 1-op-1 narekenen (backlog). Headless bewezen: ronde 1.71× in PEEK!, verifier toont 1.71×, Python-HMAC idem. Standaard 97% ongewijzigd (100*0.97 == 97).
+- Gedaan: PEEK! Enter in inzet- of auto cash-out-veld zet in, maar met een lopende inzet bevestigt Enter alleen (geen annuleren/uitcashen); auto cash-out wordt 0 of 1.01 tot 10.000 (backlog). Headless getest, testpagina's verwijderd.
+- Gedaan: check.sh maakt ook een 360px-screenshot van de Vault-skin (frame.html kreeg ?hash=) (backlog). Rooktest nu 15/15.
+- Idee voor later: SONAR-verifier voor mijnenlegging op index; check.sh testpagina-check op achtergebleven zz-bestanden.
+- Voor Nick: niets
