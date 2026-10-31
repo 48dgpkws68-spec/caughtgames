@@ -111,6 +111,7 @@ body{overflow-x:hidden}
 .fairbox{position:fixed;right:16px;top:76px;width:min(400px,calc(100% - 32px));padding:16px 18px;font-size:13px;color:var(--muted);z-index:9}
 .fairbox b{color:var(--fg);font:800 13px Unbounded,sans-serif;letter-spacing:.04em}
 .fairbox p{margin:8px 0 0;line-height:1.5}
+.fairbox .fairv{display:inline-block;margin-top:10px;padding:7px 12px;border:1px solid var(--line);border-radius:10px;color:var(--sea2);font:700 12px 'JetBrains Mono',monospace;text-decoration:none}.fairbox .fairv:hover{border-color:var(--sea)}
 .fairbox code{display:block;margin-top:8px;font:11px 'JetBrains Mono',monospace;color:var(--sea2);word-break:break-all}
 .how{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:16px;background:rgba(1,8,12,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 .how[hidden]{display:none}
@@ -201,7 +202,7 @@ body.embed .brand{display:none}
   </div>
 </div>
 <div class="glass" id="mbar"><b id="mbMult">1.00×</b><button id="mbCash">CASH OUT</button></div>
-<div class="glass fairbox" id="fairBox" hidden><b>Provably fair</b><p>Before each dive we publish SHA-256(server seed). Mine positions are a Fisher-Yates shuffle driven by HMAC-SHA256(seed, client:nonce:i); pings use HMAC(seed, client:nonce:ping:k). After the dive the seed is revealed so anyone can recompute the board.</p><p>Payouts: tile pays (1/p) × e<sup>−0.25·ln(p)²</sup>, p = exact chance the tile is safe given every number on the board. First tile: 0.975/p. No strategy can return more than 97.5%.</p><code id="fairFull"></code><p id="fairPrev">no dive played yet</p></div>
+<div class="glass fairbox" id="fairBox" hidden><b>Provably fair</b><p>Before each dive we publish SHA-256(server seed). Mine positions are a Fisher-Yates shuffle driven by HMAC-SHA256(seed, client:nonce:i); pings use HMAC(seed, client:nonce:ping:k). After the dive the seed is revealed so anyone can recompute the board.</p><p>Payouts: tile pays (1/p) × e<sup>−0.25·ln(p)²</sup>, p = exact chance the tile is safe given every number on the board. First tile: 0.975/p. No strategy can return more than 97.5%.</p><code id="fairFull"></code><p id="fairPrev">no dive played yet</p><a id="fairV" class="fairv" hidden target="_blank" rel="noopener">Open in the verifier</a></div>
 <div class="how" id="how" hidden><div class="glass" role="dialog" aria-modal="true" aria-labelledby="howT">
   <h2 id="howT">How to read <span>SONAR</span></h2>
   <p style="margin:0;color:var(--muted);font-size:14px;line-height:1.55">Mines hide under a 6×6 patch of sea. You decide where to dive, and the sonar tells you exactly how dangerous the water around you is.</p>
@@ -251,7 +252,7 @@ const hex=b=>[...b].map(x=>x.toString(16).padStart(2,'0')).join(''), enc=s=>new 
 const CLIENT='sonar-demo-client'; let nonce=0, seed=hex(crypto.getRandomValues(new Uint8Array(32))), seedHash=hex(sha256js(enc(seed))), prev=null;
 const rnd=(msg)=>new DataView(hmacjs(enc(seed),enc(msg)).buffer).getUint32(0)/2**32;
 function layMines(m){ nonce++; const a=[...Array(C).keys()]; for(let i=C-1;i>0;i--){ const j=Math.floor(rnd(CLIENT+':'+nonce+':'+i)*(i+1)); [a[i],a[j]]=[a[j],a[i]] } return new Set(a.slice(0,m)) }
-function fairUI(){ $('fairHash').textContent=seedHash.slice(0,12)+'…'; $('fairFull').textContent=(phase==='run'?'this dive':'next dive')+' seed hash: '+seedHash; if(prev) $('fairPrev').textContent='dive '+prev.nonce+' · seed '+prev.seed+' · mines at '+prev.mines.join(', ') }
+function fairUI(){ $('fairHash').textContent=seedHash.slice(0,12)+'…'; $('fairFull').textContent=(phase==='run'?'this dive':'next dive')+' seed hash: '+seedHash; if(prev){ $('fairPrev').textContent='dive '+prev.nonce+' · seed '+prev.seed+' · mines at '+prev.mines.join(', '); const v=$('fairV'); v.href='index.html?game=sonar&seed='+prev.seed+'&client='+encodeURIComponent(CLIENT)+'&nonce='+prev.nonce+'&mines='+prev.mines.length+'#fair'; v.hidden=false } } // vorige duik 1-op-1 narekenen op de homepage
 function rotateSeed(m){ prev={seed,nonce,mines:[...m].sort((a,b)=>a-b)}; seed=hex(crypto.getRandomValues(new Uint8Array(32))); seedHash=hex(sha256js(enc(seed))); fairUI() }
 
 /* ---------- audio ---------- */

@@ -177,6 +177,15 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 .term .hash{color:var(--gold2);word-break:break-all}
 .term .res{display:flex;justify-content:space-between;align-items:baseline;border-top:1px dashed var(--line2);padding-top:14px}
 .term .res b{font:700 34px var(--mono);color:var(--mint)}
+.term .res b.list{font-size:15px;text-align:right;line-height:1.5;max-width:70%}
+.fgame{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:4px;border:1px solid var(--line);border-radius:12px}
+.fgame button{font:700 12px var(--mono);letter-spacing:.04em;padding:9px 6px;border:0;border-radius:9px;background:transparent;color:var(--dim);cursor:pointer}
+.fgame button[aria-pressed="true"]{background:rgba(255,255,255,.07);color:var(--cyan)}
+.term select{width:100%;background:#05040a;border:1px solid var(--line);border-radius:8px;color:var(--cyan);font:13px var(--mono);padding:9px 11px}
+.fgrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:5px;max-width:300px;margin:0 auto}
+.fgrid i{aspect-ratio:1;border-radius:7px;border:1px solid var(--line);display:grid;place-items:center;font:600 10px var(--mono);font-style:normal;color:var(--dim)}
+.fgrid i.m{background:rgba(255,79,109,.16);border-color:rgba(255,79,109,.7);color:#ff8fa3;box-shadow:0 0 12px -4px rgba(255,79,109,.8)}
+.fnote{margin:10px 0 0;color:var(--dim);font-size:11px;line-height:1.5;text-align:center}
 
 /* play buttons */
 .playbar{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
@@ -464,16 +473,19 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
     <div class="rv">
       <span class="eyebrow">Provably fair</span>
       <h2>Every round is <span class="gold">locked before it starts.</span></h2>
-      <p class="lead">The server seed is hashed with SHA-256 and published before betting opens. After the round the seed is revealed, so any player, regulator or auditor can recompute the crash point. Try it: change the client seed or nonce and watch the result follow.</p>
+      <p class="lead">The server seed is hashed with SHA-256 and published before betting opens. After the round the seed is revealed, so any player, regulator or auditor can recompute the crash point or the SONAR minefield. Try it: change the client seed or nonce and watch the result follow.</p>
     </div>
     <div class="term rv" aria-label="Provably fair verifier">
       <div class="bar"><i></i><i></i><i></i><span>fairness check · runs in your browser</span></div>
       <div class="body">
+        <div class="fgame" role="group" aria-label="Game to verify"><button type="button" id="fgPeek" aria-pressed="true">PEEK! · Vault</button><button type="button" id="fgSonar" aria-pressed="false">SONAR</button></div>
         <div><label for="fSeed">Server seed (revealed after round)</label><input id="fSeed" spellcheck="false"></div>
         <div><label>SHA-256 commitment (published before round)</label><div class="hash" id="fHash">...</div></div>
         <div style="display:grid;grid-template-columns:minmax(0,1fr) 110px;gap:12px"><div><label for="fClient">Client seed</label><input id="fClient" value="lucky-player-42" spellcheck="false"></div><div><label for="fNonce">Nonce</label><input id="fNonce" type="number" value="1" min="0"></div></div>
-        <div><label>HMAC-SHA256(server, client:nonce)</label><div class="hash" id="fHmac" style="color:var(--muted)">...</div></div>
-        <div class="res"><span style="color:var(--dim)">CRASH POINT</span><b id="fRes">...</b></div>
+        <div id="fMinesW" hidden><label for="fMines">Mines on the board</label><select id="fMines"><option>3</option><option selected>5</option><option>8</option><option>12</option></select></div>
+        <div><label id="fHmacL">HMAC-SHA256(server, client:nonce)</label><div class="hash" id="fHmac" style="color:var(--muted)">...</div></div>
+        <div class="res"><span style="color:var(--dim)" id="fResL">CRASH POINT</span><b id="fRes">...</b></div>
+        <div id="fGridW" hidden><div class="fgrid" id="fGrid" role="img"></div><p class="fnote">Tiles are numbered 0 to 35, left to right, top to bottom. The board shows the same numbers SONAR listed after your dive.</p></div>
       </div>
     </div>
   </div>
@@ -836,19 +848,34 @@ function hmacjs(key,msg){
   const ip=new Uint8Array(64+msg.length), op=new Uint8Array(96);
   for(let i=0;i<64;i++){ ip[i]=kb[i]^0x36; op[i]=kb[i]^0x5c } ip.set(msg,64); op.set(sha256js(ip),64); return sha256js(op);
 }
+let fGame='peek';
+// SONAR: Fisher-Yates over 36 tegels met HMAC(seed, client:nonce:i), identiek aan layMines() in sonar.html
+function sonarMines(seed,cl,n,m){ const r=i=>new DataView(hmacjs(enc(seed),enc(cl+':'+n+':'+i)).buffer).getUint32(0)/2**32, a=[...Array(36).keys()];
+  for(let i=35;i>0;i--){ const j=Math.floor(r(i)*(i+1)); [a[i],a[j]]=[a[j],a[i]] } return a.slice(0,m).sort((x,y)=>x-y) }
 async function fair(){
   const seed=$('fSeed').value, cl=$('fClient').value, n=$('fNonce').value;
   $('fHash').textContent=hex(sha256js(enc(seed)));
+  if(fGame==='sonar'){
+    $('fHmac').textContent=hex(hmacjs(enc(seed),enc(cl+':'+n+':35')));
+    const ms=sonarMines(seed,cl,n,+$('fMines').value), el=$('fRes'); el.textContent=ms.join(', '); el.style.color='#ff8fa3';
+    $('fGrid').innerHTML=[...Array(36).keys()].map(i=>'<i'+(ms.includes(i)?' class="m"':'')+'>'+i+'</i>').join('');
+    $('fGrid').setAttribute('aria-label','Mines at tiles '+ms.join(', ')); return }
   const h=hex(hmacjs(enc(seed),enc(cl+':'+n)));
   $('fHmac').textContent=h;
   const r=parseInt(h.slice(0,13),16)/2**52, c=Math.min(10000,Math.max(1,Math.floor(100*fRtp/(1-r))/100));
-  const el=$('fRes'); el.textContent=fmt(c,2)+'×'; el.style.color=c<2?'var(--pink)':c<10?'var(--gold)':'var(--mint)';
+  const el=$('fRes'); el.textContent=fmt(c,2)+'×'; el.className=''; el.style.color=c<2?'var(--pink)':c<10?'var(--gold)':'var(--mint)';
 }
 $('fSeed').value=hex(crypto.getRandomValues(new Uint8Array(32)));
 // "Open in the verifier" vanuit PEEK!/Vault: ?seed=&client=&nonce=&rtp=(fractie, zelfde double als PEEK!) vult een gespeelde ronde in
+function setGame(g){ fGame=g; const so=g==='sonar'; $('fgPeek').setAttribute('aria-pressed',!so); $('fgSonar').setAttribute('aria-pressed',so);
+  $('fMinesW').hidden=!so; $('fGridW').hidden=!so; $('fRes').className=so?'list':'';
+  $('fHmacL').textContent=so?'Shuffle draw HMAC-SHA256(server, client:nonce:35)':'HMAC-SHA256(server, client:nonce)'; $('fResL').textContent=so?'MINES AT':'CRASH POINT';
+  const c=$('fClient'); if(so&&c.value==='lucky-player-42') c.value='sonar-demo-client'; else if(!so&&c.value==='sonar-demo-client') c.value='lucky-player-42'; fair() }
+$('fgPeek').onclick=()=>setGame('peek'); $('fgSonar').onclick=()=>setGame('sonar'); $('fMines').addEventListener('change',fair);
 let fRtp=0.97; { const q=new URLSearchParams(location.search), qs=q.get('seed');
-  if(qs&&/^[0-9a-f]{64}$/i.test(qs)){ $('fSeed').value=qs; if(q.get('client')) $('fClient').value=q.get('client').slice(0,80); const n=parseInt(q.get('nonce'),10); if(n>=0) $('fNonce').value=n; const r=parseFloat(q.get('rtp')); if(r>=.9&&r<=.995) fRtp=r } }
-['fSeed','fClient','fNonce'].forEach(id=>$(id).addEventListener('input',fair)); fair();
+  if(qs&&/^[0-9a-f]{64}$/i.test(qs)){ $('fSeed').value=qs; if(q.get('client')) $('fClient').value=q.get('client').slice(0,80); const n=parseInt(q.get('nonce'),10); if(n>=0) $('fNonce').value=n; const r=parseFloat(q.get('rtp')); if(r>=.9&&r<=.995) fRtp=r }
+  if(q.get('game')==='sonar'){ const m=q.get('mines'); if(['3','5','8','12'].includes(m)) $('fMines').value=m; fGame='sonar' } }
+['fSeed','fClient','fNonce'].forEach(id=>$(id).addEventListener('input',fair)); fGame==='sonar'?setGame('sonar'):fair();
 
 /* ---------- revenue Monte Carlo ---------- */
 const mc=$('mc'), mx2=mc.getContext('2d');
