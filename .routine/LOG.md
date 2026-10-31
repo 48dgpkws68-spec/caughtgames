@@ -98,3 +98,10 @@
 - Gedaan: check.sh maakt ook een 360px-screenshot van de Vault-skin (frame.html kreeg ?hash=) (backlog). Rooktest nu 15/15.
 - Idee voor later: SONAR-verifier voor mijnenlegging op index; check.sh testpagina-check op achtergebleven zz-bestanden.
 - Voor Nick: niets
+
+## 2026-10-31
+- Gevonden: rooktest volledig ok (15/15), geen console-fouten, screenshots netjes. Codecheck vandaag op het SONAR fair-pad (layMines, seed-rotatie, nonce) en de index-verifier: geen fouten, maar de mijnenlegging was voor een operator niet na te rekenen op de site (backlog).
+- Gedaan: verifier op index heeft nu een schakelaar PEEK! · Vault / SONAR; in SONAR-modus kies je het aantal mijnen en toont hij "MINES AT …" plus een 6x6-bord met de mijnen rood (tegels 0 t/m 35 genummerd zoals SONAR ze noemt). Bewezen: 1.500 willekeurige borden identiek tussen sonar.html, de verifier en Python-HMAC; URL-varianten headless getest; 360px-screenshot netjes. RTP ongewijzigd.
+- Gedaan: SONAR FAIR-paneel toont na een duik "Open in the verifier" (index.html?game=sonar&seed=&client=&nonce=&mines=#fair), zodat een gespeelde duik 1-op-1 na te rekenen is, net als PEEK!.
+- Idee voor later: pings in de SONAR-verifier; PEEK! codecheck; og-afbeelding SONAR met verifier-vermelding in game sheet.
+- Voor Nick: niets
