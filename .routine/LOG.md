@@ -105,3 +105,11 @@
 - Gedaan: SONAR FAIR-paneel toont na een duik "Open in the verifier" (index.html?game=sonar&seed=&client=&nonce=&mines=#fair), zodat een gespeelde duik 1-op-1 na te rekenen is, net als PEEK!.
 - Idee voor later: pings in de SONAR-verifier; PEEK! codecheck; og-afbeelding SONAR met verifier-vermelding in game sheet.
 - Voor Nick: niets
+
+## 2026-11-01
+- Gevonden: rooktest volledig ok (15/15), geen console-fouten, screenshots netjes. Codecheck PEEK!: uitbetaling, crashpunt, seed-vrijgave, auto cash-out en max win kloppen. Wel: de muziekplanner speelde na een haperende of verborgen tab alle gemiste stappen tegelijk af (klonten geluid uit een achtergrondtabblad), SONAR bleef zeegeruis spelen in een verborgen tabblad, en "Verified: …" bleef staan bij een nieuwere ronde. Bij het testen bleek ook: zonder WebGL (GPU geblokkeerd, VM, beveiligde bedrijfslaptop) gooit three.js een fout die het hele index-script stopt, dus verifier, rekenmodel en live feed werkten dan niet.
+- Gedaan: index vangt een mislukte WebGL-start af (alleen de 3D-chips vallen weg). Waarom: juist compliance-mensen op dichtgetimmerde laptops moeten de verifier kunnen gebruiken. Headless met --disable-gpu bevestigd.
+- Gedaan: SONAR-pings narekenbaar (backlog): SONAR bewaart welke tegel elke ping trof, het FAIR-paneel en "Open in the verifier" (&pings=0w,2c) geven ze mee, en de verifier toont per ping de trekking, eerlijk/omgedraaid en of WARM/COLD klopt (✓ matches / ✗ you saw). Bewezen: 25 gespeelde duiken, 75 pings allemaal ✓ (15 omgedraaid = 20%), gemanipuleerde link geeft ✗, Python-HMAC identiek, 360px netjes. RTP ongewijzigd.
+- Gedaan: PEEK!/Vault en SONAR pauzeren geluid als het tabblad verborgen is; PEEK!-muziek slaat gemiste stappen over; verify-melding wordt bij een nieuwe crash gewist. Testpagina's alleen in scratch, niets in de repo.
+- Idee voor later: check.sh zonder WebGL; PEEK! history inkorten; SONAR-verifier ook de uitbetaling per tegel narekenen.
+- Voor Nick: niets
