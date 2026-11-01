@@ -252,8 +252,8 @@ const hex=b=>[...b].map(x=>x.toString(16).padStart(2,'0')).join(''), enc=s=>new 
 const CLIENT='sonar-demo-client'; let nonce=0, seed=hex(crypto.getRandomValues(new Uint8Array(32))), seedHash=hex(sha256js(enc(seed))), prev=null;
 const rnd=(msg)=>new DataView(hmacjs(enc(seed),enc(msg)).buffer).getUint32(0)/2**32;
 function layMines(m){ nonce++; const a=[...Array(C).keys()]; for(let i=C-1;i>0;i--){ const j=Math.floor(rnd(CLIENT+':'+nonce+':'+i)*(i+1)); [a[i],a[j]]=[a[j],a[i]] } return new Set(a.slice(0,m)) }
-function fairUI(){ $('fairHash').textContent=seedHash.slice(0,12)+'…'; $('fairFull').textContent=(phase==='run'?'this dive':'next dive')+' seed hash: '+seedHash; if(prev){ $('fairPrev').textContent='dive '+prev.nonce+' · seed '+prev.seed+' · mines at '+prev.mines.join(', '); const v=$('fairV'); v.href='index.html?game=sonar&seed='+prev.seed+'&client='+encodeURIComponent(CLIENT)+'&nonce='+prev.nonce+'&mines='+prev.mines.length+'#fair'; v.hidden=false } } // vorige duik 1-op-1 narekenen op de homepage
-function rotateSeed(m){ prev={seed,nonce,mines:[...m].sort((a,b)=>a-b)}; seed=hex(crypto.getRandomValues(new Uint8Array(32))); seedHash=hex(sha256js(enc(seed))); fairUI() }
+function fairUI(){ $('fairHash').textContent=seedHash.slice(0,12)+'…'; $('fairFull').textContent=(phase==='run'?'this dive':'next dive')+' seed hash: '+seedHash; if(prev){ $('fairPrev').textContent='dive '+prev.nonce+' · seed '+prev.seed+' · mines at '+prev.mines.join(', ')+(prev.pings.length?' · pings '+prev.pings.map(p=>'tile '+parseInt(p)+' '+(p.endsWith('w')?'warm':'cold')).join(', '):''); const v=$('fairV'); v.href='index.html?game=sonar&seed='+prev.seed+'&client='+encodeURIComponent(CLIENT)+'&nonce='+prev.nonce+'&mines='+prev.mines.length+(prev.pings.length?'&pings='+prev.pings.join(','):'')+'#fair'; v.hidden=false } } // vorige duik 1-op-1 narekenen op de homepage
+function rotateSeed(m){ prev={seed,nonce,mines:[...m].sort((a,b)=>a-b),pings:[...pings].map(([t,w])=>t+(w?'w':'c'))}; /* pings in volgorde k=1,2,3 (Map bewaart invoegvolgorde) */ seed=hex(crypto.getRandomValues(new Uint8Array(32))); seedHash=hex(sha256js(enc(seed))); fairUI() }
 
 /* ---------- audio ---------- */
 let ac=null, muted=false, amb=null, echo=null;
@@ -273,6 +273,7 @@ function startAmb(){ if(!ac||amb||muted) return; const b=ac.createBuffer(2,ac.sa
   const s=ac.createBufferSource(); s.buffer=b; s.loop=true; const f=ac.createBiquadFilter(); f.type='lowpass'; f.frequency.value=320; const g=ac.createGain(); g.gain.value=0; s.connect(f).connect(g).connect(ac.destination); s.start();
   const o=ac.createOscillator(); o.frequency.value=48; const og=ac.createGain(); og.gain.value=.025; o.connect(og).connect(g); o.start();
   g.gain.linearRampToValueAtTime(.22,ac.currentTime+2); amb={g,s,o} }
+document.addEventListener('visibilitychange',()=>{ if(!ac) return; if(document.hidden) ac.suspend(); else ac.resume() }); // geen zeegeruis uit een verborgen tabblad
 function stopAmb(){ if(!amb) return; const a=amb; amb=null; a.g.gain.linearRampToValueAtTime(0,ac.currentTime+.4); setTimeout(()=>{ a.s.stop(); a.o.stop() },500) }
 
 /* ---------- state ---------- */

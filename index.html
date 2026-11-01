@@ -186,6 +186,9 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 .fgrid i{aspect-ratio:1;border-radius:7px;border:1px solid var(--line);display:grid;place-items:center;font:600 10px var(--mono);font-style:normal;color:var(--dim)}
 .fgrid i.m{background:rgba(255,79,109,.16);border-color:rgba(255,79,109,.7);color:#ff8fa3;box-shadow:0 0 12px -4px rgba(255,79,109,.8)}
 .fnote{margin:10px 0 0;color:var(--dim);font-size:11px;line-height:1.5;text-align:center}
+.fping{margin-top:14px;border-top:1px dashed var(--line2);padding-top:12px;font:12px/1.6 var(--mono);color:var(--muted)}
+.fping b{color:var(--fg);font-weight:700}.fping .ok{color:var(--mint)}.fping .bad{color:#ff8fa3}
+.fping p{margin:0 0 4px}
 
 /* play buttons */
 .playbar{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
@@ -485,7 +488,7 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
         <div id="fMinesW" hidden><label for="fMines">Mines on the board</label><select id="fMines"><option>3</option><option selected>5</option><option>8</option><option>12</option></select></div>
         <div><label id="fHmacL">HMAC-SHA256(server, client:nonce)</label><div class="hash" id="fHmac" style="color:var(--muted)">...</div></div>
         <div class="res"><span style="color:var(--dim)" id="fResL">CRASH POINT</span><b id="fRes">...</b></div>
-        <div id="fGridW" hidden><div class="fgrid" id="fGrid" role="img"></div><p class="fnote">Tiles are numbered 0 to 35, left to right, top to bottom. The board shows the same numbers SONAR listed after your dive.</p></div>
+        <div id="fGridW" hidden><div class="fgrid" id="fGrid" role="img"></div><p class="fnote">Tiles are numbered 0 to 35, left to right, top to bottom. The board shows the same numbers SONAR listed after your dive.</p><div class="fping" id="fPing" aria-live="polite"></div></div>
       </div>
     </div>
   </div>
@@ -700,7 +703,7 @@ if('IntersectionObserver' in window&&!reduce){
 /* ---------- hero: 3D gold casino chips (three.js) ---------- */
 (function hero(){
   const cv=$('chips'); if(!window.THREE){ return }
-  const r=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});
+  let r; try{ r=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true}) }catch(e){ return } // zonder WebGL geen chips, maar de rest van de pagina (verifier, rekenmodel) moet blijven werken
   r.setPixelRatio(Math.min(2,devicePixelRatio));
   const scene=new THREE.Scene(), cam=new THREE.PerspectiveCamera(40,1,.1,100); cam.position.set(0,0,16);
   function faceTex(main,ring){
@@ -859,7 +862,13 @@ async function fair(){
     $('fHmac').textContent=hex(hmacjs(enc(seed),enc(cl+':'+n+':35')));
     const ms=sonarMines(seed,cl,n,+$('fMines').value), el=$('fRes'); el.textContent=ms.join(', '); el.style.color='#ff8fa3';
     $('fGrid').innerHTML=[...Array(36).keys()].map(i=>'<i'+(ms.includes(i)?' class="m"':'')+'>'+i+'</i>').join('');
-    $('fGrid').setAttribute('aria-label','Mines at tiles '+ms.join(', ')); return }
+    $('fGrid').setAttribute('aria-label','Mines at tiles '+ms.join(', '));
+    // pings: k-de ping eerlijk als HMAC(seed, client:nonce:ping:k) < 0.8, anders omgedraaid (zelfde regel als doPing() in sonar.html)
+    const draw=k=>new DataView(hmacjs(enc(seed),enc(cl+':'+n+':ping:'+k)).buffer).getUint32(0)/2**32;
+    $('fPing').innerHTML='<p>PINGS · honest when HMAC(server, client:nonce:ping:k) &lt; 0.80</p>'+[1,2,3].map(k=>{ const d=draw(k), h=d<.8, pg=fPings[k-1];
+      let row='<b>ping '+k+'</b> · draw '+d.toFixed(3)+' · '+(h?'honest':'flipped');
+      if(pg){ const want=ms.includes(pg.t)===h; row+=' · tile '+pg.t+' should read '+(want?'WARM':'COLD')+(pg.w===want?' <span class="ok">✓ matches</span>':' <span class="bad">✗ you saw '+(pg.w?'WARM':'COLD')+'</span>') }
+      return '<p>'+row+'</p>' }).join(''); return }
   const h=hex(hmacjs(enc(seed),enc(cl+':'+n)));
   $('fHmac').textContent=h;
   const r=parseInt(h.slice(0,13),16)/2**52, c=Math.min(10000,Math.max(1,Math.floor(100*fRtp/(1-r))/100));
@@ -872,9 +881,10 @@ function setGame(g){ fGame=g; const so=g==='sonar'; $('fgPeek').setAttribute('ar
   $('fHmacL').textContent=so?'Shuffle draw HMAC-SHA256(server, client:nonce:35)':'HMAC-SHA256(server, client:nonce)'; $('fResL').textContent=so?'MINES AT':'CRASH POINT';
   const c=$('fClient'); if(so&&c.value==='lucky-player-42') c.value='sonar-demo-client'; else if(!so&&c.value==='sonar-demo-client') c.value='lucky-player-42'; fair() }
 $('fgPeek').onclick=()=>setGame('peek'); $('fgSonar').onclick=()=>setGame('sonar'); $('fMines').addEventListener('change',fair);
-let fRtp=0.97; { const q=new URLSearchParams(location.search), qs=q.get('seed');
+let fRtp=0.97, fPings=[]; { const q=new URLSearchParams(location.search), qs=q.get('seed');
   if(qs&&/^[0-9a-f]{64}$/i.test(qs)){ $('fSeed').value=qs; if(q.get('client')) $('fClient').value=q.get('client').slice(0,80); const n=parseInt(q.get('nonce'),10); if(n>=0) $('fNonce').value=n; const r=parseFloat(q.get('rtp')); if(r>=.9&&r<=.995) fRtp=r }
-  if(q.get('game')==='sonar'){ const m=q.get('mines'); if(['3','5','8','12'].includes(m)) $('fMines').value=m; fGame='sonar' } }
+  if(q.get('game')==='sonar'){ const m=q.get('mines'); if(['3','5','8','12'].includes(m)) $('fMines').value=m; fGame='sonar';
+    fPings=(q.get('pings')||'').split(',').slice(0,3).map(p=>/^([0-9]|[12][0-9]|3[0-5])[wc]$/.test(p)?{t:parseInt(p,10),w:p.endsWith('w')}:null).filter(Boolean) } }
 ['fSeed','fClient','fNonce'].forEach(id=>$(id).addEventListener('input',fair)); fGame==='sonar'?setGame('sonar'):fair();
 
 /* ---------- revenue Monte Carlo ---------- */

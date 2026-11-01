@@ -429,7 +429,7 @@ async function startRun(){
 }
 function crash(){
   phase='crash'; crashedAt=performance.now(); mult=crashAt; fakeUntil=0; ending=2; sfx('bust'); flash=.32; flashCol='255,255,255'; if(theme==='A'){ sfx(ending===1?'splash':'boing') } else { sfx('alarm'); if(vaultReady()){ const sp=sackPos(); burst(sp.x,sp.y+40,45,true) } }
-  history.push(crashAt); renderHist(); prev=cur; // seed pas na de crash vrijgeven, anders verklapt Verify het crashpunt
+  history.push(crashAt); renderHist(); prev=cur; $('vmsg').textContent=''; // seed pas na de crash vrijgeven, anders verklapt Verify het crashpunt
   if(myBet&&!myBet.out) say(T('caughtMsg',crashAt.toFixed(2))); else sr(T('srEnd',crashAt.toFixed(2)));
   $('prevSeed').textContent=`seed ${prev.seed} · ${T('cl')} ${CLIENT_SEED} · nonce ${prev.nonce} · ${prev.crash.toFixed(2)}×`;
   const vl=$('vlink'); vl.href=`index.html?seed=${prev.seed}&client=${encodeURIComponent(CLIENT_SEED)}&nonce=${prev.nonce}&rtp=${prev.rtp}#fair`; vl.hidden=false; // zelfde ronde 1-op-1 in de verifier op de homepage
@@ -458,6 +458,7 @@ function updateBtn(){
 }
 $('snd').onclick=()=>{ muted=!muted; if(muted) musicStop(false); else if(phase==='run') musicStart(); $('snd').textContent=T(muted?'sndOff':'sndOn'); if(!muted) audio() };
 document.addEventListener('pointerdown',()=>audio(),{once:true});
+document.addEventListener('visibilitychange',()=>{ if(!actx) return; if(document.hidden) actx.suspend(); else actx.resume() }); // geen geluid uit een verborgen tabblad
 $('act').onclick=()=>{ audio();
   if(phase==='run'&&myBet&&!myBet.out) return cashOut();
   if(queued){ bal+=queued; queued=null; setBal(); say(T('cancelled')); return updateBtn() }
@@ -1213,6 +1214,7 @@ function schedule(){
   const I=inten(), sp=60/(120+72*I)/4, now=actx.currentTime;
   mus.master.gain.setTargetAtTime(muted?0:.13+.32*I,now,.25);
   mus.filter.frequency.setTargetAtTime(700+8000*I*I,now,.3);
+  if(mus.next<now) mus.next=now+.02; // timers liepen achter (tabblad verborgen of hapering): gemiste stappen overslaan, niet allemaal tegelijk afspelen
   while(mus.next<now+.1){ play(mus.step,mus.next,I,sp); mus.next+=sp; mus.step=(mus.step+1)%64 }
 }
 function play(st,t,I,sp){
