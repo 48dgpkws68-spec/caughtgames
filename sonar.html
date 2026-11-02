@@ -353,7 +353,7 @@ function cashOut(why){ if(phase!=='run'||first) return; au(); const w=Math.round
   $('state').textContent=why||'CASHED OUT'; $('state').style.color='var(--gold)'; $('mult').className='won'; $('win').innerHTML='won <b style="color:var(--gold2)">'+fmt(w)+'</b>';
   pushHist(mult); finish(); say((why?why.charAt(0)+why.slice(1).toLowerCase():'Cashed out')+' at '+fmt(mult)+'×. Won '+fmt(w)+'. Press Enter or Dive for a new board.') }
 function finish(){ rotateSeed(mines); actUI(); debrief() }
-function pushHist(x){ hist.unshift(x); const el=document.createElement('span'); el.className='chip'; el.textContent=x?fmt(x)+'×':'MINE'; el.style.color=x?(x>=5?'var(--gold2)':'var(--sea2)'):'var(--hot)'; $('hist').prepend(el); while($('hist').children.length>14) $('hist').lastChild.remove() }
+function pushHist(x){ hist.unshift(x); if(hist.length>200) hist.length=100; const el=document.createElement('span'); el.className='chip'; el.textContent=x?fmt(x)+'×':'MINE'; el.style.color=x?(x>=5?'var(--gold2)':'var(--sea2)'):'var(--hot)'; $('hist').prepend(el); while($('hist').children.length>14) $('hist').lastChild.remove() }
 $('act').onclick=()=>{ au(); if(phase==='run'){ cashOut() } else { newBoard(); sPing(.1); toast('New board · pick your <b>first tile</b>') } };
 $('mbCash').onclick=()=>cashOut();
 $('ping').onclick=()=>{ if(phase!=='run') return; pingArm=!pingArm; actUI(); sTickSafe(); if(pingArm) toast('Tap a hidden tile to <b>ping</b> it') };

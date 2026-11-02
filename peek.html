@@ -429,7 +429,7 @@ async function startRun(){
 }
 function crash(){
   phase='crash'; crashedAt=performance.now(); mult=crashAt; fakeUntil=0; ending=2; sfx('bust'); flash=.32; flashCol='255,255,255'; if(theme==='A'){ sfx(ending===1?'splash':'boing') } else { sfx('alarm'); if(vaultReady()){ const sp=sackPos(); burst(sp.x,sp.y+40,45,true) } }
-  history.push(crashAt); renderHist(); prev=cur; $('vmsg').textContent=''; // seed pas na de crash vrijgeven, anders verklapt Verify het crashpunt
+  history.push(crashAt); if(history.length>200) history.splice(0,history.length-100); renderHist(); prev=cur; $('vmsg').textContent=''; // seed pas na de crash vrijgeven, anders verklapt Verify het crashpunt
   if(myBet&&!myBet.out) say(T('caughtMsg',crashAt.toFixed(2))); else sr(T('srEnd',crashAt.toFixed(2)));
   $('prevSeed').textContent=`seed ${prev.seed} · ${T('cl')} ${CLIENT_SEED} · nonce ${prev.nonce} · ${prev.crash.toFixed(2)}×`;
   const vl=$('vlink'); vl.href=`index.html?seed=${prev.seed}&client=${encodeURIComponent(CLIENT_SEED)}&nonce=${prev.nonce}&rtp=${prev.rtp}#fair`; vl.hidden=false; // zelfde ronde 1-op-1 in de verifier op de homepage

@@ -73,6 +73,16 @@ else
   grep -q "<title>Vault Heist" "$OUT/vault-dom.html" || bad="Vault-skin niet actief"
   if [ -n "$bad" ]; then echo "FOUT vault (dom):"; echo "$bad" | head -5; FAIL=1; else echo "ok   vault (dom)"; fi
 fi
+# Index zonder WebGL (GPU geblokkeerd/VM/bedrijfslaptop): geen console-fouten en de verifier moet nog werken
+rm -rf "$PROF"; mkdir -p "$PROF"
+"$CHROME" --headless=new --user-data-dir="$PROF" --disable-gpu --disable-webgl --disable-3d-apis --window-size=1440,900 \
+  --virtual-time-budget=6000 --enable-logging=stderr --v=0 --dump-dom "http://127.0.0.1:$PORT/index.html?seed=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa&client=c&nonce=1#fair" > "$OUT/index-nogl-dom.html" 2> "$OUT/index-nogl.log" &
+CPID=$!; for i in {1..90}; do kill -0 $CPID 2>/dev/null || break; sleep 1; done
+if kill -0 $CPID 2>/dev/null; then pkill -P $CPID 2>/dev/null; kill $CPID 2>/dev/null; sleep 1; fi
+errs=$(grep -E "CONSOLE.*(Uncaught)|Failed to load" "$OUT/index-nogl.log" 2>/dev/null | grep -v favicon)
+if [ ! -s "$OUT/index-nogl-dom.html" ]; then echo "FOUT index (zonder WebGL): geen DOM-dump"; FAIL=1
+elif [ -n "$errs" ]; then echo "FOUT index (zonder WebGL):"; echo "$errs" | head -5; FAIL=1; elif ! grep -q 'id="fRes"[^>]*>2.08×<' "$OUT/index-nogl-dom.html"; then echo "FOUT index (zonder WebGL): verifier rekent niet (2.08× verwacht)"; FAIL=1
+else echo "ok   index (zonder WebGL)"; fi
 kill $SRV; rm -rf "$PROF"
 echo "Screenshots: $OUT"
 exit $FAIL

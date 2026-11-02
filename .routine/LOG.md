@@ -113,3 +113,10 @@
 - Gedaan: PEEK!/Vault en SONAR pauzeren geluid als het tabblad verborgen is; PEEK!-muziek slaat gemiste stappen over; verify-melding wordt bij een nieuwe crash gewist. Testpagina's alleen in scratch, niets in de repo.
 - Idee voor later: check.sh zonder WebGL; PEEK! history inkorten; SONAR-verifier ook de uitbetaling per tegel narekenen.
 - Voor Nick: niets
+
+## 2026-11-02
+- Gevonden: rooktest volledig ok (15/15), geen console-fouten, screenshots netjes (ook 360px en Vault-skin). Codecheck SONAR (duik, ping, flood-fill, cash-out, max win, seed-rotatie): geen fouten in uitbetaling of fairness; alleen de geschiedenis-array groeide onbeperkt, net als bij PEEK! (backlog).
+- Gedaan: check.sh draait index nu ook zonder WebGL (--disable-gpu --disable-webgl) en faalt bij een Uncaught-fout of als de verifier niet het verwachte crashpunt (2.08× voor een vaste seed, nagerekend met Python-HMAC) toont. Waarom: de three.js-crash van 1 nov was op de gewone rooktest onzichtbaar (backlog). Negatieftest: zonder de WebGL-vangst faalt hij (Uncaught + verifier blijft "..."), met de huidige code ok.
+- Gedaan: PEEK!/Vault en SONAR kappen de geschiedenis-array af boven 200 rondes (houdt de laatste 100, getoond worden er 30 / 14). Waarom: geen geheugengroei in een tabblad dat dagen open staat bij een operator (backlog). RTP ongewijzigd.
+- Idee voor later: SONAR-verifier uitbetaling per tegel; aria-lijst voor SONAR-geschiedenis; og-afbeelding SONAR vernieuwen als het bord verandert.
+- Voor Nick: niets
