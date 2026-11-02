@@ -5,12 +5,14 @@
 //   await W.play(result, speedFn)   replay engine.simulate(drops, true)
 //   await W.clear()                 pop every blob out of the jar
 //   W.showStill(result)             show the last frame at once (idle decoration)
+//   W.setRush(on)                   GOLD RUSH look: night-purple room, gold motes, golden nozzle
+//   (golden blobs float out of the jar at the sim's lift steps; the jar is only emptied by clear())
 //   W.screen(x, y) -> CSS px point of a jar point
 import { THREE, createStage, canvasTex, radialTex, tween, wait, ease, reduce, mulberry } from '../lib/stage.js';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { blobFactory, TIER } from './blobs.js';
 
-const JAR_R = 3.16, JAR_H = 7.4, DT = 1 / 120, SPAWN_Y = (globalThis.SquishEngine && globalThis.SquishEngine.SPAWN_Y) || 8.2;
+const JAR_R = 3.16, JAR_H = 7.9, DT = 1 / 120, SPAWN_Y = (globalThis.SquishEngine && globalThis.SquishEngine.SPAWN_Y) || 8.2;
 
 export function createWorld(canvas, opts = {}) {
   const S = createStage(canvas, {
@@ -181,7 +183,8 @@ export function createWorld(canvas, opts = {}) {
     if (kind === 'merge') { b.happy(0.9); b.poke(0.25); }
     return o;
   }
-  function radiusOf(tier) { return 0.32 * Math.pow(Math.SQRT2, tier); }
+  function radiusOf(tier) { return tier === 7 ? 0.42 : 0.32 * Math.pow(Math.SQRT2, tier); }
+  const floaters = [];      // banked golden blobs rising out of the jar
   let play = null;   // { res, time, di, mi, done, hold, speed, resolve }
   function frameAt(fr, id) { for (let i = 0; i < fr.length; i += 3) if (fr[i] === id) return i; return -1; }
   function stepPlayer(dt) {
@@ -194,6 +197,7 @@ export function createWorld(canvas, opts = {}) {
       const d = res.dropsAt[P.di++];
       const o = spawn(d.id, d.tier, d.x, SPAWN_Y, 'drop'); o.grow = 0;
       nozzleX = d.x; nozzlePulse = 1; o.b.surprise(0.5);
+      if (d.tier === 7) { sparkle(d.x, SPAWN_Y, 18, 1.2, '#ffffff'); popRing(d.x, SPAWN_Y, 1.4, '#ff8ad8'); }
       opts.onDrop?.(d);
     }
     while (P.mi < res.merges.length && res.merges[P.mi].step <= f) {
@@ -206,6 +210,11 @@ export function createWorld(canvas, opts = {}) {
       if (m.tier >= 4) shake = Math.max(shake, 0.05 * (m.tier - 3));
       if (m.tier === 6) { goldFlash = 1; shake = 0.5; zoom = 1; sparkle(m.x, m.y, 40, r * 1.6); goldLight.position.set(m.x, m.y + 1, 3.5); }
       opts.onMerge?.(m, S.toScreen(new THREE.Vector3(m.x, m.y + r + 0.3, 0)));
+    }
+    while (P.li < res.lifts.length && res.lifts[P.li].step <= f) {
+      const L = res.lifts[P.li++], o = live.get(L.id);
+      if (o) { live.delete(L.id); floaters.push({ o, t: 0, y0: o.y }); sparkle(o.x, o.y, 24, o.r * 1.2); goldFlash = Math.max(goldFlash, 0.6); }
+      opts.onLift?.(L, o ? S.toScreen(new THREE.Vector3(o.x, o.y, 0)) : null);
     }
     // move blobs to the interpolated frame
     const f0 = Math.floor(f), a = f - f0, A = frames[f0], B = frames[Math.min(last, f0 + 1)];
@@ -221,11 +230,31 @@ export function createWorld(canvas, opts = {}) {
     if (f >= last) { P.hold += dt; if (P.hold > 0.25) { play = null; P.resolve(); } }
   }
 
+  // ---------------------------------------------------------------- GOLD RUSH look
+  const bgNormal = scene.background;
+  const bgRush = canvasTex(16, 512, (g, w, h) => { const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#2b0f5e'); gr.addColorStop(0.55, '#6a2bb8'); gr.addColorStop(1, '#ff9a3c'); g.fillStyle = gr; g.fillRect(0, 0, w, h); });
+  const white = new THREE.Color('#ffffff'), wallRush = new THREE.Color('#7b55e0'), counterMat = counter.material[2], counterN = counterMat.color.clone(), counterR = new THREE.Color('#ffcf5a');
+  const motes = [];
+  for (let i = 0; i < 46; i++) {
+    const m = new THREE.Sprite(new THREE.SpriteMaterial({ map: starTex, color: i % 3 ? '#ffd76a' : '#ffffff', transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
+    m.position.set((R() - 0.5) * 26, R() * 16 - 1, -6 - R() * 6); m.scale.setScalar(0.3 + R() * 0.6); m.userData.v = 0.4 + R() * 0.8; scene.add(m); motes.push(m);
+  }
+  let rushOn = false, rushK = 0;
+  function rushFrame(dt, t) {
+    rushK += ((rushOn ? 1 : 0) - rushK) * (1 - Math.exp(-dt * 3));
+    scene.background = rushK > 0.5 ? bgRush : bgNormal;
+    wall.material.color.copy(white).lerp(wallRush, rushK);
+    counterMat.color.copy(counterN).lerp(counterR, rushK * 0.7);
+    S.hemi.intensity = 0.95 - 0.2 * rushK;
+    for (const m of motes) { m.material.opacity = rushK * (0.55 + 0.45 * Math.sin(t * 3 + m.position.x)); m.position.y += m.userData.v * dt; if (m.position.y > 15) m.position.y = -1; m.material.rotation += dt; }
+    nzTip.material.emissive?.set('#ff9d00'); if (nzTip.material.emissiveIntensity !== undefined) nzTip.material.emissiveIntensity = rushK * 0.5;
+  }
+
   // ---------------------------------------------------------------- camera
   const look = new THREE.Vector3(0, 4.55, 0);
   let intro = reduce ? 0 : 1;
   S.onFrame((dt, t) => {
-    stepPlayer(dt);
+    stepPlayer(dt); rushFrame(dt, t);
     const a = camera.aspect, th = Math.tan((camera.fov * Math.PI) / 360);
     const H = a < 1.25 ? 11.5 : 10.9, W = 9.4;
     let dist = Math.max(H / 2 / th, W / 2 / (th * a)) * 1.02;
@@ -257,6 +286,15 @@ export function createWorld(canvas, opts = {}) {
       const sq = 1 - k * 0.7; o.b.root.scale.set(o.r * 1.03 * (1 + k * 0.25) * sq, o.r * 1.03 * (1 - k * 0.4) * sq, o.r * 1.03 * sq);
       if (k >= 1) { scene.remove(o.b.root); ghosts.splice(i, 1); }
     }
+    for (let i = floaters.length - 1; i >= 0; i--) {
+      const fl = floaters[i], o = fl.o; fl.t += dt;
+      const k = fl.t / 1.7;
+      o.y = fl.y0 + ease.inOut(Math.min(1, k)) * 9; o.b.root.position.set(o.x * (1 - Math.min(1, k) * 0.3), o.y, 0.3);
+      o.b.root.scale.setScalar(Math.max(0.001, o.r * 1.06 * (1 - Math.max(0, k - 0.7) * 3)));
+      o.b.happy(0.2); o.b.update(dt, t);
+      if (Math.random() < dt * 20) sparkle(o.x, o.y - o.r * 0.6, 1, o.r * 0.6);
+      if (k >= 1) { scene.remove(o.b.root); floaters.splice(i, 1); }
+    }
     for (let i = fading.length - 1; i >= 0; i--) {
       const fd = fading[i]; fd.t += dt; const k = Math.max(0, fd.t) * 3.2;
       if (k <= 0) continue;
@@ -287,9 +325,10 @@ export function createWorld(canvas, opts = {}) {
   return {
     S,
     hasBlobs: () => live.size > 0,
+    setRush(on) { rushOn = !!on; if (on) { goldFlash = 1; sparkle(0, 4, 40, 4); } },
     screen: (x, y) => S.toScreen(new THREE.Vector3(x, y, 0)),
     play(res, speed = () => 1) {
-      return new Promise((resolve) => { play = { res, time: 0, di: 0, mi: 0, hold: 0, speed, resolve }; nozzleWant = res.dropsAt[0] ? res.dropsAt[0].x : 0; });
+      return new Promise((resolve) => { play = { res, time: 0, di: 0, mi: 0, li: 0, hold: 0, speed, resolve }; nozzleWant = res.dropsAt[0] ? res.dropsAt[0].x : 0; });
     },
     // skip the replay to the end (for auto / tests): fast forward the player
     finishNow() { if (play) play.speed = () => 1000; },

@@ -13,6 +13,7 @@ export const TIER = [
   { name: 'Bunny', col: '#38a8ff', blush: '#ff9ccf' },
   { name: 'Curly', col: '#9a62ff', blush: '#ff9de0' },
   { name: 'Golden', col: '#ffd447', blush: '#ff9a5a', gold: true },
+  { name: 'Rainbow', col: '#ffffff', blush: '#ff8ad8', rainbow: true },
 ];
 
 const E = (c, r, col, k = 0.08, rot) => ({ t: 'e', c, r, col, k, rot });
@@ -40,6 +41,7 @@ function prims(tier) {
     p.push(C([0.12, 1.2, 0], [0.3, 1.3, 0], 0.05, 0.05, 'b', 0.05));
     p.push(E([0.36, 1.34, 0], [0.15, 0.15, 0.15], 'in', 0.04));
   }
+  if (tier === 7) p.push(C([0, 0.8, 0], [0.05, 1.22, 0], 0.3, 0.06, 'b', 0.26));                    // rainbow: a curly tip
   if (tier === 6) {                                                                                    // a crown of five nubs
     for (let i = 0; i < 5; i++) {
       const a = (i / 5) * Math.PI * 2 + Math.PI / 2, x = Math.cos(a) * 0.36, z = Math.sin(a) * 0.36;
@@ -60,12 +62,19 @@ function bodyGeo(tier) {
     crown: new THREE.Color('#ffe27a'), gem: new THREE.Color('#ff4f86'),
   };
   const geo = meshSDF(makeShape(prims(tier)), tier === 6 ? 84 : 60, cols, null, null, 2);
+  if (T.rainbow) {   // rainbow stripes running round the body, by height and angle
+    const pos = geo.attributes.position, col = geo.attributes.color, c = new THREE.Color();
+    for (let i = 0; i < pos.count; i++) { const h = (pos.getY(i) + 1) * 0.36 + Math.atan2(pos.getZ(i), pos.getX(i)) / (Math.PI * 2) * 0.25; c.setHSL(((h % 1) + 1) % 1, 0.95, 0.62); col.setXYZ(i, c.r, c.g, c.b); }
+    col.needsUpdate = true;
+  }
   geoCache.set(tier, geo);
   return geo;
 }
 
 export function blobFactory(S) {
-  const mats = TIER.map((T) => (T.gold
+  const mats = TIER.map((T) => (T.rainbow
+    ? new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.18, clearcoat: 1, clearcoatRoughness: 0.03, envMapIntensity: 1.1, iridescence: 1, iridescenceIOR: 1.6, emissive: '#ffffff', emissiveIntensity: 0.12 })
+    : T.gold
     ? new THREE.MeshPhysicalMaterial({ vertexColors: true, metalness: 0.55, roughness: 0.16, clearcoat: 1, clearcoatRoughness: 0.04, envMapIntensity: 1.6, emissive: '#ffb000', emissiveIntensity: 0.28 })
     : new THREE.MeshPhysicalMaterial({ vertexColors: true, roughness: 0.3, clearcoat: 1, clearcoatRoughness: 0.06, envMapIntensity: 0.75, sheen: 0.4, sheenColor: new THREE.Color('#ffffff'), sheenRoughness: 0.4 })));
   const black = new THREE.MeshPhysicalMaterial({ color: '#1a1030', roughness: 0.1, clearcoat: 1, clearcoatRoughness: 0.03 });
@@ -112,6 +121,7 @@ export function blobFactory(S) {
         const sy = 1 + s + br, sx = 1 / Math.sqrt(Math.max(0.3, sy));
         jelly.scale.set(sx, sy, sx); jelly.position.y = (sy - 1) * 0.6;   // squash towards the bottom
         jelly.rotation.z = w * 0.5;
+        if (T.rainbow) body.rotation.y += dt * 1.8;
         blink -= dt; const closed = blink < 0.11 && blink > 0; if (blink < 0) blink = 1.8 + Math.random() * 3.2;
         happyT -= dt; ohT -= dt;
         const hp = happyT > 0;

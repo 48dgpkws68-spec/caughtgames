@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>SQUISH JAR · Caught Games</title>
-<meta name="description" content="SQUISH JAR by Caught Games: a merge slot with a real physics jar. Squishy vinyl blobs drop in, equal blobs melt into bigger ones and pay, chains pay again, the golden blob is the jackpot.">
+<meta name="description" content="SQUISH JAR by Caught Games: a merge slot with a real physics jar. Squishy vinyl blobs drop in, equal blobs melt into bigger ones and pay, chains pay again. A rainbow blob unlocks GOLD RUSH: free pours into a jar that stays full, with a growing multiplier.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Caught Games">
 <meta property="og:title" content="SQUISH JAR · Merge the blobs, grow the gold">
-<meta property="og:description" content="A 3D physics merge slot. Twelve squishy blobs drop into a glass jar, equal blobs melt together and pay. Grow the golden blob for the jackpot.">
+<meta property="og:description" content="A 3D physics merge slot. Twelve squishy blobs drop into a glass jar, equal blobs melt together and pay. Catch a rainbow blob for GOLD RUSH: free pours, a jar that stays full and a multiplier up to ×10.">
 <meta property="og:url" content="https://caughtgames.com/squish.html">
 <meta property="og:image" content="https://caughtgames.com/art/og-squish.jpg">
 <meta property="og:image:width" content="1200">
@@ -20,28 +20,44 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;800;900&display=swap">
 <link rel="stylesheet" href="lib/shell.css">
 <style>
-:root{--bg1:#ff8fcf;--bg2:#a98bff;--accent:#ff3f8e;--accent2:#ffc531;--panel2:#ffeef8}
+:root{--bg1:#ff8fcf;--bg2:#a98bff;--accent:#ff3f8e;--accent2:#ffc531;--panel2:#ffeef8;--rush:#4b1fa0}
 .brand .logo{background:var(--accent)}
-.stage{background:#ffc6e6}
+.stage{background:#ffc6e6;transition:box-shadow .4s,border-color .4s}
+body.rush .stage{border-color:#3a136e;box-shadow:0 6px 0 #3a136e,0 0 0 5px var(--accent2),0 0 40px 8px rgba(255,197,49,.55)}
+body.rush .meter{background:linear-gradient(160deg,#5a25b8,#2c0f66);color:#fff}
+body.rush #state{color:#ffd76a}body.rush #win{color:#e5d8ff}body.rush #win b{color:#fff}
 .pops{position:absolute;inset:0;pointer-events:none;z-index:3;overflow:hidden}
 .fl{position:absolute;left:0;top:0;font:22px/1 var(--display);color:#fff;-webkit-text-stroke:2.5px var(--ink);paint-order:stroke fill;text-shadow:0 3px 0 var(--ink);white-space:nowrap;animation:popUp 1.15s cubic-bezier(.2,1.2,.4,1) forwards}
 .fl.big{font-size:32px;color:var(--accent2)}.fl.huge{font-size:46px;color:var(--accent2)}
 .fl.chain{font-size:15px;color:#fff;background:var(--accent);-webkit-text-stroke:0;text-shadow:none;border:2.5px solid var(--ink);border-radius:999px;padding:3px 9px;font-family:var(--body);font-weight:900;letter-spacing:.05em}
+.fl.rain{font-size:30px;color:#fff;background:linear-gradient(90deg,#ff4f86,#ffcc1f,#2fcf7f,#38a8ff,#9a62ff);-webkit-text-stroke:2px var(--ink);border:3px solid var(--ink);border-radius:16px;padding:6px 14px;text-shadow:0 3px 0 var(--ink);animation-duration:1.8s}
 @keyframes popUp{0%{transform:var(--p) translate(-50%,-50%) scale(.3);opacity:0}18%{transform:var(--p) translate(-50%,-80%) scale(1.15);opacity:1}70%{opacity:1}100%{transform:var(--p) translate(-50%,-190%) scale(1);opacity:0}}
-.ptable{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:14px}
-.pt{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:7px;padding:6px 8px;border-radius:12px;border:2.5px solid var(--ink);background:#fff;transition:transform .2s,background .2s}
-.pt.lit{background:color-mix(in srgb,var(--c) 30%,#fff);transform:scale(1.06)}
-.pt i{--c:#f0f;width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff9 0 18%,transparent 19%),var(--c);border:2px solid var(--ink);position:relative;display:block}
-.pt i::before,.pt i::after{content:"";position:absolute;top:9px;width:3px;height:4px;border-radius:2px;background:var(--ink)}
-.pt i::before{left:6px}.pt i::after{right:6px}
-.pt b{font:16px/1 var(--display);display:block}
-.pt small{font:800 10px var(--body);color:var(--muted);letter-spacing:.03em;display:block;margin-top:1px}
-.chainrow{grid-column:span 3;font:800 11px var(--body);letter-spacing:.04em;color:var(--fg);text-align:center;padding:5px 8px;border-radius:10px;background:var(--panel2);border:2px dashed rgba(29,22,64,.35)}
+.ptable{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:14px}
+.dot{--c:#f0f;width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff9 0 18%,transparent 19%),var(--c);border:2px solid var(--ink);position:relative;display:inline-block;flex:none}
+.dot::before,.dot::after{content:"";position:absolute;top:9px;width:3px;height:4px;border-radius:2px;background:var(--ink)}
+.dot::before{left:6px}.dot::after{right:6px}
+.dot.sm{width:18px;height:18px;margin-right:-5px}.dot.sm::before,.dot.sm::after{top:6px;height:3px;width:2px}.dot.sm::before{left:4px}.dot.sm::after{right:4px}
+.dot.rb{background:radial-gradient(circle at 35% 30%,#fff9 0 18%,transparent 19%),conic-gradient(#ff4f86,#ffcc1f,#2fcf7f,#38a8ff,#9a62ff,#ff4f86)}
+.growrow{grid-column:span 2;display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:12px;border:2px dashed rgba(29,22,64,.35);font:800 11px var(--body);letter-spacing:.04em;color:var(--muted)}
+.growrow span{display:flex}
+.pt{--c:#fff;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;padding:7px 10px;border-radius:12px;border:2.5px solid var(--ink);background:#fff;transition:transform .2s,background .2s}
+.pt.lit{background:color-mix(in srgb,var(--c) 30%,#fff);transform:scale(1.05)}
+.pt b{font:15px/1 var(--display);display:block}
+.pt small{font:800 10px var(--body);color:var(--muted);letter-spacing:.03em;display:block;margin-top:2px}
+.pt em{font:19px var(--display);font-style:normal;white-space:nowrap}
+.pt.gold{background:linear-gradient(90deg,#fff6d0,#ffe27a)}
+.chainrow{grid-column:span 2;font:800 11px var(--body);letter-spacing:.04em;color:var(--fg);text-align:center;padding:5px 8px;border-radius:10px;background:var(--panel2)}
 .chainrow b{font:14px var(--display);color:var(--accent);margin-right:6px;letter-spacing:.02em}
-.pt.gold{grid-column:span 3;background:linear-gradient(90deg,#fff6d0,#ffe27a);grid-template-columns:auto 1fr auto}
-.pt.gold i{width:30px;height:30px}
-.pt.gold b{font-size:19px}
-.pt.gold em{font:22px var(--display);font-style:normal}
+.rushcard{grid-column:span 2;padding:10px 12px;border-radius:14px;border:3px solid var(--ink);color:#fff;background:linear-gradient(135deg,#5a25b8,#2c0f66 70%);box-shadow:inset 0 0 0 2px rgba(255,215,106,.5)}
+.rushcard .h{display:flex;align-items:center;gap:9px}
+.rushcard .h b{font:21px/1 var(--display);color:#ffd76a;-webkit-text-stroke:1.5px var(--ink);paint-order:stroke fill}
+.rushcard .h small{display:block;margin-top:3px;font:800 11px var(--body);color:#e5d8ff;line-height:1.3}
+.ladder{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
+.ladder span{font:15px var(--display);padding:3px 8px;border-radius:9px;background:rgba(255,255,255,.12);border:2px solid rgba(255,215,106,.55);color:#ffd76a;transition:transform .25s,background .25s}
+.ladder span.on{background:#ffc531;color:var(--ink);border-color:var(--ink);transform:scale(1.15)}
+.ladder span.done{opacity:.45}
+.rushpay{font:800 11px var(--body);color:#e5d8ff;margin-top:7px;letter-spacing:.02em}
+.rushpay b{font:13px var(--display);color:#fff}
 .choices{grid-template-columns:1fr 1fr}
 .choice{grid-template-columns:auto 1fr;padding:8px 10px;gap:9px}
 .choice .ic{width:36px;height:36px;font-size:19px}
@@ -53,9 +69,30 @@
 #cash:disabled{background:#e6e1ef;color:#8a83a3}
 #cash:disabled small{color:#8a83a3}
 #mbar button{background:var(--accent);color:#fff}
+#mult.quiet{color:#fff}
+/* GOLD RUSH overlays */
+.hud{position:absolute;left:50%;top:12px;transform:translateX(-50%);z-index:4;display:flex;align-items:center;gap:10px;padding:6px 8px 6px 14px;border-radius:999px;background:linear-gradient(90deg,#5a25b8,#2c0f66);border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink),0 0 18px rgba(255,197,49,.6);color:#fff;white-space:nowrap;pointer-events:none}
+.hud[hidden]{display:none}
+.hud .t{font:17px var(--display);color:#ffd76a;-webkit-text-stroke:1.2px var(--ink);paint-order:stroke fill}
+.hud .p{font:900 12px var(--body);letter-spacing:.06em;color:#e5d8ff}
+.hud .m{font:20px var(--display);color:var(--ink);background:#ffc531;border:2.5px solid var(--ink);border-radius:999px;padding:1px 10px}
+.hud .m.bump{animation:bump .5s cubic-bezier(.2,1.6,.4,1)}
+@keyframes bump{40%{transform:scale(1.45) rotate(-6deg)}}
+.hud .w{font:18px var(--display)}
+.intro{position:absolute;inset:0;z-index:6;display:grid;place-items:center;text-align:center;padding:18px;background:radial-gradient(circle at 50% 42%,rgba(255,197,49,.55),rgba(90,37,184,.92) 55%,rgba(30,8,70,.96));color:#fff;opacity:0;pointer-events:none;transition:opacity .35s}
+.intro.on{opacity:1;pointer-events:auto;cursor:pointer}
+.intro .ttl{font:clamp(48px,9vw,104px)/.9 var(--display);color:#ffd76a;-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;text-shadow:0 7px 0 var(--ink);transform:rotate(-4deg)}
+.intro.on .ttl{animation:introIn .8s cubic-bezier(.2,1.5,.4,1)}
+@keyframes introIn{from{transform:scale(.3) rotate(-14deg);opacity:0}}
+.intro .sub{font:900 clamp(13px,1.8vw,18px) var(--body);margin-top:14px;letter-spacing:.04em}
+.intro .ladder{justify-content:center;margin-top:14px}
+.intro .ladder span{font-size:22px;padding:4px 12px}
+.intro .tap{display:inline-block;margin-top:18px;font:20px var(--display);color:var(--ink);background:#ffc531;border:3px solid var(--ink);border-radius:14px;padding:8px 18px;box-shadow:0 5px 0 var(--ink)}
 .fairbox .vbtn{margin-top:8px;font:900 12px var(--body);letter-spacing:.06em;padding:8px 12px;border-radius:999px;border:2.5px solid var(--ink);background:var(--accent2);cursor:pointer;box-shadow:0 3px 0 var(--ink)}
 .fairbox .note{background:#fff3c4;border:2px dashed var(--ink);border-radius:10px;padding:8px 10px;color:var(--fg)}
-@media(max-width:640px){.fl{font-size:18px}.fl.big{font-size:24px}.fl.huge{font-size:34px}.ptable{gap:5px}.pt{padding:5px 6px;gap:5px}.pt i{width:20px;height:20px}.pt i::before,.pt i::after{top:7px}.pt i::before{left:4px}.pt i::after{right:4px}.pt b{font-size:14px}#cash{font-size:26px}}
+.fairbox{max-height:calc(100vh - 100px);overflow:auto}
+@media(max-width:640px){.fl{font-size:18px}.fl.big{font-size:24px}.fl.huge{font-size:34px}.fl.rain{font-size:22px}.ptable{gap:5px}.pt{padding:6px 8px;gap:6px}.dot{width:20px;height:20px}.dot::before,.dot::after{top:7px}.dot::before{left:4px}.dot::after{right:4px}.pt b{font-size:14px}.pt em{font-size:19px}#cash{font-size:26px}
+  .hud{top:8px;gap:6px;padding:4px 5px 4px 10px}.hud .t{font-size:14px}.hud .p{font-size:10px}.hud .m{font-size:16px;padding:0 7px}.hud .w{font-size:14px}.intro .ladder span{font-size:17px;padding:3px 8px}}
 </style>
 <script defer src="https://stats.1v1battles.com/nv.js" data-website-id="4f92624d-4cbc-4758-8bb8-8515f2b5e871"></script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
@@ -63,15 +100,17 @@
 <body>
 <div class="wrap">
   <div class="top">
-    <a class="box brand" href="index.html"><span class="logo">S</span><div><b>SQUISH JAR</b><small>Caught Games · merge the blobs, grow the gold</small></div></a>
+    <a class="box brand" href="index.html"><span class="logo">S</span><div><b>SQUISH JAR</b><small>Caught Games · merge the blobs, chase the GOLD RUSH</small></div></a>
     <div class="box hist" id="hist"></div>
     <div class="pills"><button class="box pill" id="howBtn">HOW<span class="lg"> TO PLAY</span></button><button class="box pill" id="fairBtn">FAIR<span class="lg" id="fairHash"></span></button><button class="box pill" id="snd">SOUND ON</button></div>
   </div>
   <div class="main">
     <div class="stage" id="stage">
-      <canvas id="view" tabindex="0" aria-label="A glass jar. Press SQUISH to drop twelve blobs; equal blobs that touch merge and pay. Space or Enter spins, T toggles turbo, A toggles auto play." aria-describedby="sr"></canvas>
+      <canvas id="view" tabindex="0" aria-label="A glass jar. Press SQUISH to drop twelve blobs; equal blobs that touch merge and pay, a rainbow blob starts GOLD RUSH. Space or Enter spins, T toggles turbo, A toggles auto play." aria-describedby="sr"></canvas>
       <div class="pops" id="pops"></div>
+      <div class="hud" id="hud" hidden><span class="t">GOLD RUSH</span><span class="p" id="hudP">POUR 1 / 5</span><span class="m" id="hudM">×1</span><span class="w" id="hudW">0.00</span></div>
       <div class="banner" id="banner"><b id="bnT"></b><span id="bnS"></span></div>
+      <div class="intro" id="intro" role="dialog" aria-label="GOLD RUSH"><div><div class="ttl">GOLD RUSH!</div><div class="sub" id="introSub"></div><div class="ladder" id="introLadder"></div><div class="tap" id="introGo">START THE RUSH</div></div></div>
       <div class="tip" id="tip">PRESS SQUISH · 12 BLOBS DROP IN</div>
       <div class="sr" id="sr" aria-live="polite"></div>
     </div>
@@ -86,7 +125,7 @@
           <div class="bal"><div class="lbl">Play money</div><b id="bal">1,000.00</b></div>
           <div><div class="lbl">Stake</div><div class="stake"><input id="bet" type="number" value="10" min="1" step="1" inputmode="decimal" aria-label="Stake"><button id="half">½</button><button id="dbl">2×</button></div></div>
         </div>
-        <div class="ptable" id="ptable" aria-label="Merge pay table"></div>
+        <div class="ptable" id="ptable" aria-label="Pay table"></div>
         <div class="choices">
           <button class="choice turbo" id="cTurbo" aria-pressed="false"><span class="ic">T</span><span class="nm">TURBO<small id="rTurbo">normal speed</small></span></button>
           <button class="choice auto" id="cAuto" aria-pressed="false"><span class="ic">A</span><span class="nm">AUTO 10<small id="rAuto">ten spins in a row</small></span></button>
@@ -100,15 +139,15 @@
 <div class="box" id="mbar"><b id="mbMult">0.00×</b><button id="mbCash">SQUISH!</button></div>
 <div class="box fairbox" id="fairBox" hidden><b>Provably fair</b>
   <p id="fairRule"></p>
-  <p class="note"><b style="font:inherit;font-weight:900">Honest note:</b> in a physics game the sim code is part of the outcome. squish-engine.js is deterministic (fixed 1/120 s steps, 6 solver passes in a fixed order, only + − × ÷ and square roots, so every browser computes the same jar), but before any real-money use the sim itself needs independent lab verification and must run on the server.</p>
+  <p class="note"><b style="font:inherit;font-weight:900">Honest note:</b> in a physics game the sim code is part of the outcome. squish-engine.js is deterministic (fixed 1/120 s steps, 6 solver passes in a fixed order, only + − × ÷ and square roots, so every browser computes the same jar, GOLD RUSH included), but before any real-money use the sim itself needs independent lab verification and must run on the server.</p>
   <code id="fairFull"></code><pre id="fairPrev">no spin played yet</pre><button class="vbtn" id="verify" disabled>VERIFY LAST SPIN</button></div>
 <div class="how" id="how" hidden><div class="box" role="dialog" aria-modal="true" aria-labelledby="howT">
   <h2 id="howT">How to play <span>SQUISH JAR</span></h2>
   <p style="margin:0;color:var(--muted);font-size:15px;line-height:1.55">A glass jar, twelve squishy blobs and real physics. Play money only.</p>
   <ol>
     <li><div><b>Set your stake and press SQUISH.</b> Twelve blobs of random sizes drop one by one into an empty jar.</div></li>
-    <li><div><b>Two equal blobs that touch melt</b> into the next size up and pay the table. If the new blob melts again within half a second, that is a <b>chain</b>: link 2 pays ×2, link 3 pays ×3 and so on.</div></li>
-    <li><div><b>Grow a golden blob</b> for the jackpot of <b id="howGold"></b>.</div></li>
+    <li><div><b>Two equal blobs that touch melt</b> into the next size up. Small blobs just grow; <b id="howPays"></b>. If a new blob melts again within half a second, that is a <b>chain</b>: link 2 pays ×2, link 3 ×3 and so on.</div></li>
+    <li><div><b>Catch a RAINBOW blob</b> to start <b>GOLD RUSH</b>: <span id="howRush"></span></div></li>
     <li><div><b>Nothing to decide but the stake.</b> The fair draws pick the blobs, the physics does the rest. Space spins, T turbo, A auto.</div></li>
   </ol>
   <button id="go" class="go">LET'S SQUISH</button>
@@ -127,21 +166,29 @@ const fp=v=>Number.isInteger(v)?fmt(v,0):fmt(v);
 const embed=location.hash==='#embed'; if(embed){ document.body.classList.add('embed'); $('backlink').remove() }
 const wait=ms=>new Promise(r=>setTimeout(r,reduce?Math.min(ms,150):ms));
 const F=createFair('squish-demo-client'), A=createSfx();
-const NAMES=['Drop','Nubbin','Sprout','Kitty','Bunny','Curly','Golden'], COLS=['#ff4f86','#ff8a2b','#ffcc1f','#2fcf7f','#38a8ff','#9a62ff','#ffc531'];
-const GOLD_PAY=E.PAY[E.GOLD];
+const NAMES=['Drop','Nubbin','Sprout','Kitty','Bunny','Curly','Golden','Rainbow'], COLS=['#ff4f86','#ff8a2b','#ffcc1f','#2fcf7f','#38a8ff','#9a62ff','#ffc531'];
+const RAIN=E.RAIN, GOLD=E.GOLD;
 
 /* ---------- sound ---------- */
-const sDrop=()=>{ A.tone(300,620,.09,.06,'sine'); A.noise(.05,1800,.03,'bandpass') };
+const sDrop=t=>{ if(t===RAIN){ A.notes([0,4,7,11,14,19],784,.04,.05,'sine'); return } A.tone(300,620,.09,.06,'sine'); A.noise(.05,1800,.03,'bandpass') };
 const sLand=v=>{ A.tone(180+Math.random()*60,90,.12,.05+v*.12,'sine'); };
 const sPop=t=>{ const f=330*Math.pow(2,t*3/12); A.tone(f*.7,f*1.5,.12,.09,'triangle'); A.tone(f*1.5,f*2.2,.08,.05,'sine',.05); A.noise(.06,3000,.04,'highpass') };
 const sGold=()=>{ A.notes([0,4,7,12,16,19,24],523,.08,.08); A.tone(80,40,1,.3,'sine') };
 const sWin=big=>A.notes(big?[0,4,7,12,16]:[0,7,12],659,.06,.07);
 const sClear=()=>{ for(let i=0;i<6;i++) A.tone(500+i*90,900+i*90,.06,.03,'sine',i*.04) };
+const sRush=()=>{ A.notes([0,4,7,12,16,19,24,28],392,.07,.08,'square'); A.tone(60,120,.8,.2,'sawtooth') };
+const sMult=()=>{ A.tone(520,1040,.25,.07,'square'); A.notes([0,7,12],784,.05,.05) };
+// GOLD RUSH music: a little synth loop while the rush runs
+const music={ id:0, start(){ if(this.id) return; let i=0; const pat=[0,4,7,12,16,12,7,4,2,5,9,14,17,14,9,5];
+  this.id=setInterval(()=>{ if(A.muted||document.hidden) return; const f=392*Math.pow(2,pat[i%16]/12); A.tone(f,f*1.001,.16,.03,'triangle'); if(i%4===0) A.tone(i%8?110:98,90,.32,.07,'sine'); if(i%2) A.noise(.035,7000,.012,'highpass'); i++ },reduce?400:140) },
+  stop(){ clearInterval(this.id); this.id=0 } };
 $('snd').onclick=()=>{ A.unlock(); $('snd').textContent=A.toggle()?'SOUND OFF':'SOUND ON' };
 
 /* ---------- state ---------- */
-let bal=1000, stake=10, phase='idle', busy=false, run=0, last=null, hist=[], turbo=false, auto=0, cur=null;
+let bal=1000, stake=10, phase='idle', busy=false, run=0, last=null, hist=[], turbo=false, auto=0, cur=null, lastReveal=null;
+let rushPours=0, rushIdx=-1, rushWin=0;
 const say=s=>{ $('sr').textContent=s };
+const spd=()=>turbo?2.5:1;
 function readStake(){ let v=parseFloat($('bet').value); if(!isFinite(v)||v<1) v=1; v=Math.min(v,Math.max(1,bal),500); v=Math.round(v*100)/100; $('bet').value=v; return v }
 $('half').onclick=()=>{ $('bet').value=Math.max(1,Math.round(readStake()/2*100)/100); ui() };
 $('dbl').onclick=()=>{ $('bet').value=Math.min(bal,500,readStake()*2); readStake(); ui() };
@@ -152,75 +199,119 @@ function ui(){
   document.body.classList.add('running');   // the mobile bar always carries the SQUISH button
   const st=parseFloat($('bet').value)||stake;
   $('cash').disabled=$('mbCash').disabled=busy;
-  $('cashS').textContent=busy?(auto>0?'auto · '+auto+' left':'blobs dropping…'):'drop 12 blobs · stake '+fmt(Math.min(st,500));
+  $('cashS').textContent=busy?(phase==='rush'?'GOLD RUSH in progress':auto>0?'auto · '+auto+' left':'blobs dropping…'):'drop 12 blobs · stake '+fmt(Math.min(st,500));
   $('mbCash').textContent=busy?'…':'SQUISH!';
   $('bet').disabled=$('half').disabled=$('dbl').disabled=busy;
   $('cTurbo').classList.toggle('on',turbo); $('cTurbo').setAttribute('aria-pressed',turbo); $('rTurbo').textContent=turbo?'2.5× faster replay':'normal speed';
   $('cAuto').classList.toggle('on',auto>0); $('cAuto').setAttribute('aria-pressed',auto>0); $('rAuto').textContent=auto>0?auto+' spins left · tap to stop':'ten spins in a row';
 }
+const ladderHTML=(n,on)=>{ let h=''; for(let p=0;p<n;p++) h+='<span class="'+(p===on?'on':p<on?'done':'')+'">×'+E.MULTS[Math.min(p,E.MULTS.length-1)]+'</span>'; return h };
 function ptable(){
-  let h='';
-  for(let t=1;t<E.GOLD;t++) h+='<div class="pt" id="pt'+t+'" style="--c:'+COLS[t]+'"><i style="--c:'+COLS[t]+'"></i><div><b>'+(E.PAY[t]>0?'×'+fp(E.PAY[t]):'grow')+'</b><small>'+NAMES[t].toUpperCase()+'</small></div></div>';
+  const paid=[]; for(let t=1;t<=GOLD;t++) if(E.PAY[t]>0) paid.push(t);
+  const grow=[]; for(let t=0;t<paid[0];t++) grow.push(t);
+  let h='<div class="growrow"><span>'+grow.map(t=>'<i class="dot sm" style="--c:'+COLS[t]+'"></i>').join('')+'</span>'+NAMES[grow[1]].toUpperCase()+' TO '+NAMES[grow[grow.length-1]].toUpperCase()+' JUST GROW</div>';
+  for(const t of paid) h+='<div class="pt'+(t===GOLD?' gold':'')+'" id="pt'+t+'" style="--c:'+COLS[t]+'"><i class="dot" style="--c:'+COLS[t]+'"></i><div><b>'+NAMES[t].toUpperCase()+'</b><small>'+(t===GOLD?'2 CURLIES':'2 BUNNIES')+'</small></div><em>×'+fp(E.PAY[t])+'</em></div>';
   h+='<div class="chainrow"><b>CHAINS</b> link 2 ×2 · link 3 ×3 · link 4 ×4 …</div>';
-  h+='<div class="pt gold" id="pt'+E.GOLD+'" style="--c:#ffc531"><i style="--c:#ffc531"></i><div><b>GOLDEN BLOB</b><small>THE JACKPOT · TWO CURLIES MELT INTO GOLD</small></div><em>×'+fp(GOLD_PAY)+'</em></div>';
+  const bp=[]; for(let t=1;t<=GOLD;t++) if(E.BONUS_PAY[t]>0) bp.push(NAMES[t]+' <b>×'+fp(E.BONUS_PAY[t])+'</b>');
+  h+='<div class="rushcard" id="rushcard"><div class="h"><i class="dot rb"></i><div><b>GOLD RUSH</b><small>a RAINBOW blob starts '+E.BONUS_POURS+' free pours. The jar is NOT emptied, the multiplier grows every pour.</small></div></div><div class="ladder" id="ladder">'+ladderHTML(E.BONUS_POURS,-1)+'</div><div class="rushpay">In the rush: '+bp.join(' · ')+' × pour multiplier × chain. Another rainbow: +'+E.RETRIGGER+' pours at ×'+E.MULTS[E.BONUS_POURS]+', ×'+E.MULTS[E.BONUS_POURS+1]+' and up to ×'+E.MULTS[E.MULTS.length-1]+'.</div></div>';
   $('ptable').innerHTML=h;
-  $('howGold').textContent='×'+fp(GOLD_PAY)+' your stake (more in a chain)';
-  $('hint').innerHTML='Each merge pays the <b>table above</b> for the blob it makes, times its <b>chain link</b>. Target return <b>'+(E.RTP*100).toFixed(0)+'%</b>: '+E.SIM.spins+' simulated spins gave <b>'+E.SIM.rtp+'</b> (± '+E.SIM.se+'), '+E.SIM.hit+' of spins pay something, a golden blob about '+E.SIM.gold+' spins. Max win <b>×'+fmt(E.MAX_WIN,0)+'</b>. The stake is the only decision, so the RTP is one number.';
+  $('howPays').innerHTML=paid.map(t=>NAMES[t]+' pays ×'+fp(E.PAY[t])).join(', ');
+  $('howRush').innerHTML=E.BONUS_POURS+' free pours of '+E.BONUS_DROPS+' blobs into the same jar, which is not emptied, so blobs keep growing. The multiplier climbs '+E.MULTS.slice(0,E.BONUS_POURS).map(m=>'×'+m).join(', ')+'. A rainbow during the rush adds '+E.RETRIGGER+' more pours at ×'+E.MULTS[E.BONUS_POURS]+', ×'+E.MULTS[E.BONUS_POURS+1]+' and up to ×'+E.MULTS[E.MULTS.length-1]+'. Golden blobs float out and bank their win. Wins up to ×'+fmt(E.MAX_WIN,0)+'.';
+  $('hint').innerHTML='Paid merges pay the <b>table above</b> times their <b>chain link</b>; a paid base spin always pays more than the stake. Target return <b>'+(E.RTP*100).toFixed(0)+'%</b>: a simulation of '+E.SIM.spins+' gave <b>'+E.SIM.rtp+'</b> (± '+E.SIM.se+'), of which GOLD RUSH '+E.SIM.rushShare+'. GOLD RUSH comes about '+E.SIM.rush+' spins and pays '+E.SIM.rushAvg+' on average. Max win <b>×'+fmt(E.MAX_WIN,0)+'</b>. The stake is the only decision, so the RTP is one number.';
+  $('introLadder').innerHTML=ladderHTML(E.BONUS_POURS,-1);
 }
 function lit(t){ const el=$('pt'+t); if(!el) return; el.classList.add('lit'); setTimeout(()=>el.classList.remove('lit'),500) }
-function chip(m){ hist.unshift(m); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span class="chip '+(h>=1?'w':'l')+'">'+fx(h)+'×</span>').join('') }
+function chip(m,rush){ hist.unshift({m,rush}); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span class="chip '+(h.m>1?'w':'l')+'"'+(h.rush&&h.m>1?' style="background:#ffd76a;box-shadow:inset 0 0 0 2px #9a62ff"':'')+'>'+(h.rush?'★ ':'')+fx(h.m)+'×</span>').join('') }
 function banner(t,s,cls){ $('bnT').textContent=t; $('bnS').textContent=s; $('banner').className='banner '+cls+' on'; say(t+'. '+s) }
 const hideBanner=()=>{ $('banner').className='banner' };
 function fairUI(){ $('fairHash').textContent=' · '+F.hash.slice(0,10)+'…'; $('fairFull').textContent=(busy?'this spin':'next spin')+' · nonce '+F.nonce+' · seed hash: '+F.hash }
 function fairRule(){
-  let acc=0; const parts=E.DROP_TABLE.map((w,t)=>{ const a=acc; acc+=w; return a+' to '+(acc-1)+' '+NAMES[t] });
-  $('fairRule').innerHTML='Before each spin we publish SHA-256(server seed). Blob k (k = 0 to '+(E.DROPS-1)+') uses u = HMAC-SHA256(seed, client:nonce:drop:k), first 52 bits ÷ 2<sup>52</sup>. cell = floor(1000u) picks the blob: '+parts.join(', ')+'. Its drop point is x = −3 + r + (1000u − cell) × (6 − 2r) across the jar. The blobs fall every 0.25 s into an empty jar in the deterministic sim, two equal blobs that touch merge, and each merge pays the table times its chain link (a merge whose input was made by a merge in the previous 60 sim steps is the next link; total capped at ×'+fmt(E.MAX_WIN,0)+'). After the spin the seed is revealed and VERIFY replays the whole jar from it.';
+  const part=(tab,withRain)=>{ let acc=0; const out=[]; tab.forEach((w,t)=>{ if(!w) return; out.push(fmt(acc,0)+' to '+fmt(acc+w-1,0)+' '+NAMES[t]); acc+=w }); out.push(fmt(acc,0)+' to 99,999 Rainbow'); return out.join(', ') };
+  $('fairRule').innerHTML='Before each spin we publish SHA-256(server seed). Every blob uses u = HMAC-SHA256(seed, client:nonce:msg), first 52 bits ÷ 2<sup>52</sup>, with msg = drop:k for base blob k (k = 0 to '+(E.DROPS-1)+') and rush:p:k for blob k of GOLD RUSH pour p. cell = floor(100000u) picks the blob. Base: '+part(E.DROP_TABLE)+'. GOLD RUSH: '+part(E.BONUS_TABLE)+'. The drop point is x = −3 + r + (100000u − cell) × (6 − 2r). Blobs fall every 0.25 s; two equal blobs that touch merge, a rainbow melts into the first normal blob it touches and grows it one size, a golden blob floats out '+(E.LIFT/120).toFixed(1)+' s after it is made. A merge pays the table times its chain link (its input was made by a merge in the previous 60 sim steps), in GOLD RUSH also times the pour multiplier ('+E.MULTS.slice(0,8).map(m=>'×'+m).join(' ')+' …). A rainbow in the base spin starts GOLD RUSH with '+E.BONUS_POURS+' pours, the jar carries on, a rainbow during the rush adds '+E.RETRIGGER+' pours (max '+E.MAX_POURS+'). Base + rush is capped at ×'+fmt(E.MAX_WIN,0)+'. After the round the seed is revealed and VERIFY replays the whole jar from it.';
 }
-function pop(text,scr,cls){ if(!scr) return; const d=document.createElement('div'); d.className='fl '+(cls||''); d.textContent=text; d.style.setProperty('--p','translate('+scr.x.toFixed(1)+'px,'+scr.y.toFixed(1)+'px)'); $('pops').appendChild(d); setTimeout(()=>d.remove(),1200) }
+function pop(text,scr,cls){ if(!scr) return; const d=document.createElement('div'); d.className='fl '+(cls||''); d.textContent=text; d.style.setProperty('--p','translate('+scr.x.toFixed(1)+'px,'+scr.y.toFixed(1)+'px)'); $('pops').appendChild(d); setTimeout(()=>d.remove(),cls==='fl rain'||cls==='rain'?1900:1200) }
+const centre=()=>{ const r=$('stage').getBoundingClientRect(); return {x:r.width/2,y:r.height*0.4} };
+
+/* ---------- GOLD RUSH ---------- */
+function hud(){ $('hudP').textContent='POUR '+Math.min(rushIdx+1,rushPours)+' / '+rushPours; $('hudM').textContent='×'+E.MULTS[Math.min(Math.max(Math.min(rushIdx,rushPours-1),0),E.MULTS.length-1)]; $('hudW').textContent=fmt(cur.stake*rushWin); const l=ladderHTML(rushPours,rushIdx); $('ladder').innerHTML=l }
+function intro(){
+  $('introSub').textContent=E.BONUS_POURS+' FREE POURS · THE JAR STAYS FULL · THE MULTIPLIER CLIMBS';
+  $('introLadder').innerHTML=ladderHTML(E.BONUS_POURS,-1);
+  $('intro').classList.add('on'); sRush();
+  return new Promise(res=>{ let done=false; const go=()=>{ if(done) return; done=true; $('intro').classList.remove('on'); res() };
+    $('intro').onclick=go; setTimeout(go,auto>0||turbo?1800:3600) });
+}
+async function playRush(round){
+  const R=round.rush; phase='rush'; rushPours=E.BONUS_POURS; rushIdx=-1; rushWin=0; ui();
+  document.body.classList.add('rush'); W.setRush(true); music.start();
+  $('state').textContent='GOLD RUSH!';
+  await intro();
+  $('hud').hidden=false;
+  for(const pour of R.pours){
+    rushIdx=pour.p; hud();
+    if(pour.p>0){ $('hudM').classList.remove('bump'); void $('hudM').offsetWidth; $('hudM').classList.add('bump'); sMult(); pop('×'+pour.mult+' MULTIPLIER',centre(),'big') }
+    $('state').textContent='GOLD RUSH · POUR '+(pour.p+1)+' · ×'+pour.mult;
+    await W.play(pour.res,spd);
+    await wait(250);
+  }
+  if(round.capped) pop('MAX WIN ×'+fmt(E.MAX_WIN,0),centre(),'huge');
+  rushIdx=rushPours; hud();
+  const w=R.win;
+  if(w>1){ sWin(true); banner('GOLD RUSH!','rush paid ×'+fx(Math.min(w,E.MAX_WIN))+' · '+fmt(cur.stake*Math.min(w,E.MAX_WIN)),'good'); await wait(2400); hideBanner() }
+  else { $('win').innerHTML='GOLD RUSH returned <b>'+fmt(cur.stake*w)+'</b>'; await wait(900) }
+  $('hud').hidden=true; music.stop(); W.setRush(false); document.body.classList.remove('rush');
+}
 
 /* ---------- flow ---------- */
-async function spin(testUs){
+async function spin(){
   if(busy) return;
   A.unlock(); $('tip').style.opacity=0;
   if(bal<1) bal=1000;
   stake=readStake(); if(bal<stake){ stake=Math.floor(bal*100)/100; $('bet').value=stake }
-  bal-=stake; busy=true; phase='drop'; run=0; hideBanner(); fairUI(); ui();
+  bal-=stake; busy=true; phase='base'; run=0; hideBanner(); fairUI(); ui();
   $('state').textContent='DROPPING · STAKE '+fmt(stake); multUI(''); $('win').innerHTML='watch the jar';
   if(W.hasBlobs()) sClear();
   await W.clear();
-  const drops=Array.isArray(testUs)?testUs.map(E.dropFromU):E.drawDrops(m=>F.u(m)), res=E.simulate(drops,true);
-  cur={drops,res,stake,test:Array.isArray(testUs)};
-  await W.play(res,()=>turbo?2.5:1);
-  // settle
-  const win=Math.round(stake*res.win*100)/100; bal+=win; run=res.win;
-  phase='idle';
-  if(res.gold){ sGold(); banner('GOLDEN BLOB!','×'+fx(res.win)+' · won '+fmt(win),'good'); multUI('won') }
-  else if(res.win>=20){ sWin(true); banner('MEGA SQUISH!','×'+fx(res.win)+' · won '+fmt(win),'good'); multUI('won') }
-  else if(res.win>=5){ sWin(true); banner('BIG SQUISH!','×'+fx(res.win)+' · won '+fmt(win),'good'); multUI('won') }
-  else if(res.win>=1){ sWin(false); banner('SQUISHY!','×'+fx(res.win)+' · won '+fmt(win),'good'); multUI('won') }
-  else multUI(res.win>0?'':'bust');
-  $('state').textContent=res.win>0?res.merges.length+' MERGES · '+(res.merges.filter(m=>m.pay>0).length)+' PAID':'NO PAID MERGES';
-  $('win').innerHTML=res.win>0?'won <b>'+fmt(win)+'</b>'+(res.win<1?' of '+fmt(stake):''):'lost <b>'+fmt(stake)+'</b>';
-  if(res.win<1) say('Spin over. Paid '+fx(res.win)+' times the stake.');
-  chip(res.win); end(res);
-  last={win:res.win,merges:res.merges.length,top:res.top,gold:res.gold,drops:drops.map(d=>d.tier),paid:win,stake};
+  const round=E.playRound(m=>F.u(m),true);
+  cur={round,stake};
+  await W.play(round.base,spd);
+  if(round.rush) await playRush(round);
+  // settle: celebrate only a total above the stake
+  const win=Math.round(stake*round.win*100)/100; bal+=win; run=round.win; phase='idle';
+  const what=round.rush?'GOLD RUSH round':'spin';
+  if(round.win>1){
+    multUI('won'); $('win').innerHTML='won <b>'+fmt(win)+'</b>';
+    if(round.rush&&!round.capped){ sWin(false); say('GOLD RUSH round won '+fmt(win)) }
+    else if(round.capped){ sGold(); banner('MAX WIN!','×'+fx(round.win)+' · won '+fmt(win),'good') }
+    else if(round.base.gold&&!round.rush){ sGold(); banner('GOLDEN BLOB!','×'+fx(round.win)+' · won '+fmt(win),'good') }
+    else if(round.win>=50){ sWin(true); banner('MEGA SQUISH!','×'+fx(round.win)+' · won '+fmt(win),'good') }
+    else if(round.win>=10){ sWin(true); banner('BIG SQUISH!','×'+fx(round.win)+' · won '+fmt(win),'good') }
+    else { sWin(false); banner('SQUISHY!','×'+fx(round.win)+' · won '+fmt(win),'good') }
+  } else if(round.win>0){ multUI('quiet'); $('win').innerHTML='returned <b>'+fmt(win)+'</b> of '+fmt(stake); say('Returned '+fmt(win)+' of the stake.') }
+  else { multUI('bust'); $('win').innerHTML='lost <b>'+fmt(stake)+'</b>'; say('No paid merges this '+what+'.') }
+  const paid=round.base.merges.filter(m=>m.pay>0).length;
+  $('state').textContent=round.rush?'GOLD RUSH OVER':paid?paid+' PAID MERGE'+(paid>1?'S':''):round.base.merges.length+' MERGES · NONE PAID';
+  chip(round.win,!!round.rush); end(round);
+  last={win:round.win,rush:!!round.rush,pours:round.rush?round.rush.pours.length:0,gold:round.base.gold,paid:win,stake};
   busy=false; ui(); fairUI();
-  if(auto>0){ auto--; ui(); if(auto>0&&!res.gold){ await wait(res.win>=1?1300:500); hideBanner(); if(auto>0) spin() } else { auto=0; ui() } }
+  if(auto>0){ auto--; ui(); if(auto>0&&round.win<50){ await wait(round.win>1?1300:500); hideBanner(); if(auto>0) spin() } else { auto=0; ui() } }
 }
-function end(res){
+function end(round){
   const rv=F.reveal(); lastReveal=rv;
-  const lines=cur.drops.map((d,k)=>'drop:'+k+' u='+d.u.toFixed(6)+' → '+NAMES[d.tier]+' at x='+d.x.toFixed(3));
-  const ms=res.merges.map(m=>'step '+m.step+': '+NAMES[m.tier-1]+' + '+NAMES[m.tier-1]+' → '+NAMES[m.tier]+(m.pay>0?' ×'+fx(m.pay):'')+(m.chain>1?' (link '+m.chain+', ×'+m.chain+')':''));
-  $('fairPrev').textContent=(cur.test?'TEST HOOK SPIN: drops were forced, not drawn from this seed\n':'')+'spin '+rv.nonce+' · client '+rv.client+'\nseed '+rv.seed+'\n'+lines.join('\n')+'\n'+(ms.length?ms.join('\n'):'no merges')+'\npaid ×'+fx(res.win)+(res.capped?' (capped)':'');
-  $('verify').disabled=false; fairUI();
+  const tn=d=>NAMES[d.tier];
+  const L=['spin '+rv.nonce+' · client '+rv.client,'seed '+rv.seed];
+  round.drops.forEach((d,k)=>L.push('drop:'+k+' u='+d.u.toFixed(6)+' → '+tn(d)+' at x='+d.x.toFixed(3)));
+  round.base.merges.forEach(m=>L.push('  step '+m.step+': → '+NAMES[m.tier]+(m.rainbow?' (rainbow)':'')+(m.pay>0?' ×'+fx(m.pay):'')+(m.chain>1?' (link '+m.chain+')':'')));
+  L.push('base paid ×'+fx(round.baseWin));
+  if(round.rush) for(const p of round.rush.pours){ L.push('rush pour '+p.p+' ×'+p.mult+': '+p.drops.map(tn).join(', ')); const pm=p.res.merges.filter(m=>m.pay>0); L.push('  '+p.res.merges.length+' merges, paid ×'+fx(p.res.raw)+(pm.length?' ('+pm.map(m=>NAMES[m.tier]+(m.chain>1?' link '+m.chain:'')).join(', ')+')':'')+(p.res.rainbows?' · rainbow +'+E.RETRIGGER+' pours':'')) }
+  L.push('round paid ×'+fx(round.win)+(round.capped?' (capped)':''));
+  $('fairPrev').textContent=L.join('\n'); $('verify').disabled=false; fairUI();
 }
-let lastReveal=null;
 function verify(){
   if(!lastReveal||!cur) return null;
-  if(cur.test){ $('fairPrev').textContent+='\nVERIFY: not possible, this was a test hook spin with forced drops'; return null }
-  const rv=lastReveal, drops=E.drawDrops(m=>uOf(rv.seed,rv.client+':'+rv.nonce+':'+m)), res=E.simulate(drops,false);
-  const ok=res.win===cur.res.win&&res.merges.length===cur.res.merges.length&&res.steps===cur.res.steps;
-  $('fairPrev').textContent+='\nVERIFY: replayed from the revealed seed → '+res.merges.length+' merges, ×'+fx(res.win)+(ok?' · MATCHES':' · DOES NOT MATCH');
+  const rv=lastReveal, r=E.playRound(m=>uOf(rv.seed,rv.client+':'+rv.nonce+':'+m),false), c=cur.round;
+  const ok=r.win===c.win&&r.base.merges.length===c.base.merges.length&&r.base.steps===c.base.steps&&(!!r.rush===!!c.rush)&&(!r.rush||r.rush.pours.length===c.rush.pours.length);
+  $('fairPrev').textContent+='\nVERIFY: replayed from the revealed seed → ×'+fx(r.win)+(r.rush?' with '+r.rush.pours.length+' rush pours':'')+(ok?' · MATCHES':' · DOES NOT MATCH');
   return ok;
 }
 $('verify').onclick=verify;
@@ -228,7 +319,7 @@ $('cash').onclick=()=>spin(); $('mbCash').onclick=()=>spin();
 $('cTurbo').onclick=()=>{ turbo=!turbo; ui() };
 $('cAuto').onclick=()=>{ if(auto>0){ auto=0; ui(); return } auto=10; ui(); if(!busy) spin() };
 addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden) return;
-  if(e.key===' '||e.key==='Enter'){ if(e.target.tagName!=='BUTTON'||e.target.id==='cash'){ spin(); e.preventDefault() } }
+  if(e.key===' '||e.key==='Enter'){ if($('intro').classList.contains('on')){ $('intro').click(); e.preventDefault(); return } if(e.target.tagName!=='BUTTON'||e.target.id==='cash'){ spin(); e.preventDefault() } }
   else if(e.key==='t'||e.key==='T') $('cTurbo').click(); else if(e.key==='a'||e.key==='A') $('cAuto').click() });
 $('fairBtn').onclick=()=>{ $('fairBox').hidden=!$('fairBox').hidden };
 const openHow=()=>{ $('how').hidden=false; setTimeout(()=>$('go').focus({preventScroll:true}),0) };
@@ -237,13 +328,19 @@ $('howBtn').onclick=openHow; $('go').onclick=()=>{ $('how').hidden=true; try{ lo
 /* ---------- 3D ---------- */
 let W=null;
 const hooks={
-  onDrop:()=>sDrop(),
+  onDrop:d=>{ sDrop(d.tier); if(d.tier===RAIN){ if(phase==='rush'){ const add=Math.min(E.RETRIGGER,E.MAX_POURS-rushPours); if(add>0){ rushPours+=add; hud(); pop('RAINBOW! +'+add+' POURS',centre(),'rain') } } else { pop('RAINBOW! GOLD RUSH',centre(),'rain'); $('state').textContent='RAINBOW · GOLD RUSH UNLOCKED' } } },
   onLand:(t,v)=>sLand(v),
+  onLift:()=>{ A.notes([12,16,19,24],784,.05,.05,'sine') },
   onMerge:(m,scr)=>{
-    run=Math.min(E.MAX_WIN,Math.round((run+m.pay)*1e6)/1e6); sPop(m.tier); lit(m.tier);
-    if(m.pay>0){ multUI(''); $('win').innerHTML='so far <b>'+fmt(cur.stake*run)+'</b>'; pop('+'+fmt(cur.stake*m.pay),scr,m.tier>=6?'huge':m.tier>=4?'big':'') }
-    if(m.chain>1&&scr) pop('CHAIN ×'+m.chain,{x:scr.x,y:scr.y-34},'chain');
-    if(m.tier===E.GOLD) banner('GOLDEN BLOB!','the jackpot · ×'+fx(m.pay),'good');
+    sPop(m.tier); lit(m.tier);
+    if(m.pay>0){
+      if(phase==='rush') rushWin+=m.pay;
+      run=Math.min(E.MAX_WIN,Math.round((run+m.pay)*1e6)/1e6); multUI(''); $('win').innerHTML='so far <b>'+fmt(cur.stake*run)+'</b>';
+      if(phase==='rush') hud();
+      pop('+'+fmt(cur.stake*m.pay),scr,m.tier>=GOLD?'huge':m.pay>=5?'big':'');
+    }
+    if(m.chain>1&&scr&&m.pay>0) pop('CHAIN ×'+m.chain,{x:scr.x,y:scr.y-34},'chain');
+    if(m.tier===GOLD){ sGold(); pop('GOLDEN BLOB!',centre(),'huge') }
   },
 };
 try{
@@ -253,14 +350,13 @@ try{
   const demo=[3,1,0,2,2,0,1,4,0,3,1,2].map((t,k)=>({tier:t,x:-2.4+((k*0.37)%1)*4.8}));
   W.showStill(E.simulate(demo,true));
 }catch(err){
-  console.error(err); const nop=async()=>{};
-  W={ hasBlobs:()=>false, clear:nop, showStill(){}, finishNow(){}, async play(res){ for(const m of res.merges) hooks.onMerge(m,null) } };
-  $('stage').insertAdjacentHTML('beforeend','<div class="nogl"><div><b style="font:24px var(--display)">3D could not start</b><p>This browser blocks WebGL. You can still play: SQUISH runs the same physics sim and pays the same table, you just will not see the jar.</p></div></div>');
+  console.error(err);
+  W={ hasBlobs:()=>false, clear:async()=>{}, showStill(){}, setRush(){}, async play(res){ for(const d of res.dropsAt) hooks.onDrop(d); for(const m of res.merges) hooks.onMerge(m,null) } };
+  $('stage').insertAdjacentHTML('beforeend','<div class="nogl"><div><b style="font:24px var(--display)">3D could not start</b><p>This browser blocks WebGL. You can still play: SQUISH runs the same physics sim and pays the same table, GOLD RUSH included, you just will not see the jar.</p></div></div>');
 }
-if(!W.hasBlobs) W.hasBlobs=()=>true;
 ptable(); fairRule(); fairUI(); ui();
 let seen=false; try{ seen=localStorage.getItem('squish-how')==='1' }catch(e){} if(!seen&&!embed) openHow();
-window.__squish={ get state(){ return {phase,busy,bal,stake,run,turbo,auto,last} }, spin:()=>spin(), verify, setTurbo:v=>{ turbo=!!v; ui() }, fast:()=>W.finishNow(), E, get result(){ return cur&&cur.res } };
+window.__squish={ get state(){ return {phase,busy,bal,stake,turbo,auto,last:busy?null:last} }, spin:()=>spin(), verify, setTurbo:v=>{ turbo=!!v; ui() } };
 </script>
 </body>
 </html>
