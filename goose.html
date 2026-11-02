@@ -31,6 +31,18 @@
 .legend span{font:800 12px var(--body);padding:4px 9px;border-radius:999px;border:2px solid var(--ink);background:#fff}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;border:1.5px solid var(--ink);vertical-align:-1px}
 .pos{font:900 12px var(--body);color:var(--muted);letter-spacing:.06em}
+.eggov{position:absolute;inset:0;z-index:5;display:none;place-items:center;background:radial-gradient(circle,rgba(255,214,90,.55),rgba(29,22,64,.35))}
+.eggov.on{display:grid}
+.eggbox{display:grid;justify-items:center;gap:10px;text-align:center}
+.eggbox b{font:clamp(26px,4vw,44px) var(--display);color:#fff;-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;text-shadow:0 5px 0 var(--ink)}
+.eggbox small{font:900 13px var(--body);color:var(--ink);background:var(--panel);border:2.5px solid var(--ink);border-radius:999px;padding:4px 12px}
+#eggBtn{width:150px;height:190px;border:0;padding:0;background:none;cursor:pointer;animation:wob 1s ease-in-out infinite}
+#eggBtn .shell{display:block;width:100%;height:100%;border-radius:50% 50% 46% 46%/58% 58% 42% 42%;background:radial-gradient(circle at 35% 30%,#fff6c9,#ffd23f 40%,#f2a900 75%,#c97f00);border:4px solid var(--ink);box-shadow:0 8px 0 var(--ink),inset -12px -16px 0 rgba(0,0,0,.08)}
+.eggov.cracked #eggBtn{animation:none;transform:scale(.6) rotate(-8deg);opacity:.35;transition:all .35s}
+#eggV{font:clamp(60px,9vw,110px)/1 var(--display);font-style:normal;color:var(--accent2);-webkit-text-stroke:4px var(--ink);paint-order:stroke fill;text-shadow:0 7px 0 var(--ink);min-height:0}
+.eggov.cracked #eggV{animation:pop .5s cubic-bezier(.2,1.8,.4,1)}
+@keyframes wob{25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+@keyframes pop{from{transform:scale(.2)}}
 </style>
 <script defer src="https://stats.1v1battles.com/nv.js" data-website-id="4f92624d-4cbc-4758-8bb8-8515f2b5e871"></script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
@@ -46,6 +58,7 @@
     <div class="stage" id="stage">
       <canvas id="view" tabindex="0" aria-label="Game of the Goose board. Key 1 throws one die, key 2 throws two dice, space cashes out." aria-describedby="sr"></canvas>
       <div class="dicebadge" id="dice"></div>
+      <div class="eggov" id="egg"><div class="eggbox"><b id="eggT">GOLDEN EGG!</b><button id="eggBtn" aria-label="Crack the egg"><span class="shell"></span></button><i id="eggV"></i><small>tap the egg to crack it</small></div></div>
       <div class="toast" id="toast"></div>
       <div class="banner" id="banner"><b id="bnT"></b><span id="bnS"></span></div>
       <div class="tip" id="tip">HOVER A BUTTON TO SEE WHERE YOU CAN LAND</div>
@@ -67,23 +80,23 @@
           <button class="choice k1" id="c1"><span class="ic">1</span><span class="nm">ONE DIE<small id="r1"></small></span><span class="x" id="x1"></span></button>
           <button class="choice k2" id="c2"><span class="ic">2</span><span class="nm">TWO DICE<small id="r2"></small></span><span class="x" id="x2"></span></button>
         </div>
-        <div class="legend"><span><i style="background:#21e07a"></i>safe landing</span><span><i style="background:#ff2a4a"></i>trap: inn, well, prison, skull</span></div>
+        <div class="legend"><span><i style="background:#21e07a"></i>safe</span><span><i style="background:#ffb800"></i>golden egg ×2 to ×10</span><span><i style="background:#ff2a4a"></i>trap: foxes, inn, well, prison, skull</span></div>
         <button id="cash" disabled>CASH OUT<small>after your first risky throw</small></button>
-        <p class="hint">Every throw pays its <b>true odds</b>. Throws that cannot hit a trap pay ×1.00. The house edge of 3% is taken once, on your first risky throw, so <b>one die, two dice or any mix returns 97%</b>.</p>
+        <p class="hint">Nine foxes guard the board, so every throw that survives pays its <b>true odds</b> and the multiplier climbs fast. Land on a <b>golden egg</b> (22, 44) or reach <b>63</b> and you crack an egg worth ×2 to ×10 on top. The house edge of 3% is taken once, on your first risky throw, so <b>one die, two dice or any mix returns 97%</b>.</p>
       </div>
     </div>
   </div>
 </div>
 <div class="box" id="mbar"><b id="mbMult">1.00×</b><button id="mbCash" disabled>CASH OUT</button></div>
-<div class="box fairbox" id="fairBox" hidden><b>Provably fair</b><p>Before each game we publish SHA-256(server seed). Throw n uses u = HMAC-SHA256(seed, client:nonce:throw:n), first 52 bits ÷ 2<sup>52</sup>. The dice results of your choice are listed with the trap results first: u below the trap share lands on a trap, otherwise u picks one of the safe results in order. After the game the seed is revealed.</p><p>Classic rules: geese move you again by the same throw, 6 → 12 (bridge), 42 → 30 (maze), overshoot 63 and you bounce back, a first throw of 6+3 goes to 26 and 5+4 to 53. Traps: 19 inn, 31 well, 52 prison, 58 skull.</p><code id="fairFull"></code><pre id="fairPrev">no game played yet</pre></div>
+<div class="box fairbox" id="fairBox" hidden><b>Provably fair</b><p>Before each game we publish SHA-256(server seed). Throw n uses u = HMAC-SHA256(seed, client:nonce:throw:n), first 52 bits ÷ 2<sup>52</sup>. The dice results of your choice are listed with the trap results first: u below the trap share lands on a trap, otherwise u picks one of the safe results in order. After the game the seed is revealed.</p><p>Classic rules: geese move you again by the same throw, 6 → 12 (bridge), 42 → 30 (maze), overshoot 63 and you bounce back, a first throw of 6+3 goes to 26 and 5+4 to 53. Traps: 19 inn, 31 well, 52 prison, 58 skull and foxes on 11, 16, 25, 29, 38, 43, 47, 56, 61.</p><p>Pricing: each dice result gets weight 0 (trap), 2.95 (golden egg 22 or 44, or 63) or 1. A normal landing pays f ÷ average weight, an egg landing that times the egg, drawn with v = HMAC(seed, client:nonce:egg:n): ×2 (60%), ×3 (25%), ×5 (10%), ×10 (5%), average 2.95. So each throw is worth exactly f: 0.97 on your first risky throw, 1 after. Payouts are capped at 10,000×.</p><code id="fairFull"></code><pre id="fairPrev">no game played yet</pre></div>
 <div class="how" id="how" hidden><div class="box" role="dialog" aria-modal="true" aria-labelledby="howT">
   <h2 id="howT">How to play <span>GOOSE 63</span></h2>
   <p style="margin:0;color:var(--muted);font-size:15px;line-height:1.55">The board game everyone played as a kid, now with a cash-out button. Get your goose to square 63.</p>
   <ol>
     <li><div><b>Pick one die or two.</b> One die moves you a little, two dice move you far. Each button shows the exact chance of landing on a trap.</div></li>
     <li><div><b>Geese fly you on.</b> Land on a goose and you move the same number again. The bridge jumps ahead, the maze sends you back.</div></li>
-    <li><div><b>Avoid the traps.</b> The inn (19), the well (31), the prison (52) and the skull (58) end the game.</div></li>
-    <li><div><b>Cash out any time</b> after your first risky throw, or land exactly on <b>63</b> for the golden goose.</div></li>
+    <li><div><b>Avoid the traps.</b> Nine foxes, the inn (19), the well (31), the prison (52) and the skull (58) end the game. More danger means every safe throw pays more.</div></li>
+    <li><div><b>Hunt the golden eggs.</b> Land on 22 or 44 and crack an egg worth ×2 to ×10. Reach exactly <b>63</b> and the golden goose lays one more. Cash out any time after your first risky throw.</div></li>
   </ol>
   <button id="go" class="go">LET'S GO</button>
 </div></div>
@@ -100,7 +113,7 @@ const fx=m=>m>=1000?fmt(m,0):fmt(m);
 const embed=location.hash==='#embed'; if(embed){ document.body.classList.add('embed'); $('backlink').remove() }
 const wait=ms=>new Promise(r=>setTimeout(r,reduce?Math.min(ms,150):ms));
 const F=createFair('goose-demo-client'), A=createSfx();
-const TRAP_TXT={inn:['SLEPT IN','square 19, the inn'],well:['IN THE WELL!','square 31, the well'],prison:['LOCKED UP!','square 52, the prison'],skull:['SKULL!','square 58, the skull']};
+const TRAP_TXT={inn:['SLEPT IN','square 19, the inn'],well:['IN THE WELL!','square 31, the well'],prison:['LOCKED UP!','square 52, the prison'],skull:['SKULL!','square 58, the skull'],fox:['FOX!','a fox got your goose']};
 
 /* ---------- sound ---------- */
 const sRattle=()=>{ for(let i=0;i<7;i++) A.noise(.05,2500+Math.random()*2500,.12,'bandpass',i*.07) };
@@ -120,7 +133,7 @@ function readStake(){ let v=parseFloat($('bet').value); if(!isFinite(v)||v<1) v=
 $('half').onclick=()=>{ $('bet').value=Math.max(1,Math.round(readStake()/2*100)/100) };
 $('dbl').onclick=()=>{ $('bet').value=Math.min(bal,500,readStake()*2); readStake() };
 function multUI(cls){ const el=$('mult'); el.textContent=fx(mult)+'×'; el.className=cls||''; if(!cls&&!reduce){ el.classList.add('pop'); setTimeout(()=>el.classList.remove('pop'),200) } $('mbMult').textContent=fx(mult)+'×' }
-function ends(o){ const m=new Map(); for(const r of o.all){ const v=m.get(r.end)||{share:0,trap:!!r.trap}; v.share+=1/o.all.length; m.set(r.end,v) } return m }
+function ends(o){ const m=new Map(); for(const r of o.all){ const v=m.get(r.end)||{share:0,trap:!!r.trap,bonus:!!r.bonus}; v.share+=1/o.all.length; m.set(r.end,v) } return m }
 function ui(){
   $('bal').textContent=fmt(bal);
   document.body.classList.toggle('running',phase==='run');
@@ -134,11 +147,19 @@ function ui(){
   [[o1,'1'],[o2,'2']].forEach(([o,k])=>{
     const b=$('c'+k); b.disabled=busy||phase==='over'||o.blocked;
     if(o.blocked){ $('x'+k).textContent='—'; $('r'+k).textContent='every result is a trap'; return }
-    $('x'+k).textContent=o.p>0?'×'+fx(o.m):'×'+fx(o.m);
-    $('r'+k).textContent=o.p>0?(o.p*100).toFixed(o.max?1:0)+'% trap'+(o.max?' · MAX WIN':''):'no trap in reach · free move';
+    $('x'+k).textContent='×'+fx(o.m);
+    const eg=o.bonus>0?' · egg '+(o.bonus*100).toFixed(0)+'%':'';
+    $('r'+k).textContent=(o.p>0?(o.p*100).toFixed(0)+'% trap':'no trap in reach')+eg;
   });
   if(phase!=='run'&&phase!=='idle') return;
   if(!busy) W&&W.preview(hoverD?ends(hoverD===1?o1:o2):null);
+}
+function crackEgg(v,golden){
+  return new Promise(res=>{
+    const ov=$('egg'); $('eggT').textContent=golden?'THE GOLDEN GOOSE LAID AN EGG':'GOLDEN EGG!'; $('eggV').textContent=''; ov.className='eggov on'; sHonk();
+    let done=false; const go=()=>{ if(done) return; done=true; ov.classList.add('cracked'); $('eggV').textContent='×'+v; sWin(); say('The egg is worth '+v+' times.'); setTimeout(()=>{ ov.className='eggov'; res() },1500) };
+    $('eggBtn').onclick=go; setTimeout(go,reduce?300:3500);
+  });
 }
 function chip(m,won,trap){ hist.unshift({m,won,trap}); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span class="chip '+(h.won?'w':'l')+'">'+(h.won?fx(h.m)+'×':h.trap)+'</span>').join('') }
 function banner(t,s,cls){ $('bnT').textContent=t; $('bnS').textContent=s; $('banner').className='banner '+cls+' on'; say(t+'. '+s) }
@@ -158,7 +179,7 @@ async function throwDice(d){
   throwN++; const u=F.u('throw:'+throwN), r=E.resolve(o,u);
   sRattle(); await W.roll(r.dice); sLand();
   const tot=r.dice.reduce((a,b)=>a+b,0); $('dice').textContent=r.dice.join(' + ')+(r.dice.length>1?' = '+tot:''); $('dice').classList.add('on');
-  log.push({n:throwN,d,u,dice:r.dice,end:r.end,trap:r.trap,p:o.p,m:o.m});
+  log.push({n:throwN,d,u,dice:r.dice,end:r.end,trap:r.trap,p:o.p,m:o.m,g:o.g});
   let hops=0; const onEv=e=>{ if(e==='goose'){ sHonk(); toast('GOOSE! FLY AGAIN') } else if(e==='bridge') toast('THE BRIDGE!'); else if(e==='maze') toast('THE MAZE, BACK TO 30'); else if(e==='lucky') toast(r.end===26?'6 + 3, STRAIGHT TO 26':'5 + 4, STRAIGHT TO 53') };
   W.setEvents(onEv, ()=>sHop(hops++%8));
   await W.play(r.moves);
@@ -168,11 +189,13 @@ async function throwDice(d){
     banner(t,s+' · lost '+fmt(stake),'bad'); $('state').textContent='CAUGHT ON SQUARE '+r.end; multUI('bust'); $('win').innerHTML='lost <b>'+fmt(stake)+'</b>';
     await W.trap(r.trap); chip(0,false,r.trap.toUpperCase()); end(0); await wait(900); hideBanner(); busy=false; await W.reset(); newRound(); return;
   }
-  pos=r.end; mult=o.m; if(o.edge) charged=true; multUI(); sSafe();
+  let v=1;
+  if(r.bonus){ v=E.eggValue(F.u('egg:'+throwN)); log[log.length-1].egg=v; await crackEgg(v,r.end===E.LAST) }
+  pos=r.end; mult=Math.min(E.MAX_WIN,mult*o.g*v); if(o.edge) charged=true; multUI(); sSafe();
   say('Safe on square '+pos+'. Multiplier '+fx(mult)+' times.');
   $('win').innerHTML=charged?'cash out <b>'+fmt(stake*mult)+'</b>':'free moves until your first risky throw';
   busy=false; ui();
-  if(pos===E.LAST||o.max) await finish(o.max);
+  if(pos===E.LAST||mult>=E.MAX_WIN) await finish(mult>=E.MAX_WIN);
 }
 async function finish(isMax){
   busy=true; phase='over'; if(!charged) mult*=E.RTP;
@@ -186,7 +209,7 @@ async function cashOut(){
   banner('CASHED OUT','×'+fx(mult)+' · won '+fmt(win),'good'); $('state').textContent='CASHED OUT ON SQUARE '+pos; multUI('won'); $('win').innerHTML='won <b>'+fmt(win)+'</b>';
   await W.cash(); chip(mult,true); end(mult); await wait(400); hideBanner(); busy=false; await W.reset(); newRound();
 }
-function end(cash){ const rv=F.reveal(); $('fairPrev').textContent='game '+rv.nonce+' · client '+rv.client+'\nseed '+rv.seed+'\n'+log.map(l=>'throw '+l.n+': u='+l.u.toFixed(6)+' · '+l.d+' '+(l.d>1?'dice':'die')+' · trap share '+(l.p*100).toFixed(2)+'% → '+l.dice.join('+')+' → square '+l.end+(l.trap?' ('+l.trap+')':' safe ×'+fx(l.m))).join('\n')+(cash?'\npaid ×'+fx(cash):''); fairUI() }
+function end(cash){ const rv=F.reveal(); $('fairPrev').textContent='game '+rv.nonce+' · client '+rv.client+'\nseed '+rv.seed+'\n'+log.map(l=>'throw '+l.n+': u='+l.u.toFixed(6)+' · '+l.d+' '+(l.d>1?'dice':'die')+' · trap share '+(l.p*100).toFixed(2)+'% → '+l.dice.join('+')+' → square '+l.end+(l.trap?' ('+l.trap+')':' safe · gain ×'+l.g.toFixed(4)+(l.egg?' · egg ×'+l.egg:''))).join('\n')+(cash?'\npaid ×'+fx(cash):''); fairUI() }
 $('c1').onclick=()=>throwDice(1); $('c2').onclick=()=>throwDice(2);
 for(const k of [1,2]){ const b=$('c'+k); b.addEventListener('pointerenter',()=>{ hoverD=k; ui() }); b.addEventListener('pointerleave',()=>{ hoverD=0; ui() }); b.addEventListener('focus',()=>{ hoverD=k; ui() }); b.addEventListener('blur',()=>{ hoverD=0; ui() }) }
 $('cash').onclick=cashOut; $('mbCash').onclick=cashOut;

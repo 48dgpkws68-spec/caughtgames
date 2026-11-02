@@ -12,6 +12,8 @@ import { makeGoose, makeDie, faceUp } from './models.js';
 const CELL = 1.52;
 const TILE_COLS = ['#ff6b8b', '#ffc531', '#3fd6a6', '#55b6ff', '#b58cff', '#ff9a4d'];
 const TRAP_NAME = { 19: 'INN', 31: 'WELL', 52: 'PRISON', 58: 'SKULL' };
+const FOXES = [11, 16, 25, 29, 38, 43, 47, 56, 61], EGG_SQ = [22, 44];
+for (const k of FOXES) TRAP_NAME[k] = 'FOX';
 
 // square spiral on a 9x9 grid, from the bottom-left corner inward
 function spiral() {
@@ -72,10 +74,10 @@ export function createWorld(canvas, opts = {}) {
       g.textAlign = 'center'; g.textBaseline = 'middle';
       g.font = '96px "Lilita One", "Arial Rounded MT Bold", sans-serif';
       g.lineWidth = 14; g.strokeStyle = '#1d1640'; g.fillStyle = '#fff';
-      const ty = GEESE.has(k) || TRAP_NAME[k] || k === 6 || k === 42 || k === 63 ? 70 : 128;
+      const ty = GEESE.has(k) || TRAP_NAME[k] || EGG_SQ.includes(k) || k === 6 || k === 42 || k === 63 ? 70 : 128;
       g.strokeText(String(k), w / 2, ty); g.fillText(String(k), w / 2, ty);
-      if (TRAP_NAME[k] || k === 6 || k === 42) {
-        const t = TRAP_NAME[k] || (k === 6 ? 'BRIDGE' : 'MAZE');
+      if (TRAP_NAME[k] || EGG_SQ.includes(k) || k === 6 || k === 42) {
+        const t = TRAP_NAME[k] || (EGG_SQ.includes(k) ? 'EGG' : k === 6 ? 'BRIDGE' : 'MAZE');
         g.font = '44px "Lilita One", sans-serif'; g.lineWidth = 9; g.strokeText(t, w / 2, 200); g.fillStyle = TRAP_NAME[k] ? '#ffe36b' : '#c9fff0'; g.fillText(t, w / 2, 200);
       }
       void col;
@@ -85,7 +87,8 @@ export function createWorld(canvas, opts = {}) {
     const p = posOf(k);
     let col = k === 0 ? '#ffffff' : TILE_COLS[k % TILE_COLS.length];
     if (GEESE.has(k)) col = '#fff6dc';
-    if (TRAP_NAME[k]) col = k === 58 ? '#3b2a63' : '#d63a5a';
+    if (TRAP_NAME[k]) col = k === 58 ? '#3b2a63' : TRAP_NAME[k] === 'FOX' ? '#ff6a2b' : '#d63a5a';
+    if (EGG_SQ.includes(k)) col = '#ffd23f';
     if (k === 63) col = '#ffc93c';
     const mat = k === 63 ? new THREE.MeshPhysicalMaterial({ color: col, metalness: 0.9, roughness: 0.25, envMapIntensity: 1.2, emissive: '#ff9d00', emissiveIntensity: 0.15 }) : S.vinyl(col, { rough: 0.3, env: 0.5 });
     const tile = new THREE.Mesh(tileGeo, mat);
@@ -157,6 +160,29 @@ export function createWorld(canvas, opts = {}) {
     g.add(head, jaw); g.children.forEach((m) => { m.castShadow = true; }); g.position.set(p.x + 0.3, TOP, p.z - 0.3); g.scale.setScalar(0.85); g.rotation.y = -0.4;
     scene.add(g); props.skull = g;
   }
+  // foxes: a little vinyl fox on every fox square (it pounces on a pawn that lands there)
+  props.foxes = {};
+  for (const k of FOXES) {
+    const p = posOf(k), g = new THREE.Group(), fur = S.vinyl('#ff7a2e'), white = S.vinyl('#fff4e6'), dark = S.vinyl('#2a1b2e');
+    const body = new THREE.Mesh(new THREE.SphereGeometry(0.22, 20, 14), fur); body.scale.set(1, 0.9, 1.2); body.position.y = 0.2;
+    const head = new THREE.Mesh(new THREE.SphereGeometry(0.17, 20, 14), fur); head.position.set(0, 0.45, 0.14);
+    const snout = new THREE.Mesh(new THREE.ConeGeometry(0.08, 0.2, 14), white); snout.rotation.x = Math.PI / 2; snout.position.set(0, 0.42, 0.33);
+    const nose = new THREE.Mesh(new THREE.SphereGeometry(0.03, 8, 6), dark); nose.position.set(0, 0.42, 0.43);
+    for (const s2 of [-1, 1]) { const ear = new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.17, 4), fur); ear.position.set(s2 * 0.1, 0.62, 0.1); g.add(ear); const eye = new THREE.Mesh(new THREE.SphereGeometry(0.025, 8, 6), dark); eye.position.set(s2 * 0.065, 0.5, 0.28); g.add(eye); }
+    const tail = new THREE.Mesh(new THREE.SphereGeometry(0.12, 14, 10), fur); tail.scale.set(0.7, 0.7, 1.6); tail.position.set(0.12, 0.25, -0.3); tail.rotation.y = 0.5;
+    const tip = new THREE.Mesh(new THREE.SphereGeometry(0.06, 10, 8), white); tip.position.set(0.2, 0.27, -0.48);
+    g.add(body, head, snout, nose, tail, tip); g.children.forEach((m) => { m.castShadow = true; });
+    g.position.set(p.x + 0.36, TOP, p.z - 0.32); g.rotation.y = -0.6 + R() * 0.4; g.scale.setScalar(0.95);
+    scene.add(g); props.foxes[k] = g;
+  }
+  // golden eggs on the egg squares
+  const eggMat = new THREE.MeshPhysicalMaterial({ color: '#ffcf3a', metalness: 0.9, roughness: 0.18, clearcoat: 1, envMapIntensity: 1.3, emissive: '#ff9d00', emissiveIntensity: 0.12 });
+  props.eggs = {};
+  for (const k of EGG_SQ) {
+    const p = posOf(k), e = new THREE.Mesh(new THREE.SphereGeometry(0.26, 28, 20), eggMat);
+    e.scale.set(1, 1.3, 1); e.position.set(p.x + 0.3, TOP + 0.34, p.z - 0.3); e.castShadow = true; scene.add(e); props.eggs[k] = e;
+  }
+
   // golden goose statue in the middle of the spiral, next to 63
   const golden = makeGoose(S, { gold: true, idle: true });
   const centre = new THREE.Vector3(0, TOP, 0);
@@ -207,7 +233,8 @@ export function createWorld(canvas, opts = {}) {
     camera.lookAt(camLook);
     S.sun.position.set(p.x + 6, 14, p.z + 8); S.sun.target.position.set(p.x * 0.5, 0, p.z * 0.5);
     pawn.update(dt, t); golden.update(dt, t); for (const g of decorGeese) g.update(dt, t * 0.8 + g.root.position.x);
-    golden.root.rotation.y = 0.6 + Math.sin(t * 0.6) * 0.35; glow.material.opacity = 0.45 + Math.sin(t * 2) * 0.12;
+    golden.root.rotation.y = 0.6 + Math.sin(t * 0.6) * 0.35;
+    for (const k in props.eggs) { const e = props.eggs[k]; e.rotation.y = t * 1.2; e.position.y = TOP + 0.34 + Math.sin(t * 2.2 + +k) * 0.06; } glow.material.opacity = 0.45 + Math.sin(t * 2) * 0.12;
     shadowBlob.position.set(p.x, TOP + 0.012, p.z); shadowBlob.scale.setScalar(Math.max(0.3, 1 - Math.max(0, p.y - TOP) * 0.35) * (1 + Math.sin(t * 4) * 0.06));
     for (let k = 1; k <= 63; k++) {
       const T = tiles[k];
@@ -248,7 +275,7 @@ export function createWorld(canvas, opts = {}) {
     preview(ends) {   // ends: Map square -> { share, trap }
       for (let k = 1; k <= 63; k++) tiles[k].want = 0;
       if (!ends) return;
-      for (const [k, v] of ends) { tiles[k].want = Math.min(1, 0.25 + v.share * 2.2); tiles[k].col = v.trap ? '#ff2a4a' : '#21e07a'; }
+      for (const [k, v] of ends) { tiles[k].want = Math.min(1, 0.25 + v.share * 2.2); tiles[k].col = v.trap ? '#ff2a4a' : v.bonus ? '#ffb800' : '#21e07a'; }
     },
     async roll(vals) {
       const p = pawn.root.position;
@@ -291,7 +318,9 @@ export function createWorld(canvas, opts = {}) {
       if (kind === 'inn') { const target = new THREE.Vector3(props.inn.g.position.x, TOP, props.inn.g.position.z + 0.3); await tween(600, (k) => { pawn.root.position.lerpVectors(pp, target, k); pawn.root.scale.setScalar(0.85 * (1 - k * 0.85)); }); props.inn.win.material.color.set('#3a2f55'); }
       else if (kind === 'well') { burst(pp, 40, 'splash'); await tween(700, (k) => { pawn.root.position.y = TOP - k * 1.4; pawn.root.rotation.y += 0.25; }); }
       else if (kind === 'prison') { const g = props.prison.g; g.visible = true; await tween(420, (k) => { g.position.y = props.prison.rest - k * k * 3; }); shake = 0.35; }
-      else { pawn.inner.traverse((m) => { if (m.material && m.material.color) { m.material = m.material.clone(); m.material.color?.set('#8d86a3'); if (m.material.vertexColors) m.material.vertexColors = false; } }); await tween(500, (k) => { pawn.inner.rotation.x = -k * Math.PI / 2; }); }
+      else {
+        if (kind === 'fox') { const f = Object.entries(props.foxes).map(([k, g]) => g).sort((a2, b2) => a2.position.distanceTo(pp) - b2.position.distanceTo(pp))[0]; if (f) { const f0 = f.position.clone(); await tween(380, (k2) => { f.position.lerpVectors(f0, new THREE.Vector3(pp.x, TOP, pp.z), ease.out(k2)); f.position.y = TOP + Math.sin(Math.PI * k2) * 0.9; }); shake = 0.3; setTimeout(() => { tween(500, (k2) => { f.position.lerpVectors(new THREE.Vector3(pp.x, TOP, pp.z), f0, k2); }); }, 900); } }
+        pawn.inner.traverse((m) => { if (m.material && m.material.color) { m.material = m.material.clone(); m.material.color?.set('#8d86a3'); if (m.material.vertexColors) m.material.vertexColors = false; } }); await tween(500, (k) => { pawn.inner.rotation.x = -k * Math.PI / 2; }); }
       await wait(900);
     },
     async finish() {
