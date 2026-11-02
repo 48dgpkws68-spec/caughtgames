@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SNEAK · Caught Games</title>
+<meta name="description" content="SNEAK by Caught Games: a 3D heist step game. Pick shadow, dim or spotlight on every step, set your own risk as you go and get out before the alarm.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Caught Games">
+<meta property="og:title" content="SNEAK · Pick your risk every step">
+<meta property="og:description" content="A 3D heist step game. Shadow, dim or spotlight on every step. Get out with the loot before the alarm.">
+<meta property="og:url" content="https://caughtgames.com/sneak.html">
+<meta property="og:image" content="https://caughtgames.com/art/og-sneak.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://caughtgames.com/sneak.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2307060b'/%3E%3Cpath d='M8 32c8-12 16-17 24-17s16 5 24 17c-8 12-16 17-24 17S16 44 8 32z' fill='none' stroke='%23e9c46a' stroke-width='4'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%23ff2d6f'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Manrope:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{--fg:#f4efff;--muted:rgba(222,212,255,.62);--dim:rgba(222,212,255,.38);--line:rgba(190,170,255,.14);--line2:rgba(190,170,255,.28);
+  --glass:rgba(16,10,30,.55);--gold:#e9c46a;--gold2:#f8e3a3;--hot:#ff3b5c;--ok:#3dff9a;--sh:#8ea2ff;--dm:#ffbf6b;--sp:#fff3d6;color-scheme:dark}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;background:#07050d;color:var(--fg);font-family:Manrope,system-ui,sans-serif}
+body{overflow-x:hidden}
+.wrap{position:relative;min-height:100vh;display:grid;grid-template-rows:auto 1fr;padding:16px;gap:14px;max-width:1320px;margin:0 auto}
+.glass{background:var(--glass);border:1px solid var(--line);border-radius:22px;backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);box-shadow:inset 0 1px 0 rgba(220,200,255,.1),0 24px 60px -24px rgba(0,0,0,.8)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.brand{padding:11px 18px;font:800 19px Unbounded,sans-serif;letter-spacing:.06em;display:flex;align-items:center;gap:12px}
+.brand .dot{width:12px;height:12px;border-radius:50%;background:var(--hot);box-shadow:0 0 0 4px rgba(255,59,92,.15),0 0 18px var(--hot);animation:blink 1.6s infinite}
+@keyframes blink{50%{opacity:.25}}
+.brand small{display:block;font:500 10px 'JetBrains Mono',monospace;color:var(--muted);letter-spacing:.16em;margin-top:3px}
+.hist{display:flex;gap:6px;padding:9px;flex:1;min-width:0;overflow:hidden;mask:linear-gradient(90deg,#000 85%,transparent)}
+.hist:empty::before{content:"NO HEISTS YET";font:600 11px 'JetBrains Mono',monospace;letter-spacing:.14em;color:var(--dim);padding:5px 8px}
+.chip{font:700 12px 'JetBrains Mono',monospace;padding:5px 10px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid var(--line);white-space:nowrap;animation:chipIn .4s cubic-bezier(.2,1.4,.4,1)}
+.chip.w{color:var(--gold2);border-color:rgba(233,196,106,.35)}.chip.l{color:#ff8a9c}
+@keyframes chipIn{from{transform:scale(.4);opacity:0}}
+.pills{display:flex;gap:8px}
+.pill{white-space:nowrap;cursor:pointer;color:var(--fg);font:700 11px 'JetBrains Mono',monospace;letter-spacing:.08em;padding:11px 14px;border-radius:999px}
+.pill:hover{border-color:var(--gold)}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:16px;align-items:start}
+@media(max-width:960px){.main{grid-template-columns:minmax(0,1fr)}}
+.stage{position:relative;width:100%;aspect-ratio:16/10;max-height:calc(100vh - 110px);border-radius:24px;overflow:hidden;border:1px solid var(--line);background:#07050d}
+#view{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:manipulation;outline:none}
+.banner{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%) scale(.6);text-align:center;pointer-events:none;opacity:0;transition:opacity .3s,transform .5s cubic-bezier(.2,1.5,.4,1)}
+.banner.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.banner b{display:block;font:800 clamp(40px,8vw,92px)/1 Unbounded,sans-serif;letter-spacing:-.02em}
+.banner span{display:block;margin-top:10px;font:700 clamp(12px,1.6vw,16px) 'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--fg);text-shadow:0 2px 12px #000}
+.banner.bad b{color:var(--hot);text-shadow:0 0 40px rgba(255,59,92,.7),0 6px 0 #5a0012}
+.banner.good b{background:linear-gradient(100deg,#b8862b,#f8e3a3 35%,#e9c46a 60%,#fff4cf 75%,#b8862b);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 26px rgba(233,196,106,.6)) drop-shadow(0 6px 0 #5a3d00)}
+.rows{position:absolute;right:14px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column-reverse;gap:5px;pointer-events:none}
+.rows i{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);transition:background .3s,box-shadow .3s}
+.rows i.on{background:var(--gold);box-shadow:0 0 10px var(--gold)}
+.rows i.gem{width:13px;height:13px;margin-left:-2px;border-radius:3px;transform:rotate(45deg);background:rgba(127,216,255,.35);border-color:#7fd8ff}
+.tip{position:absolute;left:14px;bottom:14px;font:600 11px 'JetBrains Mono',monospace;letter-spacing:.08em;color:var(--muted);padding:8px 12px;border-radius:999px;background:rgba(7,5,13,.6);border:1px solid var(--line);pointer-events:none;transition:opacity .4s}
+.nogl{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:30px;color:var(--muted)}
+.side{display:grid;gap:12px;min-width:0;grid-template-columns:minmax(0,1fr)}
+.card{padding:18px}
+.lbl{font:600 10px 'JetBrains Mono',monospace;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin:0 0 8px 2px;display:flex;justify-content:space-between}
+.meter{text-align:center;padding:20px 18px 18px}
+#state{font:600 10px 'JetBrains Mono',monospace;letter-spacing:.22em;color:var(--gold);margin-bottom:10px}
+#mult{font:800 clamp(46px,6vw,62px)/1 Unbounded,sans-serif;letter-spacing:-.03em;background:linear-gradient(180deg,#fff,#f3e6ff 50%,#c9a4ff);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 22px rgba(170,120,255,.35));transition:transform .25s cubic-bezier(.2,1.6,.4,1)}
+#mult.pop{transform:scale(1.08)}
+#mult.bust{background:linear-gradient(180deg,#ffe0e6,#ff3b5c 60%,#a3001f);-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 26px rgba(255,59,92,.55))}
+#mult.won{background:linear-gradient(100deg,#b8862b,#f8e3a3 35%,#e9c46a 60%,#fff4cf 75%,#b8862b);-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 0 26px rgba(233,196,106,.5))}
+#win{font:700 15px 'JetBrains Mono',monospace;color:var(--muted);margin-top:10px;min-height:20px}
+#win b{color:var(--fg)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.bal b{font:800 20px Unbounded,sans-serif}
+.stake{display:flex;gap:6px}
+.stake input{width:100%;min-width:0;font:700 16px 'JetBrains Mono',monospace;color:var(--fg);background:rgba(0,0,0,.3);border:1px solid var(--line2);border-radius:12px;padding:10px 12px}
+.stake button{font:700 12px 'JetBrains Mono',monospace;color:var(--fg);background:rgba(255,255,255,.06);border:1px solid var(--line2);border-radius:12px;padding:0 11px;cursor:pointer}
+.picks{display:grid;gap:8px;margin-top:16px}
+.pick{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;text-align:left;cursor:pointer;color:var(--fg);border-radius:16px;padding:12px 14px;border:1px solid var(--line2);background:rgba(255,255,255,.04);transition:transform .15s,border-color .2s,background .2s}
+.pick:hover:not(:disabled),.pick.hl{transform:translateX(-3px);background:rgba(255,255,255,.08)}
+.pick:disabled{opacity:.42;cursor:not-allowed}
+.pick .sw{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font:800 15px Unbounded,sans-serif;color:#0b0812}
+.pick .nm{font:800 14px Unbounded,sans-serif;letter-spacing:.04em}
+.pick .nm small{display:block;font:600 11px 'JetBrains Mono',monospace;color:var(--muted);letter-spacing:.06em;margin-top:3px}
+.pick .x{font:800 17px 'JetBrains Mono',monospace}
+.pick.k0{border-color:rgba(142,162,255,.35)}.pick.k0 .sw{background:linear-gradient(135deg,#c3cdff,#4f6bff)}.pick.k0 .x{color:var(--sh)}
+.pick.k1{border-color:rgba(255,191,107,.35)}.pick.k1 .sw{background:linear-gradient(135deg,#ffe2b0,#ff9a2e)}.pick.k1 .x{color:var(--dm)}
+.pick.k2{border-color:rgba(255,243,214,.4)}.pick.k2 .sw{background:linear-gradient(135deg,#fff,#ffe6a6)}.pick.k2 .x{color:var(--sp)}
+#cash{width:100%;margin-top:12px;font:800 16px Unbounded,sans-serif;letter-spacing:.04em;border:0;border-radius:16px;padding:16px;cursor:pointer;color:#1b1406;background:linear-gradient(100deg,#b8862b,#f8e3a3 35%,#e9c46a 60%,#fff4cf 75%,#b8862b);background-size:200% 100%;animation:sheen 3s linear infinite;box-shadow:0 10px 30px -10px rgba(233,196,106,.6)}
+#cash small{display:block;font:700 11px 'JetBrains Mono',monospace;letter-spacing:.06em;margin-top:4px;opacity:.75}
+#cash:disabled{animation:none;filter:grayscale(.85) brightness(.55);cursor:not-allowed;box-shadow:none}
+@keyframes sheen{to{background-position:-200% 0}}
+.hint{font-size:13px;line-height:1.5;color:var(--muted);margin:14px 2px 0}
+.hint b{color:var(--fg)}
+.fairbox{position:fixed;right:16px;top:76px;z-index:20;width:min(440px,calc(100vw - 32px));padding:18px;font-size:13px;line-height:1.5}
+.fairbox b{font:800 14px Unbounded,sans-serif}
+.fairbox p{color:var(--muted);margin:8px 0}
+.fairbox code{display:block;font:500 11px 'JetBrains Mono',monospace;word-break:break-all;color:var(--gold2);background:rgba(0,0,0,.35);padding:8px 10px;border-radius:10px}
+#fairPrev{font:500 11px 'JetBrains Mono',monospace;color:var(--fg);white-space:pre-wrap;word-break:break-all;max-height:220px;overflow:auto}
+.how[hidden]{display:none}
+.how{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:rgba(4,2,10,.7);backdrop-filter:blur(6px);padding:16px}
+.how .glass{max-width:500px;padding:26px 26px 22px;background:rgba(18,12,34,.92)}
+.how h2{margin:0 0 6px;font:800 24px Unbounded,sans-serif}
+.how h2 span{color:var(--gold)}
+.how ol{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:12px;counter-reset:s}
+.how li{display:grid;grid-template-columns:30px 1fr;gap:12px;font-size:14.5px;line-height:1.5;color:var(--muted);counter-increment:s}
+.how li::before{content:counter(s);width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font:800 13px Unbounded,sans-serif;color:#1b1406;background:var(--gold)}
+.how li b{color:var(--fg)}
+.how .go{width:100%;margin-top:20px;font:800 15px Unbounded,sans-serif;letter-spacing:.05em;border:0;border-radius:16px;padding:16px;cursor:pointer;color:#1b1406;background:linear-gradient(100deg,#b8862b,#f8e3a3 35%,#e9c46a 60%,#fff4cf 75%,#b8862b)}
+.plabel{position:absolute;left:0;top:0;z-index:3;display:grid;justify-items:center;gap:1px;padding:7px 12px 8px;border-radius:14px;cursor:pointer;color:#fff;background:rgba(10,7,20,.78);border:2px solid var(--c);box-shadow:0 8px 24px -8px rgba(0,0,0,.8),0 0 18px -6px var(--c);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);will-change:transform;transform-origin:50% 100%;animation:labIn .35s cubic-bezier(.2,1.5,.4,1)}
+.plabel::after{content:"";position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);border:7px solid transparent;border-top-color:var(--c);border-bottom:0}
+.plabel b{font:800 clamp(14px,1.8vw,20px)/1 Unbounded,sans-serif;letter-spacing:-.01em}
+.plabel small{font:700 clamp(8.5px,.9vw,10px) 'JetBrains Mono',monospace;letter-spacing:.08em;color:var(--c)}
+.plabel.k0{--c:#8ea2ff}.plabel.k1{--c:#ffbf6b}.plabel.k2{--c:#fff3d6}
+.plabel[hidden]{display:none}
+.plabel i{font-style:normal}
+@media(max-width:640px){.plabel{padding:5px 8px 6px;border-radius:11px}.plabel b{font-size:13px}.plabel i{display:none}}
+@keyframes labIn{from{opacity:0}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+body.embed .brand{display:none}
+#mbar{display:none;position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom));z-index:8;align-items:center;gap:12px;padding:10px 10px 10px 18px;transition:transform .35s cubic-bezier(.2,1,.3,1);background:rgba(16,10,30,.88)}
+#mbar b{font:800 26px Unbounded,sans-serif;letter-spacing:-.02em;flex:1}
+#mbar button{font:800 14px Unbounded,sans-serif;border:0;border-radius:14px;padding:14px 18px;color:#1b1406;background:linear-gradient(100deg,#b8862b,#f8e3a3 35%,#e9c46a 60%,#fff4cf 75%,#b8862b);cursor:pointer}
+#mbar button:disabled{filter:grayscale(.8) brightness(.6)}
+@media(max-width:960px){.stage{aspect-ratio:4/3;max-height:62vh}}
+@media(max-width:640px){
+  .wrap{padding:10px;gap:10px}
+  .brand{font-size:16px;padding:9px 14px}.brand small{display:none}
+  .hist{order:3;flex-basis:100%;padding:7px}
+  .pills{flex:1;justify-content:flex-end;gap:6px}.pill{padding:9px 10px;font-size:10px}
+  #fairBtn span,.pill .lg{display:none}
+  .stage{aspect-ratio:1/1;max-height:62vh;border-radius:18px}
+  #mbar{display:flex}
+  body:not(.running) #mbar{transform:translateY(130%)}
+  body.running .wrap{padding-bottom:96px}
+  .meter{padding:14px 14px 12px;display:grid;grid-template-columns:auto 1fr;align-items:center;text-align:left;gap:2px 14px}
+  .meter #state{grid-column:1/-1;margin:0}
+  #mult{font-size:38px}
+  #win{margin:0;text-align:right}
+  .card{padding:14px}
+  .tip{display:none}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+<style>.backlink{position:fixed;left:14px;bottom:14px;z-index:30;display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:999px;font:600 12px system-ui,sans-serif;color:#f4f2ff;text-decoration:none;background:rgba(10,8,20,.6);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}.backlink:hover{border-color:#e9c46a}@media(max-width:640px){.backlink{display:none}}</style>
+<script defer src="https://stats.1v1battles.com/nv.js" data-website-id="4f92624d-4cbc-4758-8bb8-8515f2b5e871"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="glass brand" href="index.html" style="color:inherit;text-decoration:none"><span class="dot"></span><div>SNEAK<small>CAUGHT GAMES · PICK YOUR RISK EVERY STEP</small></div></a>
+    <div class="glass hist" id="hist"></div>
+    <div class="pills"><button class="glass pill" id="howBtn">HOW<span class="lg"> TO PLAY</span></button><button class="glass pill" id="fairBtn">FAIR · <span id="fairHash">…</span></button><button class="glass pill" id="snd">SOUND ON</button></div>
+  </div>
+  <div class="main">
+    <div class="stage" id="stage">
+      <canvas id="view" tabindex="0" aria-label="Museum floor. Keys 1, 2, 3 pick shadow, dim or spot. Space cashes out." aria-describedby="sr"></canvas>
+      <div class="rows" id="rows" aria-hidden="true"></div>
+      <div class="banner" id="banner"><b id="bnT"></b><span id="bnS"></span></div>
+      <div class="tip" id="tip">TAP A PLATE IN THE NEXT ROW</div>
+      <div class="sr" id="sr" aria-live="polite"></div>
+    </div>
+    <div class="side">
+      <div class="glass card meter">
+        <div id="state">READY · 16 ROWS TO THE DIAMOND</div>
+        <div id="mult">1.00×</div>
+        <div id="win">pick a plate to start</div>
+      </div>
+      <div class="glass card" id="ctrl">
+        <div class="row2">
+          <div class="bal"><div class="lbl">Play money</div><b id="bal">1,000.00</b></div>
+          <div><div class="lbl">Stake</div><div class="stake"><input id="bet" type="number" value="10" min="1" step="1" inputmode="decimal" aria-label="Stake"><button id="half">½</button><button id="dbl">2×</button></div></div>
+        </div>
+        <div class="lbl" style="margin-top:16px"><span>Next step</span><span id="rowInfo">row 1 of 16</span></div>
+        <div class="picks" id="picks"></div>
+        <button id="cash" disabled>CASH OUT<small>take at least one step</small></button>
+        <p class="hint">Every plate pays its <b>true odds</b>. The house edge is charged once, on the first step, so <b>any mix of plates returns 97%</b>. Shadow is safe and slow, spot is fast and loud.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="glass" id="mbar"><b id="mbMult">1.00×</b><button id="mbCash" disabled>CASH OUT</button></div>
+<div class="glass fairbox" id="fairBox" hidden><b>Provably fair</b><p>Before each heist we publish SHA-256(server seed). The plate order of row r comes from HMAC-SHA256(seed, client:nonce:layout:r), the alarm draw of row r is u = HMAC-SHA256(seed, client:nonce:step:r) / 2<sup>32</sup>. You are caught when u is below the risk of the plate you chose (shadow 10%, dim 30%, spot 55%). After the heist the seed is revealed.</p><p>Pay: a safe step multiplies by 1/(1 − risk), the first step by 0.97/(1 − risk). A step that would pass 10,000× pays exactly 10,000× and its risk drops to 1 − multiplier/10,000, so even the max-win run returns 97%.</p><code id="fairFull"></code><p id="fairPrev">no heist played yet</p></div>
+<div class="how" id="how" hidden><div class="glass" role="dialog" aria-modal="true" aria-labelledby="howT">
+  <h2 id="howT">How to <span>SNEAK</span></h2>
+  <p style="margin:0;color:var(--muted);font-size:14px;line-height:1.55">A diamond waits at the end of a guarded hall. Every row has three pressure plates. You choose how loud each step is.</p>
+  <ol>
+    <li><div><b>Pick a plate.</b> <span style="color:var(--sh)">Shadow</span> trips the alarm 10% of the time, <span style="color:var(--dm)">dim</span> 30%, <span style="color:var(--sp)">spot</span> 55%. Riskier plates multiply more.</div></li>
+    <li><div><b>Change your risk every step.</b> Play it safe early, go loud when you feel it, or the other way round.</div></li>
+    <li><div><b>Cash out any time</b> after the first step. Caught means the stake is gone.</div></li>
+    <li><div><b>Reach the diamond</b> or hit 10,000× and the thief grabs it automatically.</div></li>
+  </ol>
+  <button id="go" class="go">START THE HEIST</button>
+</div></div>
+<a class="backlink" id="backlink" href="index.html">← caughtgames.com</a>
+
+<script src="sneak-engine.js"></script>
+<script type="module">
+const $=id=>document.getElementById(id), E=window.SneakEngine, ROWS=E.ROWS;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fmt=(n,d=2)=>n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fx=m=>m>=1000?fmt(m,0):fmt(m);
+const embed=location.hash==='#embed'; if(embed){ document.body.classList.add('embed'); $('backlink').remove() }
+const wait=ms=>new Promise(r=>setTimeout(r,reduce?Math.min(ms,150):ms));
+
+/* ---------- provably fair (pure-JS SHA-256/HMAC, same code as PEEK! and SONAR) ---------- */
+const K256=new Uint32Array([0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2]);
+function sha256js(m){
+  const l=m.length, n=((l+9+63)>>6)<<6, b=new Uint8Array(n); b.set(m); b[l]=0x80;
+  const dv=new DataView(b.buffer); dv.setUint32(n-4,l*8); dv.setUint32(n-8,Math.floor(l/0x20000000));
+  const h=new Uint32Array([0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19]), w=new Uint32Array(64);
+  const r=(x,k)=>(x>>>k)|(x<<(32-k));
+  for(let o=0;o<n;o+=64){
+    for(let i=0;i<16;i++) w[i]=dv.getUint32(o+i*4);
+    for(let i=16;i<64;i++){ const a=w[i-15],c=w[i-2]; w[i]=(w[i-16]+(r(a,7)^r(a,18)^(a>>>3))+w[i-7]+(r(c,17)^r(c,19)^(c>>>10)))|0 }
+    let [A,B,Cc,D,Ee,F,G,H]=h;
+    for(let i=0;i<64;i++){ const t1=(H+(r(Ee,6)^r(Ee,11)^r(Ee,25))+((Ee&F)^(~Ee&G))+K256[i]+w[i])|0, t2=((r(A,2)^r(A,13)^r(A,22))+((A&B)^(A&Cc)^(B&Cc)))|0;
+      H=G;G=F;F=Ee;Ee=(D+t1)|0;D=Cc;Cc=B;B=A;A=(t1+t2)|0 }
+    h[0]+=A;h[1]+=B;h[2]+=Cc;h[3]+=D;h[4]+=Ee;h[5]+=F;h[6]+=G;h[7]+=H;
+  }
+  const out=new Uint8Array(32), od=new DataView(out.buffer); h.forEach((v,i)=>od.setUint32(i*4,v)); return out;
+}
+function hmacjs(key,msg){
+  let k=key.length>64?sha256js(key):key; const kb=new Uint8Array(64); kb.set(k);
+  const ip=new Uint8Array(64+msg.length), op=new Uint8Array(96);
+  for(let i=0;i<64;i++){ ip[i]=kb[i]^0x36; op[i]=kb[i]^0x5c } ip.set(msg,64); op.set(sha256js(ip),64); return sha256js(op);
+}
+const hex=b=>[...b].map(x=>x.toString(16).padStart(2,'0')).join(''), enc=s=>new TextEncoder().encode(s);
+const CLIENT='sneak-demo-client';
+let nonce=1, seed=hex(crypto.getRandomValues(new Uint8Array(32))), seedHash=hex(sha256js(enc(seed))), prev=null;
+const draw=msg=>new DataView(hmacjs(enc(seed),enc(msg)).buffer).getUint32(0)/2**32;
+const layoutsFor=()=>{ const L=[null]; for(let r=1;r<=ROWS;r++) L[r]=E.layout(draw(CLIENT+':'+nonce+':layout:'+r)); return L };
+function fairUI(){ $('fairHash').textContent=seedHash.slice(0,12)+'…'; $('fairFull').textContent=(phase==='run'?'this heist':'next heist')+' · nonce '+nonce+' · seed hash: '+seedHash;
+  if(prev) $('fairPrev').textContent='heist '+prev.nonce+' · client '+CLIENT+'\nseed '+prev.seed+'\n'+prev.steps.map(s=>'row '+s.r+': u='+s.u.toFixed(6)+' · '+E.KINDS[s.k].name+' risk '+(s.p*100).toFixed(2)+'% → '+(s.caught?'CAUGHT':'safe ×'+fx(s.m))).join('\n')+(prev.cash?'\ncashed out at '+fx(prev.cash)+'×':'') }
+function rotateSeed(steps,cash){ prev={seed,nonce,steps,cash}; seed=hex(crypto.getRandomValues(new Uint8Array(32))); seedHash=hex(sha256js(enc(seed))); nonce++; fairUI() }
+
+/* ---------- audio (synth only, no files) ---------- */
+let ac=null, muted=false, amb=null, beat=null;
+function au(){ if(!ac){ try{ ac=new (window.AudioContext||window.webkitAudioContext)() }catch(e){ return } } if(ac.state==='suspended') ac.resume(); startAmb() }
+function tone(f1,f2,dur,v,type='sine',delay=0){ if(!ac||muted) return; const t=ac.currentTime+delay,o=ac.createOscillator(),g=ac.createGain(); o.type=type; o.frequency.setValueAtTime(f1,t); o.frequency.exponentialRampToValueAtTime(f2,t+dur); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(v,t+.01); g.gain.exponentialRampToValueAtTime(.0001,t+dur); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+dur+.05) }
+function noise(dur,f,v,type='lowpass',delay=0){ if(!ac||muted) return; const b=ac.createBuffer(1,Math.max(1,ac.sampleRate*dur),ac.sampleRate),d=b.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; const s=ac.createBufferSource(); s.buffer=b; const fl=ac.createBiquadFilter(); fl.type=type; fl.frequency.value=f; const g=ac.createGain(), t=ac.currentTime+delay; g.gain.setValueAtTime(v,t); g.gain.exponentialRampToValueAtTime(.0001,t+dur); s.connect(fl).connect(g).connect(ac.destination); s.start(t) }
+const sHop=()=>{ tone(420,620,.12,.06,'triangle'); noise(.06,1800,.05,'bandpass',.5) };
+const sLand=()=>{ noise(.12,500,.18); tone(110,70,.15,.12,'sine') };
+const sScan=()=>{ for(let i=0;i<6;i++) tone(900+i*140,900+i*140,.05,.035,'square',i*.085) };
+const sSafe=row=>{ const f=440*Math.pow(2,(row%12)/12); tone(f,f,.25,.09,'triangle'); tone(f*1.5,f*1.5,.3,.06,'triangle',.07) };
+const sCaught=()=>{ for(let i=0;i<4;i++){ tone(620,1250,.3,.13,'sawtooth',i*.6); tone(1250,620,.3,.13,'sawtooth',i*.6+.3) } noise(.5,300,.6,'lowpass',.38); tone(80,30,.7,.6,'sine',.38) };
+const sCash=()=>{ [0,4,7,12,16,19].forEach((s,i)=>tone(523*Math.pow(2,s/12),523*Math.pow(2,s/12),.5,.08,'triangle',i*.07)); for(let i=0;i<12;i++) tone(2200+Math.random()*1800,2600,.08,.025,'sine',.2+i*.06) };
+function startAmb(){ if(!ac||amb||muted) return; const o=ac.createOscillator(), o2=ac.createOscillator(), g=ac.createGain(), f=ac.createBiquadFilter(); o.type='sawtooth'; o.frequency.value=55; o2.type='sawtooth'; o2.frequency.value=55.4; f.type='lowpass'; f.frequency.value=180; g.gain.value=0; o.connect(f); o2.connect(f); f.connect(g).connect(ac.destination); o.start(); o2.start(); g.gain.linearRampToValueAtTime(.05,ac.currentTime+2); amb={g,o,o2} }
+// heartbeat speeds up with the multiplier
+function heart(){ clearTimeout(beat); if(!ac||muted||phase!=='run'||first) return; tone(60,40,.12,.25,'sine'); tone(55,38,.12,.18,'sine',.16); const bpm=Math.min(150,70+Math.log(mult)*14); beat=setTimeout(heart,60000/bpm) }
+document.addEventListener('visibilitychange',()=>{ if(!ac) return; if(document.hidden) ac.suspend(); else ac.resume() });
+$('snd').onclick=()=>{ muted=!muted; $('snd').textContent=muted?'SOUND OFF':'SOUND ON'; if(muted&&amb){ amb.g.gain.value=0 } else { au(); if(amb) amb.g.gain.value=.05 } };
+
+/* ---------- state ---------- */
+let bal=1000, stake=10, phase='idle', busy=false, row=0, mult=1, first=true, layouts=null, steps=[], hist=[];
+const rowsEl=$('rows'); for(let i=0;i<ROWS;i++) rowsEl.appendChild(document.createElement('i')); { const g=document.createElement('i'); g.className='gem'; rowsEl.appendChild(g) }
+const KC=['k0','k1','k2'];
+const picks=E.KINDS.map((k,i)=>{ const b=document.createElement('button'); b.className='pick '+KC[i]; b.innerHTML='<span class="sw">'+(i+1)+'</span><span class="nm">'+k.name+'<small id="pr'+i+'"></small></span><span class="x" id="px'+i+'"></span>'; b.onclick=()=>pickKind(i); b.onmouseenter=()=>W&&W.hover(colOf(i)); b.onmouseleave=()=>W&&W.hover(-1); $('picks').appendChild(b); return b });
+const colOf=k=>layouts?layouts[row+1]?.indexOf(k)??-1:-1;
+const say=s=>{ $('sr').textContent=s };
+function readStake(){ let v=parseFloat($('bet').value); if(!isFinite(v)||v<1) v=1; v=Math.min(v,Math.max(1,bal),500); v=Math.round(v*100)/100; $('bet').value=v; return v }
+$('half').onclick=()=>{ $('bet').value=Math.max(1,Math.round(readStake()/2*100)/100) };
+$('dbl').onclick=()=>{ $('bet').value=Math.min(bal,500,readStake()*2); readStake() };
+function multUI(cls){ const el=$('mult'); el.textContent=fx(mult)+'×'; el.className=cls||''; if(!cls&&!reduce){ el.classList.add('pop'); setTimeout(()=>el.classList.remove('pop'),180) } $('mbMult').textContent=fx(mult)+'×' }
+function ui(){
+  $('bal').textContent=fmt(bal);
+  document.body.classList.toggle('running',phase==='run');
+  const canCash=phase==='run'&&!first&&!busy;
+  $('cash').disabled=$('mbCash').disabled=!canCash;
+  $('cash').innerHTML=canCash?'CASH OUT<small>'+fmt(stake*mult)+'</small>':'CASH OUT<small>'+(phase==='run'?'take at least one step':'take at least one step')+'</small>';
+  $('mbCash').textContent=canCash?'CASH '+fmt(stake*mult):'CASH OUT';
+  $('bet').disabled=$('half').disabled=$('dbl').disabled=phase==='run'||busy;
+  $('win').innerHTML=phase==='run'&&!first?'cash out <b>'+fmt(stake*mult)+'</b>':phase==='idle'?'pick a plate to start':$('win').innerHTML;
+  $('rowInfo').textContent=row<ROWS?'row '+(row+1)+' of '+ROWS:'the diamond';
+  [...rowsEl.children].forEach((d,i)=>{ if(i<ROWS) d.classList.toggle('on',i<row) });
+  E.KINDS.forEach((k,i)=>{ const st=E.step(mult,i,first); $('px'+i).textContent='×'+fx(st.m); $('pr'+i).textContent=(st.p*100).toFixed(st.max?1:0)+'% alarm'+(st.max?' · MAX':''); picks[i].disabled=busy||phase==='over'||row>=ROWS });
+  if(W&&!busy&&phase!=='over'&&row<ROWS){ W.showNext(row+1,[0,1,2].map(c=>{ const st=E.step(mult,layouts[row+1][c],first); return {mult:'×'+fx(st.m),risk:(st.p*100).toFixed(st.max?1:0)+'%'} })) }
+}
+function chip(m,won){ hist.unshift({m,won}); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span class="chip '+(h.won?'w':'l')+'">'+(h.won?fx(h.m)+'×':'CAUGHT')+'</span>').join('') }
+function banner(t,s,cls){ $('bnT').textContent=t; $('bnS').textContent=s; const b=$('banner'); b.className='banner '+cls+' on'; say(t+'. '+s) }
+const hideBanner=()=>{ $('banner').className='banner' };
+
+/* ---------- flow ---------- */
+function newRound(){ phase='idle'; row=0; mult=1; first=true; steps=[]; layouts=layoutsFor(); W&&W.setRows(layouts); $('state').textContent='READY · '+ROWS+' ROWS TO THE DIAMOND'; $('state').style.color=''; multUI(''); fairUI(); ui() }
+function start(){ if(bal<1){ bal=1000; banner('TOPPED UP','play money back to 1,000','good'); setTimeout(hideBanner,1400) } stake=readStake(); if(bal<stake) return false; bal-=stake; phase='run'; $('state').textContent='SNEAKING · STAKE '+fmt(stake); fairUI(); return true }
+async function pickCol(c){
+  if(busy||phase==='over'||row>=ROWS||!W) return;
+  au(); $('tip').style.opacity=0;
+  if(phase==='idle'&&!start()) return;
+  busy=true; ui();
+  const r=row+1, k=layouts[r][c], st=E.step(mult,k,first), u=draw(CLIENT+':'+nonce+':step:'+r), caught=u<st.p;
+  sHop(); await W.moveTo(r,c); sLand();
+  W.plate(r,c,'scan'); sScan(); say(E.KINDS[k].name+' plate. Checking the alarm.'); await wait(560);
+  if(caught){
+    steps.push({r,k,u,p:st.p,caught:true});
+    W.plate(r,c,'caught'); sCaught(); phase='over'; clearTimeout(beat);
+    const rowSafe=[0,1,2].map(cc=>u>=E.step(mult,layouts[r][cc],first).p);
+    const others=[0,1,2].filter(cc=>cc!==c&&rowSafe[cc]).map(cc=>E.KINDS[layouts[r][cc]].name.toLowerCase());
+    banner('CAUGHT',others.length?others.join(' and ')+' would have been safe':'every plate in this row was armed','bad');
+    $('state').textContent='CAUGHT ON ROW '+r; $('state').style.color='var(--hot)'; $('win').innerHTML='lost <b>'+fmt(stake)+'</b>'; multUI('bust');
+    await W.caught(r,c,rowSafe); chip(0,false); rotateSeed(steps,0); ui();
+    await wait(600); hideBanner(); busy=false; await W.reset(); newRound(); return;
+  }
+  W.plate(r,c,'safe'); mult=st.m; first=false; row=r; steps.push({r,k,u,p:st.p,caught:false,m:mult});
+  sSafe(r); multUI(); say('Safe. Multiplier '+fx(mult)+' times. Row '+r+' of '+ROWS+'.');
+  if(first===false&&steps.length===1) heart();
+  busy=false; ui();
+  if(st.max||row>=ROWS) await cashOut(true);
+}
+function pickKind(k){ const c=colOf(k); if(c>=0) pickCol(c) }
+async function cashOut(auto=false){
+  if(phase!=='run'||first||(busy&&!auto)) return;
+  busy=true; phase='over'; clearTimeout(beat); const win=stake*mult, isMax=mult>=E.MAX_WIN||row>=ROWS; bal+=win; ui();
+  sCash(); banner(isMax&&mult>=E.MAX_WIN?'MAX WIN':isMax?'DIAMOND!':'ESCAPED','×'+fx(mult)+' · won '+fmt(win),'good');
+  $('state').textContent='ESCAPED WITH THE LOOT'; $('state').style.color='var(--gold)'; $('win').innerHTML='won <b>'+fmt(win)+'</b>'; multUI('won');
+  await W.escape(isMax); chip(mult,true); rotateSeed(steps,mult); await wait(500); hideBanner(); busy=false; await W.reset(); newRound();
+}
+$('cash').onclick=()=>cashOut(); $('mbCash').onclick=()=>cashOut();
+addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden) return;
+  if(e.key==='1'||e.key==='2'||e.key==='3'){ pickKind(+e.key-1); e.preventDefault() }
+  else if(e.key===' '||e.key==='Enter'){ cashOut(); e.preventDefault() } });
+$('fairBtn').onclick=()=>{ $('fairBox').hidden=!$('fairBox').hidden };
+const openHow=()=>{ $('how').hidden=false; setTimeout(()=>$('go').focus({preventScroll:true}),0) };
+$('howBtn').onclick=openHow; $('go').onclick=()=>{ $('how').hidden=true; try{ localStorage.setItem('sneak-how','1') }catch(e){} au() };
+
+/* ---------- 3D ---------- */
+let W=null;
+try{
+  const { createWorld } = await import('./sneak/world.js');
+  W=await createWorld($('view'),{ rows:ROWS, onPick:c=>pickCol(c), onHover:c=>{ picks.forEach((b,i)=>b.classList.toggle('hl',c>=0&&layouts&&layouts[row+1]?.[c]===i)) } });
+  W.place();
+}catch(err){ console.error(err); const nop=async()=>{}; W={setRows(){},showNext(){},hover(){},plate(){},moveTo:nop,caught:nop,escape:nop,reset:nop,place(){}}; $('stage').insertAdjacentHTML('beforeend','<div class="nogl"><div><b style="font:800 18px Unbounded,sans-serif;color:var(--fg)">3D could not start</b><p>This browser blocks WebGL. You can still play with the buttons on the right.</p></div></div>') }
+newRound();
+let seen=false; try{ seen=localStorage.getItem('sneak-how')==='1' }catch(e){} if(!seen&&!embed) openHow();
+window.__sneak={ get state(){ return {phase,row,mult,first,busy,bal} }, pickCol, cashOut };
+</script>
+</body>
+</html>

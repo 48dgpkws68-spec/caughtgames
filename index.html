@@ -119,6 +119,9 @@ nav .w{display:flex;align-items:center;justify-content:space-between;height:74px
 @keyframes spin{to{--a:360deg}}
 .device iframe{display:block;width:100%;height:760px;border:0;border-radius:16px;background:#07060b}
 .device iframe.sonar-frame{height:820px;background:#020b10}
+.device iframe.sneak-frame{height:760px;background:#07050d}
+@media (max-width:960px){.device iframe.sneak-frame{height:1500px}}
+@media (max-width:640px){.device iframe.sneak-frame{height:1400px}}
 @media (max-width:900px){.device iframe.sonar-frame{height:1500px}}
 @media (max-width:640px){.device iframe.sonar-frame{height:1280px}}
 @media (max-width:880px){.device iframe{height:1160px}}
@@ -336,7 +339,7 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
       <svg class="eye" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#b8862b"/><stop offset=".5" stop-color="#f8e3a3"/><stop offset="1" stop-color="#e9c46a"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="#13101d" stroke="#2a2438"/><g class="lid"><path d="M8 32c8-12 16-17 24-17s16 5 24 17c-8 12-16 17-24 17S16 44 8 32z" fill="none" stroke="url(#g1)" stroke-width="3.5"/><circle cx="32" cy="32" r="9" fill="#ff2d6f"/><circle cx="35" cy="29" r="3" fill="#fff"/></g></svg>
       <span>CAUGHT GAMES<small>CASINO GAME STUDIO</small></span>
     </a>
-    <div class="nl"><a href="#games">PEEK!</a><a href="peek.html#play-vault">Vault Heist</a><a href="#sonar">SONAR <span class="newtag">NEW</span></a><a href="#lab">Math lab</a><a href="#fair">Provably fair</a><a href="#sheets">Game sheets</a><a href="#custom">Custom builds</a><a href="#revenue">Revenue</a><a href="#models">Partnership</a></div>
+    <div class="nl"><a href="#games">PEEK!</a><a href="peek.html#play-vault">Vault Heist</a><a href="#sneak">SNEAK <span class="newtag">NEW</span></a><a href="#sonar">SONAR</a><a href="#lab">Math lab</a><a href="#fair">Provably fair</a><a href="#sheets">Game sheets</a><a href="#custom">Custom builds</a><a href="#revenue">Revenue</a><a href="#models">Partnership</a></div>
     <a class="btn gold-b" href="#contact">Book a demo</a>
   </div>
 </nav>
@@ -350,7 +353,7 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
     <p class="lead">Caught Games designs, builds and supplies crash and instant games for online casinos. Every title ships with transparent RTP math, provably fair rounds and a story players get in one second. Want something nobody else has? We build it for you.</p>
     <div class="cta">
       <a class="btn gold-b" href="#games">Play PEEK! live <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
-      <a class="btn ghost" href="#sonar">Discover SONAR <span class="newtag">NEW GAME TYPE</span></a>
+      <a class="btn ghost" href="#sneak">Play SNEAK <span class="newtag">NEW · 3D</span></a>
     </div>
     <div class="livebar" aria-live="off">
       <div><b id="lvRounds">0</b><span><i class="dot"></i>rounds simulated in your browser</span></div>
@@ -381,6 +384,27 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
   </div>
 </section>
 
+
+<section id="sneak" style="padding-top:0">
+  <div class="w">
+    <div class="feat sonarhead" style="align-items:end;margin-bottom:40px">
+      <div class="rv">
+        <span class="eyebrow">New title · 3D heist step game <span class="newtag">NEW</span></span>
+        <h2>SNEAK <span class="gold">Pick your risk on every step.</span></h2>
+      </div>
+      <div class="rv">
+        <p class="lead" style="margin:0">Step games are the breakout instant format, but they all lock the risk once per round. In SNEAK the player chooses on every single step: a shadow plate (10% alarm), a dim plate (30%) or the spotlight (55%). Every plate pays its true odds and the house edge is charged once, on the first step, so any mix of choices returns exactly 97%. Built in real-time 3D: a vinyl-toy thief, light cones, laser fences, cameras that follow you and a diamond at the end of the hall.</p>
+        <div class="playbar" style="margin-top:24px"><a class="btn gold-b" href="sneak.html">Play SNEAK <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a><a class="btn ghost" href="#sheets">Game sheet</a></div>
+      </div>
+    </div>
+    <div class="device rv" style="box-shadow:0 40px 120px -30px rgba(170,120,255,.35),0 0 0 1px var(--line2),inset 0 1px 0 rgba(255,255,255,.08)"><iframe class="sneak-frame" src="sneak.html#embed" title="SNEAK playable demo with play money" loading="lazy"></iframe></div>
+    <ul class="bul rv" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px;margin-top:56px">
+      <li><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><path d="M4 20l4-6 4 3 4-7 4 4"/></svg></span><div><b>Volatility in the player's hands</b><span>Creep through the shadows for a long run or go loud under the spotlight. The choice changes every step, so every round tells a different story.</span></div></li>
+      <li><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 12l3 3 5-6"/></svg></span><div><b>One RTP, any strategy</b><span>Fair odds per plate plus a single edge on step one. Even the run to the 10,000× diamond is priced so it returns 97%. Checked with millions of simulated rounds.</span></div></li>
+      <li><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg></span><div><b>Near misses you can see</b><span>When the alarm goes off, the other plates in that row light up safe or armed. One draw per row, published by HMAC, so every round can be checked.</span></div></li>
+    </ul>
+  </div>
+</section>
 
 <section id="sonar" style="padding-top:0">
   <div class="w">
@@ -521,32 +545,33 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
   <div class="w">
     <span class="eyebrow rv">Game sheets</span>
     <h2 class="rv">The numbers your <span class="gold">team will ask for.</span></h2>
-    <p class="lead rv">Three titles: two crash skins on one tested engine and SONAR, a new game type. Every value below is configurable per market; these are the defaults in the live demos.</p>
+    <p class="lead rv">Four titles: two crash skins on one tested engine, SONAR and SNEAK, two new instant game types. Every value below is configurable per market; these are the defaults in the live demos.</p>
     <div class="tiles rv">
       <a class="tile" href="peek.html#play-peek" style="--img:url(art/bg.webp);--pos:62% 40%"><span class="tt">PEEK!</span><span class="ts">Crash · comedy</span></a>
       <a class="tile" href="peek.html#play-vault" style="--img:url(art/vault_bg.webp);--pos:55% 45%"><span class="tt">VAULT HEIST</span><span class="ts">Crash · neutral skin</span></a>
       <a class="tile" href="sonar.html" style="--img:url(art/og-sonar.jpg);--pos:50% 50%"><span class="tt">SONAR</span><span class="ts">New game type · skill-read mines</span></a>
+      <a class="tile" href="sneak.html" style="--img:url(art/og-sneak.jpg);--pos:50% 50%"><span class="tt">SNEAK</span><span class="ts">New · 3D heist step game</span></a>
     </div>
     <div class="tbl sheet rv"><table>
-      <thead><tr><th>Specification</th><th>PEEK!</th><th>Vault Heist</th><th>SONAR</th></tr></thead>
+      <thead><tr><th>Specification</th><th>PEEK!</th><th>Vault Heist</th><th>SONAR</th><th>SNEAK</th></tr></thead>
       <tbody>
-        <tr><td>Game type</td><td>Crash, single cash-out</td><td>Crash, single cash-out</td><td>Instant, player-paced</td></tr>
-        <tr><td>Default RTP</td><td>97.00%</td><td>97.00%</td><td>Up to 97.50%, skill-based</td></tr>
-        <tr><td>RTP range</td><td>95.0 to 99.0%</td><td>95.0 to 99.0%</td><td>Hard cap 97.5% for any strategy</td></tr>
-        <tr><td>Max multiplier</td><td>10,000×</td><td>10,000×</td><td>5,000×</td></tr>
-        <tr><td>Max win payout</td><td>Always paid at 10,000×</td><td>Always paid at 10,000×</td><td>Always paid at 5,000×</td></tr>
-        <tr><td>Volatility</td><td>High</td><td>High</td><td>Player-chosen (3 to 12 mines)</td></tr>
-        <tr><td>Hit frequency at 2×</td><td>48.5%</td><td>48.5%</td><td>Depends on mines and reading</td></tr>
-        <tr><td>Instant bust (1.00×)</td><td>3.96%</td><td>3.96%</td><td>8.3 to 33% (blind first tile)</td></tr>
-        <tr><td>Betting window</td><td>6 s</td><td>6 s</td><td>None, start any time</td></tr>
-        <tr><td>Average round</td><td>13 s</td><td>13 s</td><td>20 to 60 s</td></tr>
-        <tr><td>Rounds per hour</td><td>~190</td><td>~190</td><td>~90</td></tr>
-        <tr><td>Auto cash-out</td><td>Yes</td><td>Yes</td><td>At max win or cleared sea</td></tr>
-        <tr><td>Fairness</td><td>Provably fair, SHA-256 / HMAC</td><td>Provably fair, SHA-256 / HMAC</td><td>Provably fair, SHA-256 / HMAC</td></tr>
-        <tr><td>Rendering</td><td>HTML5 canvas, illustrated</td><td>HTML5 canvas, illustrated</td><td>HTML5 canvas, procedural</td></tr>
-        <tr><td>Orientation</td><td>Landscape and portrait</td><td>Landscape and portrait</td><td>Landscape and portrait</td></tr>
-        <tr><td>Languages</td><td>EN, NL (more on request)</td><td>EN, NL (more on request)</td><td>EN (more on request)</td></tr>
-        <tr><td>Status</td><td>Playable demo</td><td>Playable demo</td><td>Playable demo</td></tr>
+        <tr><td>Game type</td><td>Crash, single cash-out</td><td>Crash, single cash-out</td><td>Instant, player-paced</td><td>Step game, risk chosen per step</td></tr>
+        <tr><td>Default RTP</td><td>97.00%</td><td>97.00%</td><td>Up to 97.50%, skill-based</td><td>97.00% for every strategy</td></tr>
+        <tr><td>RTP range</td><td>95.0 to 99.0%</td><td>95.0 to 99.0%</td><td>Hard cap 97.5% for any strategy</td><td>95.0 to 99.0%</td></tr>
+        <tr><td>Max multiplier</td><td>10,000×</td><td>10,000×</td><td>5,000×</td><td>10,000×</td></tr>
+        <tr><td>Max win payout</td><td>Always paid at 10,000×</td><td>Always paid at 10,000×</td><td>Always paid at 5,000×</td><td>Always paid at 10,000×</td></tr>
+        <tr><td>Volatility</td><td>High</td><td>High</td><td>Player-chosen (3 to 12 mines)</td><td>Player-chosen on every step</td></tr>
+        <tr><td>Hit frequency at 2×</td><td>48.5%</td><td>48.5%</td><td>Depends on mines and reading</td><td>Up to 48.5%, route-dependent</td></tr>
+        <tr><td>Instant bust (1.00×)</td><td>3.96%</td><td>3.96%</td><td>8.3 to 33% (blind first tile)</td><td>10 to 55% (first plate)</td></tr>
+        <tr><td>Betting window</td><td>6 s</td><td>6 s</td><td>None, start any time</td><td>None, start any time</td></tr>
+        <tr><td>Average round</td><td>13 s</td><td>13 s</td><td>20 to 60 s</td><td>Player-paced</td></tr>
+        <tr><td>Rounds per hour</td><td>~190</td><td>~190</td><td>~90</td><td>Player-paced</td></tr>
+        <tr><td>Auto cash-out</td><td>Yes</td><td>Yes</td><td>At max win or cleared sea</td><td>At 10,000× or the diamond (row 16)</td></tr>
+        <tr><td>Fairness</td><td>Provably fair, SHA-256 / HMAC</td><td>Provably fair, SHA-256 / HMAC</td><td>Provably fair, SHA-256 / HMAC</td><td>Provably fair, SHA-256 / HMAC</td></tr>
+        <tr><td>Rendering</td><td>HTML5 canvas, illustrated</td><td>HTML5 canvas, illustrated</td><td>HTML5 canvas, procedural</td><td>Real-time 3D (WebGL)</td></tr>
+        <tr><td>Orientation</td><td>Landscape and portrait</td><td>Landscape and portrait</td><td>Landscape and portrait</td><td>Landscape and portrait</td></tr>
+        <tr><td>Languages</td><td>EN, NL (more on request)</td><td>EN, NL (more on request)</td><td>EN (more on request)</td><td>EN (more on request)</td></tr>
+        <tr><td>Status</td><td>Playable demo</td><td>Playable demo</td><td>Playable demo</td><td>Playable demo</td></tr>
       </tbody>
     </table></div>
     <p class="note rv" style="margin-top:14px">Certification by an accredited lab (GLI, BMM or iTech Labs) is part of the launch plan for your markets. Demo RNG runs in the browser; the live version runs server-side.</p>
@@ -774,11 +799,11 @@ if('IntersectionObserver' in window&&!reduce){
 /* ---------- marquee feed ---------- */
 (function feed(){
   const names=['Kees_88','Fenna','Jayden','Mo','Tessa.v','Bram','Luuk','Sanne','Rik','Ilse','Daan','Yara','Lars','Noor','Milan','Sophie','Ahmed','Julia'];
-  const games=['PEEK!','VAULT HEIST','SONAR'];
+  const games=['PEEK!','VAULT HEIST','SONAR','SNEAK'];
   let h='';
   for(let i=0;i<26;i++){ const c=crash(.97,10000), bet=[1,2,5,10,20,50][i%6], win=Math.random()<.2;
     const m=win?Math.max(1.2,Math.min(c,2+Math.random()*40)):c;
-    const g=games[i%games.length], lost=g==='SONAR'?'hit a <i>MINE</i>':g==='VAULT HEIST'?'got <i>BUSTED</i>':'got <i>CAUGHT</i>';
+    const g=games[i%games.length], lost=g==='SONAR'?'hit a <i>MINE</i>':g==='SNEAK'?'tripped the <i>ALARM</i>':g==='VAULT HEIST'?'got <i>BUSTED</i>':'got <i>CAUGHT</i>';
     h+= win||m>=1.5 ? `<span>${names[i%names.length]} cashed out <b>${fmt(m,2)}×</b> on ${g} · €${fmt(bet*m,2)}</span>` : `<span>${names[i%names.length]} ${lost} at ${fmt(m,2)}× on ${g}</span>`;
   }
   $('feed').innerHTML=h+h+'<span style="color:var(--dim)">Simulated feed</span>';
