@@ -10,6 +10,14 @@ const vinyl = (color, x = {}) => new THREE.MeshPhysicalMaterial({ color, roughne
 
 function roundShape(pts) { const s = new THREE.Shape(); pts.forEach(([x, y], i) => (i ? s.lineTo(x, y) : s.moveTo(x, y))); return s; }
 function starShape(ro, ri, n = 5) { const s = new THREE.Shape(); for (let i = 0; i <= n * 2; i++) { const a = Math.PI / 2 + (i * Math.PI) / n, r = i % 2 ? ri : ro; const x = Math.cos(a) * r, y = Math.sin(a) * r; i ? s.lineTo(x, y) : s.moveTo(x, y); } return s; }
+function ticketShape(w, h, rc, nr) {
+  const s = new THREE.Shape(), x = w / 2, y = h / 2;
+  s.moveTo(-x + rc, -y); s.lineTo(x - rc, -y); s.quadraticCurveTo(x, -y, x, -y + rc); s.lineTo(x, -nr);
+  s.absarc(x, 0, nr, -Math.PI / 2, Math.PI / 2, true); s.lineTo(x, y - rc); s.quadraticCurveTo(x, y, x - rc, y);
+  s.lineTo(-x + rc, y); s.quadraticCurveTo(-x, y, -x, y - rc); s.lineTo(-x, nr);
+  s.absarc(-x, 0, nr, Math.PI / 2, -Math.PI / 2, true); s.lineTo(-x, -y + rc); s.quadraticCurveTo(-x, -y, -x + rc, -y);
+  return s;
+}
 function sevenShape() {
   const s = new THREE.Shape();
   s.moveTo(-0.34, 0.45); s.lineTo(0.37, 0.45); s.lineTo(0.37, 0.3);
@@ -37,6 +45,16 @@ export function createSymbolKit() {
     g.fillStyle = '#ffffff'; g.fillText('WILD', w / 2, h / 2 + 4);
   });
   M.wildText = new THREE.MeshBasicMaterial({ map: wildTex, transparent: true, depthWrite: false });
+  // golden ticket face: dashed frame, stars and BONUS
+  const tixTex = canvasTex(256, 160, (g, w, h) => {
+    g.strokeStyle = '#c2185b'; g.lineWidth = 6; g.setLineDash([12, 8]); g.beginPath(); g.roundRect(12, 12, w - 24, h - 24, 16); g.stroke(); g.setLineDash([]);
+    g.fillStyle = '#ff2e7a'; for (const [cx, cy] of [[40, 40], [216, 40], [40, 120], [216, 120]]) { g.beginPath(); for (let i = 0; i <= 10; i++) { const a = -Math.PI / 2 + (i * Math.PI) / 5, r = i % 2 ? 6 : 14; i ? g.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r) : g.moveTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r); } g.fill(); }
+    g.font = '64px "Lilita One","Arial Rounded MT Bold",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    g.lineJoin = 'round'; g.lineWidth = 12; g.strokeStyle = '#ffffff'; g.strokeText('BONUS', w / 2, h / 2 + 4);
+    g.fillStyle = '#d4145a'; g.fillText('BONUS', w / 2, h / 2 + 4);
+  });
+  M.ticketFace = new THREE.MeshBasicMaterial({ map: tixTex, transparent: true, depthWrite: false });
+  M.ticket = vinyl('#ffcb2e', { metal: 0.35, rough: 0.2, env: 1.2, extra: { emissive: '#8a5a00', emissiveIntensity: 0.35 } });
   M.wildTex = wildTex;
 
   const G = {
@@ -59,6 +77,8 @@ export function createSymbolKit() {
     knob: new THREE.TorusGeometry(0.07, 0.03, 10, 20),
     gem: (() => { const p = [[0.0005, -0.44], [0.44, 0.04], [0.44, 0.1], [0.28, 0.3], [0.0005, 0.3]].map(([x, y]) => new THREE.Vector2(x, y)); const g = new THREE.LatheGeometry(p, 8); g.computeVertexNormals(); return g; })(),
     seven: extrude(sevenShape(), 0.14, 0.05, 0.035),
+    ticket: extrude(ticketShape(0.94, 0.62, 0.09, 0.1), 0.08, 0.035, 0.03, 3),
+    ticketFace: new THREE.PlaneGeometry(0.84, 0.52),
     sevenBack: extrude(sevenShape(), 0.08, 0.04, 0.085),
     star: extrude(starShape(0.5, 0.235), 0.14, 0.06, 0.04),
     starBack: extrude(starShape(0.5, 0.235), 0.08, 0.04, 0.09),
@@ -125,9 +145,16 @@ export function createSymbolKit() {
       g.scale.setScalar(1.08);
       return g;
     },
+    () => { // golden ticket (scatter)
+      const g = new THREE.Group();
+      g.add(mesh(G.ticket, M.ticket));
+      const f = new THREE.Mesh(G.ticketFace, M.ticketFace); f.position.z = 0.08; g.add(f);
+      g.rotation.z = 0.22; g.scale.setScalar(1.05); g.userData.wiggle = 1;
+      return g;
+    },
   ];
-  const spinners = [];
-  function make(i) { const g = makers[i](); g.traverse((o) => { if (o.userData.spin) spinners.push(o); }); return g; }
+  const spinners = [], wigglers = [];
+  function make(i) { const g = makers[i](); g.traverse((o) => { if (o.userData.spin) spinners.push(o); }); if (g.userData.wiggle) wigglers.push(g); return g; }
 
   // small renders of each symbol for the HTML (paytable, hints). Uses a separate little renderer.
   function thumbs(size = 96) {
@@ -144,5 +171,5 @@ export function createSymbolKit() {
     pm.dispose(); r.dispose(); r.forceContextLoss?.();
     return out;
   }
-  return { make, thumbs, M, update(t) { for (const s of spinners) s.rotation.y = t * 0.9; } };
+  return { make, thumbs, M, update(t) { for (const s of spinners) s.rotation.y = t * 0.9; for (const w of wigglers) { w.rotation.z = 0.22 + Math.sin(t * 3.2) * 0.07; w.rotation.y = Math.sin(t * 1.7) * 0.25; } } };
 }

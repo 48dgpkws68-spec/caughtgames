@@ -4,11 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>LAST REEL · Caught Games</title>
-<meta name="description" content="LAST REEL by Caught Games: a 5x3 candy slot where reels 1 to 4 land and reel 5 keeps turning. See every win it can still complete and DOUBLE on the last reel at a price that returns 96.5% in every situation.">
+<meta name="description" content="LAST REEL by Caught Games: a 5x3 candy slot where reels 1 to 4 land and reel 5 keeps turning. See every win it can still complete, DOUBLE on the last reel, and chase golden tickets into FREE SPINS with a multiplier that grows every spin.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Caught Games">
 <meta property="og:title" content="LAST REEL · Double on the last reel">
-<meta property="og:description" content="A glossy 3D candy slot. Four reels land, the fifth keeps turning, and you decide whether to double right at the moment you hold your breath.">
+<meta property="og:description" content="A glossy 3D candy slot. Four reels land, the fifth keeps turning, and you decide whether to double right at the moment you hold your breath. Three golden tickets start FREE SPINS with a growing multiplier.">
 <meta property="og:url" content="https://caughtgames.com/lastreel.html">
 <meta property="og:image" content="https://caughtgames.com/art/og-lastreel.jpg">
 <meta property="og:image:width" content="1200">
@@ -93,6 +93,40 @@
   .lgrid{grid-template-columns:repeat(5,1fr);gap:7px}
   .ptab .si{width:30px;height:30px}
 }
+#fsHud{position:absolute;left:50%;top:10px;transform:translate(-50%,-30px);opacity:0;z-index:3;display:flex;gap:8px;pointer-events:none;transition:opacity .3s,transform .5s cubic-bezier(.2,1.4,.4,1)}
+#fsHud.on{opacity:1;transform:translate(-50%,0)}
+#fsHud div{background:var(--panel);border:3px solid var(--ink);border-radius:999px;box-shadow:0 4px 0 var(--ink);padding:5px 14px;font:900 12px var(--body);letter-spacing:.06em;white-space:nowrap;display:flex;align-items:center;gap:6px}
+#fsHud b{font:22px var(--display);letter-spacing:0}
+#fsHud .mx{background:var(--accent2)}
+#fsHud .mx b{font-size:26px}
+#fsHud .mx.pop{animation:mpop .5s cubic-bezier(.2,1.6,.4,1)}
+@keyframes mpop{40%{transform:scale(1.35) rotate(-6deg)}}
+#fsCard{position:absolute;inset:0;z-index:5;display:grid;place-items:center;background:rgba(29,22,64,.45);opacity:0;pointer-events:none;transition:opacity .3s;padding:12px}
+#fsCard.on{opacity:1;pointer-events:auto}
+#fsCard .box{max-width:440px;width:100%;text-align:center;padding:22px 22px 18px;transform:scale(.6) rotate(-3deg);transition:transform .5s cubic-bezier(.2,1.6,.4,1);background:linear-gradient(170deg,#fff7d6,#ffe3f1)}
+#fsCard.on .box{transform:scale(1) rotate(0)}
+#fsCard h3{margin:0;font:clamp(34px,6vw,52px)/1 var(--display);color:var(--accent2);-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;text-shadow:0 5px 0 var(--ink)}
+#fsCard .sub{font:900 13px var(--body);letter-spacing:.12em;color:var(--accent);margin:10px 0 4px;text-transform:uppercase}
+#fsCard ul{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px;text-align:left}
+#fsCard li{display:flex;gap:10px;align-items:center;font:800 14px/1.35 var(--body);color:var(--fg)}
+#fsCard li i{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;border:2.5px solid var(--ink);background:var(--accent2);font:18px var(--display);font-style:normal}
+#fsCard li .si{width:34px;height:34px;flex:none}
+#fsCard .mults{display:flex;gap:4px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+#fsCard .mults span{font:15px var(--display);padding:3px 7px;border-radius:8px;border:2px solid var(--ink);background:#fff}
+#fsCard .mults span:nth-child(n+6){background:var(--accent2)}
+#fsCard .mults span:last-child{background:var(--accent);color:#fff}
+#fsCard button{width:100%;margin-top:16px;font:24px var(--display);border:3px solid var(--ink);border-radius:18px;padding:12px;cursor:pointer;color:var(--ink);background:var(--accent2);box-shadow:0 6px 0 var(--ink)}
+#fsCard button small{display:block;font:900 11px var(--body);letter-spacing:.06em;margin-top:2px}
+#fsCard .total{font:clamp(40px,8vw,64px)/1 var(--display);color:#fff;-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;text-shadow:0 5px 0 var(--ink);margin-top:10px}
+.r5 .bon{margin-top:8px;padding:7px 10px;border-radius:12px;background:#fff4cc;border:2px solid var(--ink);font:800 12.5px var(--body);color:var(--fg);display:flex;gap:8px;align-items:center}
+#poss .btag{background:var(--accent);color:#fff;border:2px solid var(--ink);border-radius:999px;padding:3px 9px;font:13px var(--display)}
+body.bonus .meter{background:linear-gradient(160deg,#fff3c4,#ffd6ec)}
+body.bonus #mult{color:var(--accent2)}
+.ptab tr.tix td{background:#fff7d6}
+@media(max-width:640px){
+  #fsHud{top:6px;gap:5px}#fsHud div{padding:3px 9px;font-size:10px}#fsHud b{font-size:17px}#fsHud .mx b{font-size:20px}
+  #fsCard .box{padding:14px 14px 12px}#fsCard h3{font-size:32px}#fsCard .sub{margin:4px 0 2px;font-size:11px}#fsCard ul{gap:5px;margin-top:8px}#fsCard li{font-size:12px}#fsCard li i,#fsCard li .si{width:26px;height:26px}#fsCard li:nth-child(3){display:none}#fsCard .mults{margin-top:8px}#fsCard .mults span{font-size:12px;padding:2px 5px}#fsCard button{margin-top:10px;font-size:20px;padding:9px}#fsCard .total{font-size:44px}
+}
 </style>
 <script defer src="https://stats.1v1battles.com/nv.js" data-website-id="4f92624d-4cbc-4758-8bb8-8515f2b5e871"></script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
@@ -106,10 +140,12 @@
   </div>
   <div class="main">
     <div class="stage" id="stage">
-      <canvas id="view" tabindex="0" aria-label="Slot machine with five reels. Space spins. When reel 5 is still turning, D doubles and space lets it land." aria-describedby="sr"></canvas>
+      <canvas id="view" tabindex="0" aria-label="Slot machine with five reels. Space spins. When reel 5 is still turning, D doubles and space lets it land. Three golden tickets start free spins." aria-describedby="sr"></canvas>
+      <div id="fsHud" aria-hidden="true"><div>FREE SPIN <b id="hSpin">1</b> / <b id="hOf">10</b></div><div class="mx" id="hMx"><b id="hMult">×1</b></div><div>WIN <b id="hWin">0.00</b></div></div>
       <div id="winpop"><b id="wpT"></b><span id="wpS"></span></div>
-      <div id="poss"><svg class="ring" viewBox="0 0 36 36"><circle cx="18" cy="18" r="14" fill="none" stroke="#efe8ff" stroke-width="6"/><circle id="ringArc" cx="18" cy="18" r="14" fill="none" stroke="#ff3fae" stroke-width="6" stroke-linecap="round" stroke-dasharray="88" stroke-dashoffset="0" transform="rotate(-90 18 18)"/></svg><span id="possT"></span><span class="icons" id="possI"></span><span class="tag" id="possK"></span></div>
+      <div id="poss"><svg class="ring" viewBox="0 0 36 36"><circle cx="18" cy="18" r="14" fill="none" stroke="#efe8ff" stroke-width="6"/><circle id="ringArc" cx="18" cy="18" r="14" fill="none" stroke="#ff3fae" stroke-width="6" stroke-linecap="round" stroke-dasharray="88" stroke-dashoffset="0" transform="rotate(-90 18 18)"/></svg><span id="possT"></span><span class="icons" id="possI"></span><span class="btag" id="possB" hidden>BONUS</span><span class="tag" id="possK"></span></div>
       <div class="banner" id="banner"><b id="bnT"></b><span id="bnS"></span></div>
+      <div id="fsCard" role="dialog" aria-modal="true" aria-labelledby="fsT"><div class="box" id="fsBox"></div></div>
       <div class="tip" id="tip">SPACE TO SPIN · D TO DOUBLE</div>
       <div class="sr" id="sr" aria-live="polite"></div>
     </div>
@@ -125,27 +161,27 @@
           <div><div class="lbl">Stake</div><div class="stake"><input id="bet" type="number" value="10" min="1" max="100" step="1" inputmode="decimal" aria-label="Stake for all 10 lines"><button id="half">½</button><button id="dbl">2×</button></div></div>
         </div>
         <div class="lines-sub" id="lineBet">10 lines · line bet 1.00</div>
-        <div class="r5" id="r5"><span class="big">Reel 5 decides</span>When reels 1 to 4 land, this box shows every win reel 5 can still complete.</div>
+        <div class="r5" id="r5"></div>
         <div class="choices">
           <button class="choice dbl" id="cDbl" disabled><span class="ic">D</span><span class="nm">DOUBLE<small id="kDbl">one extra stake on reel 5 only</small></span><span class="x" id="xDbl"></span><span class="bar" id="barDbl"></span></button>
           <button class="choice land" id="cLand" disabled><span class="ic">↓</span><span class="nm">LET IT LAND<small>no extra stake</small></span><span class="x"></span></button>
         </div>
         <button id="cash">SPIN<small>stake 10.00 on 10 lines</small></button>
-        <p class="hint">Lines pay <b>both ways</b>. The base game returns <b>96.50%</b> (exact: 260,873 / 270,336). DOUBLE pays <b>k ×</b> what reel 5 adds, with k = 0.965 ÷ the exact average of that amount, so <b>every double returns 96.5%</b>. Double or not, the game returns 96.5%. Max win 10,000× stake. Play money only.</p>
+        <p class="hint">Lines pay <b>both ways</b>. <b>3 golden tickets</b> anywhere start <b>10 FREE SPINS</b> where every spin raises the multiplier (×1, ×2, ×3 up to ×20), about 1 in 161 spins. DOUBLE pays <b>k ×</b> what reel 5 adds to the line wins, so <b>every double returns 96.5%</b>. Double or not, the game returns <b>96.50%</b>. Max win 10,000× stake. Play money only.</p>
       </div>
     </div>
   </div>
 </div>
 <div class="box" id="mbar"><b id="mbWin">0.00</b><button id="mbNo" hidden>LAND IT</button><button id="mbMain">SPIN</button></div>
-<div class="box fairbox" id="fairBox" hidden><b>Provably fair</b><p>Before each spin we publish SHA-256(server seed). Reel i (1 to 5) uses u<sub>i</sub> = HMAC-SHA256(seed, client:nonce:reel:i), first 52 bits ÷ 2<sup>52</sup>, and stops at floor(u<sub>i</sub> × strip length). That stop is the middle row; the rows above and below follow the strip. Reel 5's stop is fixed by the seed before you choose to double, so the choice cannot change where it lands.</p><p>Double: k = 0.965 ÷ E, where E is the average over all reel 5 stops of what reel 5 adds to the win (right to left wins plus the step up to 5 of a kind), in multiples of the stake. The extra stake pays k × that amount. After the spin the seed is revealed.</p><code id="fairFull"></code><pre id="fairPrev">no spin played yet</pre></div>
+<div class="box fairbox" id="fairBox" hidden><b>Provably fair</b><p>Before each spin we publish SHA-256(server seed). Reel i (1 to 5) uses u<sub>i</sub> = HMAC-SHA256(seed, client:nonce:reel:i), first 52 bits ÷ 2<sup>52</sup>, and stops at floor(u<sub>i</sub> × strip length). That stop is the middle row; the rows above and below follow the strip. Free spin n uses the messages fs:n:reel:1 to fs:n:reel:5 on the free spin strips, with the same seed and nonce. Reel 5's stop is fixed by the seed before you choose to double, so the choice cannot change where it lands.</p><p>Double: k = 0.965 ÷ E, where E is the average over all reel 5 stops of what reel 5 adds to the line wins (right to left wins plus the step up to 5 of a kind), in multiples of the stake. The extra stake pays k × that amount; tickets and free spins are paid by the spin stake only. The seed is revealed when the spin, and any free spins it started, are over.</p><code id="fairFull"></code><pre id="fairPrev">no spin played yet</pre></div>
 <div class="how" id="how" hidden><div class="box" role="dialog" aria-modal="true" aria-labelledby="howT">
   <h2 id="howT">How to play <span>LAST REEL</span></h2>
-  <p style="margin:0;color:var(--muted);font-size:15px;line-height:1.55">Five candy reels, ten lines and one big decision.</p>
+  <p style="margin:0;color:var(--muted);font-size:15px;line-height:1.55">Five candy reels, ten lines, one big decision and a golden bonus.</p>
   <ol>
     <li><div><b>Press SPIN.</b> Your stake covers 10 lines. Lines pay left to right <b>and</b> right to left, 3 or more in a row. The star is wild.</div></li>
-    <li><div><b>Reels 1 to 4 land, reel 5 keeps turning.</b> The cabinet lights every win it can still complete and shows how many of its stops hit.</div></li>
-    <li><div><b>DOUBLE</b> adds one extra stake that only plays on reel 5. It pays <b>k ×</b> whatever reel 5 adds. A long shot gets a big k, a likely hit a small one.</div></li>
-    <li><div><b>Or let it land.</b> Either way the game returns 96.5%. Play money only.</div></li>
+    <li><div><b>Reels 1 to 4 land, reel 5 keeps turning.</b> The cabinet lights every win it can still complete. <b>DOUBLE</b> adds one extra stake that pays <b>k ×</b> whatever reel 5 adds. Either way the game returns 96.5%.</div></li>
+    <li><div><b>3 golden tickets</b> anywhere start <b>10 FREE SPINS</b>. Every free spin raises the multiplier: ×1, ×2, ×3 and on up to ×20. 3 tickets again add 5 more spins.</div></li>
+    <li><div>Wins go up to <b>10,000× your stake</b>. Play money only.</div></li>
   </ol>
   <button id="go" class="go">LET'S SPIN</button>
 </div></div>
@@ -154,13 +190,20 @@
   <h2 id="paysT">Paytable <span>LAST REEL</span></h2>
   <p style="margin:0;color:var(--muted);font-size:14px" id="paysSub">Amounts for a stake of 10.00 (line bet 1.00).</p>
   <table class="ptab" id="ptab"></table>
+  <h3>Free spins</h3>
+  <ul class="rules">
+    <li><b>3, 4 or 5 golden tickets</b> anywhere on screen pay 1×, 10× or 100× the stake and start <b>10 FREE SPINS</b>. A ticket landing on reel 5 counts like any other.</li>
+    <li>Free spin n pays every win <b>× n</b> (×1, ×2, ×3 and on, up to ×20). The free spin reels carry stacked wilds and more of the big symbols.</li>
+    <li>3 or more tickets during free spins add <b>5 more spins</b> (about 1 in 87 free spins) and the multiplier keeps climbing.</li>
+    <li>Free spins start about <b>1 in 161 spins</b> (exact: 265,410 of 42,765,030 stop combinations) and pay <b>55.8× the stake on average</b>. 37% of them pay 50× or more, 12% pay 100× or more and about 1 in 2,850 pays 1,000× or more.</li>
+  </ul>
   <h3>10 lines, both ways</h3>
   <div class="lgrid" id="lgrid"></div>
   <ul class="rules">
     <li>Wins count from reel 1 to the right <b>and</b> from reel 5 to the left, 3 or more adjacent symbols on a line. A 5 of a kind pays once. Wins on different lines add up.</li>
-    <li>The <b>wild star</b> stands in for every symbol and also pays on its own.</li>
-    <li><b>Double</b> is offered when reel 5 can still add a win. The extra stake pays k × what reel 5 adds (right to left wins and the step up to 5 of a kind). k = 0.965 ÷ the exact average of that amount over the reel 5 stops.</li>
-    <li>Base game RTP <b>96.4995%</b> (exact, all 36,765,696 stop combinations). Each double returns <b>96.5%</b>. Max win 10,000× stake per spin; the highest possible screen pays 290.8× and a doubled spin at most 299.5×.</li>
+    <li>The <b>wild star</b> stands in for every symbol except the ticket and also pays on its own.</li>
+    <li><b>Double</b> is offered when reel 5 can still add a line win. The extra stake pays k × what reel 5 adds to the line wins (right to left wins and the step up to 5 of a kind). k = 0.965 ÷ the exact average of that amount over the reel 5 stops, so every double returns 96.5%. Tickets and free spins are paid by the spin stake, never by the double.</li>
+    <li><b>RTP 96.50%</b> (96.504%): line wins 60.93% (exact, all 42,765,030 stop combinations), tickets 0.94%, free spins 34.63% (exact recursion over the free spin strips). Max win <b>10,000× stake</b> for a spin and its free spins: a single free spin screen can pay up to 1,287× before the multiplier, so the cap can be reached from ×8 on. A double is settled on its own stake (at most about 34× it).</li>
   </ul>
   <h3>Reel strips</h3>
   <table class="stab" id="stab"></table>
@@ -179,34 +222,43 @@ const fk=k=>k>=100?fmt(k,0):k>=10?k.toFixed(1):k.toFixed(2);
 const embed=location.hash==='#embed'; if(embed){ document.body.classList.add('embed'); $('backlink').remove() }
 const wait=ms=>new Promise(r=>setTimeout(r,reduce?Math.min(ms,150):ms));
 const F=createFair('lastreel-demo-client'), A=createSfx();
-const ROWN=['top','middle','bottom'];
+const ROWN=['top','middle','bottom'], TK=E.TICKET;
 const LINE_COLORS=['#ffe14d','#3ff0ff','#ff5fd2','#7dff6a','#ff9a3d','#a98bff','#ff4d6d','#4dffc3','#ffd0f0','#5fa8ff'];
+const hasTicket=(r,stop,strips)=>E.column(r,stop,strips).includes(TK);
+const r2=v=>Math.round(v*100)/100;
 
 /* ---------- sound ---------- */
 const sSpin=()=>{ A.noise(.45,900,.07,'bandpass'); A.tone(180,620,.32,.05,'sawtooth') };
 const sStop=r=>{ A.tone(210-r*14,80,.14,.16,'triangle'); A.noise(.05,2600,.07,'highpass') };
+const sTicket=()=>{ A.tone(1320,1760,.18,.07,'triangle'); A.tone(1760,2640,.25,.05,'sine',.08) };
 const sTick=()=>A.tone(1500,1300,.035,.035,'square');
 const sDouble=()=>{ A.notes([0,7,12,19,24],392,.05,.08,'square'); A.noise(.4,4000,.05,'highpass') };
 const sWin=l=>{ A.notes(l>=2?[0,4,7,12,16,19,24]:l>=1?[0,4,7,12,16]:[0,7,12],l>=2?523:659,.06,.07); if(l>=1) for(let i=0;i<10+l*10;i++) A.tone(2200+Math.random()*1600,2000,.07,.025,'triangle',.2+i*.045) };
 const sLose=()=>A.tone(330,170,.25,.05,'triangle');
 const sMiss=()=>{ A.tone(392,196,.4,.07,'triangle'); A.tone(311,155,.5,.05,'triangle',.12) };
-let antT=null;
+const sTrigger=()=>{ A.notes([0,4,7,12,16,19,24,28,31,36],523,.07,.09,'square'); A.noise(1.2,5000,.06,'highpass'); A.tone(110,55,1,.2,'sine') };
+const sMult=m=>A.tone(400+m*40,800+m*60,.18,.06,'square');
+let antT=null, musT=null;
 function anticipation(on){ clearInterval(antT); antT=null; if(!on) return; let i=0; antT=setInterval(()=>{ const f=196*Math.pow(2,Math.min(i,24)/24); A.tone(f,f*1.01,.2,.035,'sawtooth'); if(i%4===0) A.tone(70,45,.25,.16,'sine'); i++ },240) }
+// bonus music: a bouncy major arpeggio with a bass on the beat
+function music(on){ clearInterval(musT); musT=null; if(!on) return; const pat=[0,7,12,16,12,7,4,7, 5,9,12,17,12,9,5,9, 7,11,14,19,14,11,7,11, 0,4,7,12,16,19,24,19]; let i=0;
+  musT=setInterval(()=>{ const s=pat[i%pat.length], f=523*Math.pow(2,s/12); A.tone(f,f,.16,.028,'triangle'); if(i%4===0){ const b=[0,5,7,0][Math.floor(i/8)%4]; A.tone(131*Math.pow(2,b/12),131*Math.pow(2,b/12),.3,.07,'sine') } if(i%8===4) A.noise(.06,6000,.025,'highpass'); i++ },150) }
 $('snd').onclick=()=>{ A.unlock(); $('snd').textContent=A.toggle()?'SOUND OFF':'SOUND ON' };
 
 /* ---------- state ---------- */
-let bal=1000, stake=10, phase='idle', cur=null, hist=[], doubled=false, decide=null, showToken=0, lastWin=0, thumbs=null, countdown=null;
+let bal=1000, stake=10, phase='idle', cur=null, hist=[], doubled=false, decide=null, showToken=0, lastWin=0, thumbs=null, countdown=null, fs=null;
 const say=s=>{ $('sr').textContent=s };
-function readStake(){ let v=parseFloat($('bet').value); if(!isFinite(v)||v<1) v=1; v=Math.min(v,100,Math.max(1,bal)); v=Math.round(v*100)/100; $('bet').value=v; return v }
+function readStake(){ let v=parseFloat($('bet').value); if(!isFinite(v)||v<1) v=1; v=Math.min(v,100,Math.max(1,bal)); v=r2(v); $('bet').value=v; return v }
 const stakeNow=()=>phase==='idle'?readStake():stake;
-$('half').onclick=()=>{ $('bet').value=Math.max(1,Math.round(readStake()/2*100)/100); ui() };
+$('half').onclick=()=>{ $('bet').value=Math.max(1,r2(readStake()/2)); ui() };
 $('dbl').onclick=()=>{ $('bet').value=Math.min(bal,100,readStake()*2); readStake(); ui() };
 $('bet').addEventListener('change',()=>{ readStake(); ui() });
 function icon(s,cls='si'){ const S=E.SYMBOLS[s]; return thumbs?'<img class="'+cls+'" src="'+thumbs[s]+'" alt="'+S.name+'">':'<span class="sym-fb" style="background:'+S.color+'" title="'+S.name+'">'+S.name[0]+'</span>' }
 function setMult(txt,cls){ const el=$('mult'); el.textContent=txt; el.className=cls||''; if(!reduce){ el.classList.add('pop'); setTimeout(()=>el.classList.remove('pop'),200) } }
 function ui(){
   $('bal').textContent=fmt(bal);
-  const s=stakeNow(), offer=phase==='offer';
+  const s=stakeNow(), offer=phase==='offer', bonus=phase==='bonus';
+  document.body.classList.toggle('bonus',bonus);
   $('lineBet').textContent='10 lines · line bet '+fmt(s/10)+(offer?' · double costs '+fmt(stake):'');
   $('bet').disabled=$('half').disabled=$('dbl').disabled=phase!=='idle';
   const canDbl=offer&&bal>=stake;
@@ -217,73 +269,86 @@ function ui(){
   const c=$('cash');
   if(phase==='idle'){ c.disabled=false; c.innerHTML='SPIN<small>stake '+fmt(s)+' on 10 lines</small>' }
   else if(offer){ c.disabled=false; c.innerHTML='LET IT LAND<small>reel 5 stops, no extra stake</small>' }
+  else if(bonus){ c.disabled=true; c.innerHTML='FREE SPINS<small>'+(fs?'spin '+fs.spin+' of '+(fs.spin+fs.left)+' · ×'+fs.mult:'starting')+'</small>' }
   else { c.disabled=true; c.innerHTML='SPIN<small>'+(phase==='landing'?'reel 5 is landing':'reels spinning')+'</small>' }
-  $('mbMain').disabled=!(phase==='idle'||canDbl); $('mbMain').textContent=offer?(canDbl?'DOUBLE ×'+fk(cur.r5.k):'NO PLAY MONEY'):'SPIN '+fmt(s);
-  $('mbMain').classList.toggle('gold',offer); $('mbNo').hidden=!offer;
-  $('mbWin').textContent=offer?'×'+fk(cur.r5.k):fmt(lastWin);
+  $('mbMain').disabled=!(phase==='idle'||canDbl); $('mbMain').textContent=offer?(canDbl?'DOUBLE ×'+fk(cur.r5.k):'NO PLAY MONEY'):bonus?'FREE SPINS':'SPIN '+fmt(s);
+  $('mbMain').classList.toggle('gold',offer||bonus); $('mbNo').hidden=!offer;
+  $('mbWin').textContent=offer?'×'+fk(cur.r5.k):bonus&&fs?fmt(fs.total):fmt(lastWin);
   W&&W.buttons({spin:offer?'LAND':'SPIN',spinOn:phase==='idle'||offer,dbl:canDbl});
 }
-function chip(m,dbl){ hist.unshift({m,dbl}); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span class="chip '+(h.m>0?'w':'l')+'">'+fx(h.m)+'×'+(h.dbl?' D':'')+'</span>').join('') }
+function chip(m,dbl,bonus){ hist.unshift({m,dbl,bonus}); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span class="chip '+(h.m>0?'w':'l')+'">'+fx(h.m)+'×'+(h.bonus?' FS':'')+(h.dbl?' D':'')+'</span>').join('') }
 function banner(t,s,cls){ $('bnT').textContent=t; $('bnS').textContent=s; $('banner').className='banner '+cls+' on'; say(t+'. '+s) }
 const hideBanner=()=>{ $('banner').className='banner' };
 function winpop(t,s){ $('wpT').textContent=t; $('wpS').innerHTML=s||''; $('winpop').className='on' }
 const hideWinpop=()=>{ $('winpop').className='' };
 function fairUI(){ $('fairHash').textContent=' · '+F.hash.slice(0,10)+'…'; $('fairFull').textContent=(phase==='idle'?'next spin':'this spin')+' · nonce '+F.nonce+' · seed hash: '+F.hash }
-function display(){ if(!W) return; if(phase==='offer') W.setDisplay('DOUBLE PAYS',' ×'+fk(cur.r5.k)); else if(phase!=='idle') W.setDisplay('GOOD LUCK',phase==='landing'?'REEL 5':'SPINNING'); else if(lastWin>0) W.setDisplay('WIN',fmt(lastWin)); else W.setDisplay('PLAY MONEY',fmt(bal)) }
+function display(){ if(!W) return; if(phase==='offer') W.setDisplay('DOUBLE PAYS',' ×'+fk(cur.r5.k)); else if(phase==='bonus'&&fs) W.setDisplay('FREE SPIN '+fs.spin+' · ×'+fs.mult,fmt(fs.total)); else if(phase!=='idle') W.setDisplay('GOOD LUCK',phase==='landing'?'REEL 5':'SPINNING'); else if(lastWin>0) W.setDisplay('WIN',fmt(lastWin)); else W.setDisplay('PLAY MONEY',fmt(bal)) }
 
 /* ---------- reel 5 panel ---------- */
+const R5_IDLE='<span class="big">Reel 5 decides</span>When reels 1 to 4 land, this box shows every win reel 5 can still complete. <b>3 golden tickets</b> anywhere start FREE SPINS.';
+function bonusLine(r5){ if(!r5||r5.tickets4<2) return ''; return '<div class="bon">'+icon(TK)+(r5.tickets4>=3?'<span><b>FREE SPINS</b> are already won this spin</span>':'<span>2 tickets in! A ticket on reel 5 starts <b>FREE SPINS</b> ('+r5.ticketStops+' of '+r5.n+' stops)</span>')+'</div>' }
 function r5UI(r5){
   const box=$('r5');
-  if(!r5){ box.className='r5'; box.innerHTML='<span class="big">Reel 5 decides</span>When reels 1 to 4 land, this box shows every win reel 5 can still complete.'; $('poss').className=''; return }
-  if(r5.e<=0){ box.className='r5'; box.innerHTML='<span class="big">Reel 5 cannot add a win</span>No line can still be completed, so there is no double this time.'+(r5.locked>0?' Locked in: <b>'+fmt(r5.locked*stake)+'</b>.':''); return }
+  if(!r5){ box.className='r5'; box.innerHTML=R5_IDLE; $('poss').className=''; return }
+  if(r5.e<=0){ box.className='r5'+(r5.tickets4>=2?' on':''); box.innerHTML='<span class="big">Reel 5 cannot add a line win</span>No line can still be completed, so there is no double this time.'+(r5.locked>0?' Locked in: <b>'+fmt(r5.locked*stake)+'</b>.':'')+bonusLine(r5); return }
   box.className='r5 on';
   const rows=r5.possible.slice(0,4).map(p=>'<li><span class="ln" style="--c:'+LINE_COLORS[p.line]+'">'+(p.line+1)+'</span>'+ROWN[p.row]+' row '+p.need.slice(0,5).map(s=>icon(s)).join('')+'<span class="amt">+'+fmt(p.best*stake)+'</span></li>').join('');
-  box.innerHTML='<span class="big">Reel 5 hits on '+r5.hits+' of '+r5.n+' stops</span>'+(r5.locked>0?'Locked in already: <b>'+fmt(r5.locked*stake)+'</b> · ':'')+'reel 5 can add up to <b>'+fmt(r5.best*stake)+'</b>'+(r5.possible.length>4?' · '+r5.possible.length+' lines in play':'')+'<ul>'+rows+'</ul>';
+  box.innerHTML='<span class="big">Reel 5 hits on '+r5.hits+' of '+r5.n+' stops</span>'+(r5.locked>0?'Locked in already: <b>'+fmt(r5.locked*stake)+'</b> · ':'')+'reel 5 can add up to <b>'+fmt(r5.best*stake)+'</b>'+(r5.possible.length>4?' · '+r5.possible.length+' lines in play':'')+'<ul>'+rows+'</ul>'+bonusLine(r5);
   const syms=[...new Set(r5.possible.flatMap(p=>p.need))].sort((a,b)=>a-b).slice(0,6);
   $('possT').textContent=r5.hits+' OF '+r5.n+' STOPS WIN';
   $('possI').innerHTML=syms.map(s=>icon(s)).join('');
+  $('possB').hidden=r5.tickets4!==2;
   $('possK').textContent='DOUBLE ×'+fk(r5.k);
   $('poss').className='on';
 }
 
-/* ---------- flow ---------- */
+/* ---------- base round ---------- */
 async function spin(){
   if(phase!=='idle'||!W) return;
   A.unlock(); $('tip').style.opacity=0; hideBanner(); hideWinpop(); showToken++;
   stake=readStake(); if(bal<stake){ if(bal<1){ bal=1000; ui(); display() } say('Not enough play money for that stake'); return }
-  bal-=stake; phase='spinning'; doubled=false; lastWin=0;
+  bal=r2(bal-stake); phase='spinning'; doubled=false; lastWin=0;
   const us=[1,2,3,4,5].map(i=>F.u('reel:'+i)), stops=us.map((u,i)=>E.stopOf(u,i));
-  cur={us,stops,r5:null};
+  cur={us,stops,r5:null,landed:0,fs:[]};
   fairUI(); r5UI(null); $('state').textContent='SPINNING · STAKE '+fmt(stake); setMult('?.??×'); $('win').innerHTML='10 lines · pays both ways'; ui(); display();
   sSpin(); W.spinAll();
   await wait(620);
-  for(let r=0;r<4;r++){ await W.stopReel(r,stops[r]); sStop(r); await wait(70) }
+  for(let r=0;r<4;r++){ await W.stopReel(r,stops[r]); cur.landed=r+1; sStop(r); if(hasTicket(r,stops[r])) sTicket(); await wait(70) }
   const r5=E.reel5(stops.slice(0,4)); cur.r5=r5;
   if(r5.e>0){
     phase='offer'; W.slow5(true); W.glow5(1); W.candidates(r5.possible.map(p=>({line:p.line,row:p.row})));
     $('state').textContent='REEL 5 IS STILL TURNING'; setMult('×'+fk(r5.k)); $('win').innerHTML='double pays <b>×'+fk(r5.k)+'</b> of what reel 5 adds';
     r5UI(r5); ui(); display(); anticipation(true);
-    say('Reels 1 to 4 landed. Reel 5 hits on '+r5.hits+' of '+r5.n+' stops. Double pays '+fk(r5.k)+' times what reel 5 adds. Press D to double or space to let it land.');
+    say('Reels 1 to 4 landed. Reel 5 hits on '+r5.hits+' of '+r5.n+' stops. Double pays '+fk(r5.k)+' times what reel 5 adds. Press D to double or space to let it land.'+(r5.tickets4===2?' Two golden tickets are in: a ticket on reel 5 starts free spins.':''));
     const choice=await new Promise(res=>{ decide=res; const T0=performance.now(), LEN=10000; countdown=setInterval(()=>{ const k=1-(performance.now()-T0)/LEN; $('barDbl').style.setProperty('--t',Math.max(0,k)); $('ringArc').setAttribute('stroke-dashoffset',String(88*(1-Math.max(0,k)))); if(k<=0) res('land') },100) });
     clearInterval(countdown); decide=null; anticipation(false); $('barDbl').style.setProperty('--t',0);
-    if(choice==='double'&&bal>=stake){ bal-=stake; doubled=true; phase='landing'; sDouble(); W.glow5(2); W.celebrate(0); ui(); display(); $('state').textContent='DOUBLED · REEL 5 DECIDES'; say('Doubled.'); W.speed5(13); await wait(520); await W.stopReel(4,stops[4],{dmin:6.2,slowmo:1.25}) }
-    else { phase='landing'; W.glow5(0); ui(); display(); W.speed5(9); await wait(260); await W.stopReel(4,stops[4],{dmin:3}) }
+    if(choice==='double'&&bal>=stake){ bal=r2(bal-stake); doubled=true; phase='landing'; sDouble(); W.glow5(2); W.celebrate(0); ui(); display(); $('state').textContent='DOUBLED · REEL 5 DECIDES'; say('Doubled.'); W.speed5(13); await wait(520); await W.stopReel(4,stops[4],{dmin:6.2,slowmo:1.25}) }
+    else { phase='landing'; W.glow5(r5.tickets4===2?1:0); ui(); display(); W.speed5(9); await wait(260); await W.stopReel(4,stops[4],{dmin:r5.tickets4===2?5:3,slowmo:r5.tickets4===2?1.3:1}) }
+  } else if(r5.tickets4===2){
+    // two tickets in: reel 5 still teases before it lands
+    r5UI(r5); phase='landing'; ui(); display(); W.slow5(true); W.glow5(1); anticipation(true); $('state').textContent='2 TICKETS · REEL 5 DECIDES';
+    await wait(1500); anticipation(false); W.speed5(10); await wait(240); await W.stopReel(4,stops[4],{dmin:5,slowmo:1.3});
   } else {
     r5UI(r5); await wait(120); await W.stopReel(4,stops[4],{dmin:3});
   }
-  sStop(4); $('poss').className=''; W.glow5(0); W.candidates([]);
+  cur.landed=5; sStop(4); if(hasTicket(4,stops[4])) sTicket(); $('poss').className=''; W.glow5(0); W.candidates([]);
   const ev=E.evaluate(E.grid(stops));
-  let baseWin=stake*ev.total, dblWin=doubled?stake*r5.k*ev.w5:0;
-  const cap=stake*E.MAX_WIN; if(baseWin+dblWin>cap) dblWin=Math.max(0,cap-baseWin);
-  baseWin=Math.round(baseWin*100)/100; dblWin=Math.round(dblWin*100)/100;
-  const win=baseWin+dblWin, paid=stake*(doubled?2:1), m=win/stake;
-  bal=Math.round((bal+win)*100)/100; lastWin=win;
+  let baseWin=r2(stake*Math.min(ev.total,E.MAX_WIN)), dblWin=doubled?r2(stake*r5.k*ev.w5):0;
+  const win=baseWin+dblWin, m=win/stake;
+  bal=r2(bal+win); lastWin=win;
   cur.ev=ev; cur.baseWin=baseWin; cur.dblWin=dblWin; cur.doubled=doubled;
-  end(ev,r5,baseWin,dblWin);
-  phase='idle'; ui(); display(); r5UI(null);
-  $('state').textContent=win>0?(doubled&&dblWin>0?'LAST REEL PAID':'WIN'):(doubled?'REEL 5 MISSED':'NO WIN');
-  setMult(fx(m)+'×',win>0?'won':''); $('win').innerHTML=win>0?'won <b>'+fmt(win)+'</b>'+(doubled?' · double <b>'+fmt(dblWin)+'</b>':''):(doubled?'paid '+fmt(paid)+' · reel 5 missed':'no line this time');
-  chip(m,doubled);
+  phase=ev.trigger?'bonus':'idle'; ui(); display(); r5UI(null);
+  $('state').textContent=ev.trigger?'FREE SPINS WON':win>0?(doubled&&dblWin>0?'LAST REEL PAID':'WIN'):(doubled?'REEL 5 MISSED':'NO WIN');
+  setMult(fx(m)+'×',win>0?'won':''); $('win').innerHTML=win>0?'won <b>'+fmt(win)+'</b>'+(doubled?' · double <b>'+fmt(dblWin)+'</b>':''):(doubled?'paid '+fmt(stake*2)+' · reel 5 missed':'no line this time');
+  if(ev.trigger){
+    const bw=await runBonus(ev,baseWin);
+    const total=win+bw; lastWin=total; chip(total/stake,doubled,true);
+    end(ev,r5,baseWin,dblWin,bw);
+    phase='idle'; ui(); display(); $('state').textContent='BONUS COMPLETE'; setMult(fx(total/stake)+'×','won'); $('win').innerHTML='won <b>'+fmt(total)+'</b> · free spins <b>'+fmt(bw)+'</b>';
+    return;
+  }
+  end(ev,r5,baseWin,dblWin,0);
+  chip(m,doubled,false);
   const lvl=m>=50?3:m>=10?2:m>=2?1:0;
   if(win>0){
     sWin(lvl); W.celebrate(lvl); W.coins(Math.min(180,Math.round(8+m*5)));
@@ -291,29 +356,90 @@ async function spin(){
     else if(lvl>=3) banner('MEGA WIN','×'+fx(m)+' · won '+fmt(win),'good');
     else if(lvl>=2) banner('BIG WIN','×'+fx(m)+' · won '+fmt(win),'good');
     say('Won '+fmt(win)+'.');
-    cycleWins(ev.wins,showToken);
+    cycleWins(ev.wins,showToken,1);
   } else { if(doubled){ sMiss(); winpop('MISSED','reel 5 did not add a win') } else sLose(); say(doubled?'Reel 5 missed. No win.':'No win.') }
   if($('banner').classList.contains('on')) setTimeout(()=>{ hideBanner() },2200);
 }
-async function cycleWins(wins,tok){
+function winText(w,mult){
+  if(w.scatter) return w.count+' × '+icon(TK)+' anywhere'+(mult>1?' · ×'+mult:'');
+  const dir=w.dir==='rtl'?'right to left':w.dir==='ltr'?'left to right':'all five';
+  return '<span class="ln" style="--c:'+LINE_COLORS[w.line]+'">'+(w.line+1)+'</span>'+w.count+' × '+icon(w.sym)+' '+dir+(mult>1?' · ×'+mult:'');
+}
+async function cycleWins(wins,tok,mult){
   if(!wins.length) return;
   wins=wins.slice().sort((a,b)=>b.pay-a.pay);
   for(let loop=0;loop<40&&tok===showToken;loop++) for(const w of wins){
     if(tok!==showToken) return;
-    W.showWin(w);
-    const dir=w.dir==='rtl'?'right to left':w.dir==='ltr'?'left to right':'all five';
-    winpop('+'+fmt(w.pay*stake),'<span class="ln" style="--c:'+LINE_COLORS[w.line]+'">'+(w.line+1)+'</span>'+w.count+' × '+icon(w.sym)+' '+dir);
+    W.showWin(w); winpop('+'+fmt(w.pay*stake*mult),winText(w,mult));
     await wait(wins.length>1?1250:2400);
     if(wins.length===1&&loop>0) { await wait(1200) }
   }
 }
-function end(ev,r5,baseWin,dblWin){
+
+/* ---------- free spins ---------- */
+function hud(){ if(!fs) return; $('hSpin').textContent=fs.spin; $('hOf').textContent=fs.spin+fs.left; $('hMult').textContent='×'+fs.mult; $('hWin').textContent=fmt(fs.total); ui(); display() }
+function card(html,btn,auto){
+  return new Promise(res=>{ $('fsBox').innerHTML=html+'<button id="fsGo">'+btn+'</button>'; $('fsCard').className='on'; let t=null;
+    const done=()=>{ clearTimeout(t); $('fsCard').className=''; document.removeEventListener('keydown',key,true); res() };
+    const key=e=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); e.stopPropagation(); done() } };
+    $('fsGo').onclick=()=>{ A.unlock(); done() }; document.addEventListener('keydown',key,true); setTimeout(()=>$('fsGo').focus({preventScroll:true}),50); t=setTimeout(done,auto) });
+}
+async function runBonus(ev,baseWin){
+  showToken++; hideWinpop();
+  // trigger celebration
+  const sc=ev.wins.find(w=>w.scatter); W.showWin(sc); W.celebrate(3); W.coins(70); sTrigger();
+  banner('FREE SPINS!',ev.tickets+' golden tickets · '+E.FS_START+' free spins','good');
+  winpop('+'+fmt(sc.pay*stake),winText(sc,1));
+  await wait(2300); hideBanner(); hideWinpop(); W.clearWins();
+  W.bonus(true); music(true);
+  await card('<div class="sub">'+ev.tickets+' golden tickets</div><h3 id="fsT">'+E.FS_START+' FREE SPINS</h3><ul><li><i>×</i><span>Every free spin raises the multiplier. The last spins are worth the most.</span></li><li>'+icon(TK)+'<span>3 tickets again: <b>+'+E.FS_ADD+' spins</b>, and the multiplier keeps climbing to ×'+E.FS_MULT_MAX+'.</span></li><li>'+icon(8)+'<span>Free spin reels carry <b>stacked wilds</b> and more big symbols.</span></li></ul><div class="mults">'+[1,2,3,4,5,6,7,8,9,10].map(m=>'<span>×'+m+'</span>').join('')+'</div>','START FREE SPINS<small>space or tap · starts by itself</small>',7000);
+  const S=E.FS_STRIPS, cap=stake*E.MAX_WIN-baseWin;
+  fs={spin:0,left:E.FS_START,mult:1,total:0}; $('fsHud').className='on';
+  W.setStrips(S,[3,9,15,21,27]);
+  let maxed=false;
+  while(fs.left>0&&!maxed){
+    fs.spin++; fs.left--; fs.mult=E.fsMult(fs.spin); hud();
+    if(!reduce){ const el=$('hMx'); el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop') } sMult(fs.mult);
+    $('state').textContent='FREE SPIN '+fs.spin+' OF '+(fs.spin+fs.left); setMult('×'+fs.mult); $('win').innerHTML='bonus win <b>'+fmt(fs.total)+'</b>';
+    const stops=[1,2,3,4,5].map(i=>E.stopOf(F.u('fs:'+fs.spin+':reel:'+i),i-1,S));
+    W.clearWins(); W.spinAll(); sSpin(); await wait(480);
+    let t4=0;
+    for(let r=0;r<4;r++){ await W.stopReel(r,stops[r]); sStop(r); if(hasTicket(r,stops[r],S)){ t4++; sTicket() } await wait(40) }
+    if(t4===2){ W.glow5(1); W.slow5(true); anticipation(true); await wait(1100); anticipation(false); W.speed5(10); await wait(200); await W.stopReel(4,stops[4],{dmin:5,slowmo:1.3}); W.glow5(0) }
+    else await W.stopReel(4,stops[4]);
+    sStop(4); if(hasTicket(4,stops[4],S)) sTicket();
+    const e=E.evaluate(E.grid(stops,S)); let win=r2(stake*e.total*fs.mult);
+    if(fs.total+win>=cap){ win=r2(cap-fs.total); maxed=true }
+    fs.total=r2(fs.total+win); cur.fs.push({n:fs.spin,stops,mult:fs.mult,win,re:e.trigger});
+    hud(); $('win').innerHTML='bonus win <b>'+fmt(fs.total)+'</b>';
+    if(win>0){
+      const m=win/stake, lvl=m>=50?3:m>=10?2:m>=2?1:0; sWin(lvl); W.celebrate(Math.max(1,lvl)); W.coins(Math.min(180,Math.round(10+m*3)));
+      const ws=e.wins.slice().sort((a,b)=>b.pay-a.pay).slice(0,3);
+      winpop('+'+fmt(win),ws.length===1?winText(ws[0],fs.mult):ws.length+' wins · ×'+fs.mult);
+      if(lvl>=2) banner(lvl>=3?'MEGA WIN':'BIG WIN','×'+fs.mult+' multiplier · +'+fmt(win),'good');
+      for(const w of ws){ W.showWin(w); await wait(ws.length>1?750:1100) }
+      hideBanner();
+    } else await wait(250);
+    if(e.trigger&&!maxed){ fs.left+=E.FS_ADD; hud(); sTrigger(); W.celebrate(3); banner('+'+E.FS_ADD+' FREE SPINS','3 tickets again · the multiplier keeps climbing','good'); await wait(1800); hideBanner() }
+    hideWinpop(); await wait(260);
+  }
+  music(false); W.clearWins();
+  const tm=fs.total/stake, lvl=tm>=50?3:tm>=10?2:1;
+  sWin(lvl); W.celebrate(3); W.coins(Math.min(180,Math.round(40+tm)));
+  bal=r2(bal+fs.total); const tot=fs.total; ui();
+  const roundM=(baseWin+tot)/stake;
+  await card('<div class="sub">'+(maxed?'max win reached':'free spins complete')+' · '+fs.spin+' spins</div><h3 id="fsT">'+(maxed?'MAX WIN':tm>=50?'MEGA BONUS':tm>=10?'BIG BONUS':'BONUS WIN')+'</h3><div class="total">'+fmt(tot)+'</div><div class="sub" style="color:var(--fg)">'+(maxed?'spin + free spins = ×'+fx(roundM)+' your stake':'×'+fx(tm)+' your stake')+'</div>','BACK TO THE REELS<small>space or tap</small>',6000);
+  $('fsHud').className=''; W.bonus(false); W.setStrips(E.STRIPS,cur.stops);
+  fs=null; return tot;
+}
+function end(ev,r5,baseWin,dblWin,bw){
   const rv=F.reveal(), st=cur.stops;
   const lines=[ 'spin '+rv.nonce+' · client '+rv.client, 'seed '+rv.seed ];
   st.forEach((s,i)=>lines.push('reel '+(i+1)+': u='+cur.us[i].toFixed(6)+' → stop '+s+' of '+E.STRIPS[i].length+' · '+E.column(i,s).map(x=>E.SYMBOLS[x].name).join(' / ')));
-  lines.push('base win '+fx(ev.total)+'× = '+fmt(baseWin)+' (locked by reels 1-4 '+fx(ev.locked)+'×, reel 5 added '+fx(ev.w5)+'×)');
+  lines.push('spin win '+fx(ev.total)+'× = '+fmt(baseWin)+' (lines '+fx(ev.lines)+'×: locked by reels 1-4 '+fx(ev.locked)+'×, reel 5 added '+fx(ev.w5)+'×'+(ev.scatter?' · tickets '+fx(ev.scatter)+'×':'')+')');
   if(r5.e>0) lines.push('reel 5 E = '+r5.e.toFixed(5)+'× · k = 0.965 / E = '+r5.k.toFixed(4)+' · '+(cur.doubled?'doubled, paid '+fmt(dblWin):'not doubled'));
   else lines.push('no double offered (E = 0)');
+  if(cur.fs.length){ lines.push('FREE SPINS ('+ev.tickets+' tickets), messages fs:n:reel:i on the free spin strips'); for(const f of cur.fs) lines.push('fs '+f.n+' ×'+f.mult+': stops '+f.stops.join(',')+' → '+fmt(f.win)+(f.re?' · +'+E.FS_ADD+' spins':'')); lines.push('free spins total '+fmt(bw)) }
   $('fairPrev').textContent=lines.join('\n'); fairUI();
 }
 function doDouble(){ if(phase==='offer'&&decide&&bal>=stake){ A.unlock(); decide('double') } }
@@ -324,7 +450,7 @@ $('mbMain').onclick=()=>{ if(phase==='offer') doDouble(); else spin() };
 $('mbNo').onclick=doLand;
 addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return }
   if(e.key==='Escape'){ $('pays').hidden=true; $('fairBox').hidden=true; return }
-  if(!$('how').hidden||!$('pays').hidden) return;
+  if(!$('how').hidden||!$('pays').hidden||$('fsCard').classList.contains('on')) return;
   if(e.key===' '||e.key==='Enter'){ e.preventDefault(); if(phase==='offer') doLand(); else spin() }
   else if(e.key==='d'||e.key==='D') doDouble();
   else if(e.key==='p'||e.key==='P') openPays() });
@@ -335,10 +461,14 @@ $('howBtn').onclick=openHow; $('go').onclick=()=>{ $('how').hidden=true; try{ lo
 /* ---------- paytable ---------- */
 function buildPays(){
   const s=stakeNow(), lb=s/10;
-  $('paysSub').textContent='Amounts for a stake of '+fmt(s)+' (line bet '+fmt(lb)+'). Multipliers are per line bet.';
-  $('ptab').innerHTML='<tr><th>Symbol</th><th>3 in a row</th><th>4 in a row</th><th>5 in a row</th></tr>'+E.SYMBOLS.slice().reverse().map(S=>'<tr><td>'+icon(E.SYMBOLS.indexOf(S))+'<span><b>'+S.name+'</b>'+(S.key==='wild'?'<small>stands in for all</small>':'')+'</span></td>'+S.pays.map(p=>'<td><b>'+fmt(p*lb)+'</b><small>×'+p+'</small></td>').join('')+'</tr>').join('');
+  $('paysSub').textContent='Amounts for a stake of '+fmt(s)+' (line bet '+fmt(lb)+'). Line multipliers are per line bet.';
+  const rows=E.SYMBOLS.map((S,i)=>({S,i})).filter(o=>o.i!==TK).reverse();
+  $('ptab').innerHTML='<tr><th>Symbol</th><th>3 of them</th><th>4 of them</th><th>5 of them</th></tr>'
+    +'<tr class="tix"><td>'+icon(TK)+'<span><b>Golden Ticket</b><small>anywhere · 3+ start free spins</small></span></td>'+[3,4,5].map(k=>'<td><b>'+fmt(E.SCATTER_PAYS[k]*s)+'</b><small>×'+E.SCATTER_PAYS[k]+' stake</small></td>').join('')+'</tr>'
+    +rows.map(({S,i})=>'<tr><td>'+icon(i)+'<span><b>'+S.name+'</b>'+(S.key==='wild'?'<small>stands in for all but the ticket</small>':'')+'</span></td>'+S.pays.map(p=>'<td><b>'+fmt(p*lb)+'</b><small>×'+p+'</small></td>').join('')+'</tr>').join('');
   $('lgrid').innerHTML=E.LINES.map((L,i)=>'<div class="lmini" style="--c:'+LINE_COLORS[i]+'"><em>'+(i+1)+'</em>'+[0,1,2].map(row=>[0,1,2,3,4].map(r=>'<i class="'+(L[r]===row?'on':'')+'"></i>').join('')).join('')+'</div>').join('');
-  $('stab').innerHTML='<tr><th></th>'+[1,2,3,4,5].map(r=>'<th>REEL '+r+'</th>').join('')+'</tr>'+E.SYMBOLS.map((S,i)=>'<tr><td>'+icon(i)+'</td>'+E.STRIPS.map(st=>'<td>'+st.filter(x=>x===i).length+'</td>').join('')+'</tr>').join('')+'<tr><td><b>stops</b></td>'+E.STRIPS.map(st=>'<td><b>'+st.length+'</b></td>').join('')+'</tr>';
+  const cnt=(st,i)=>st.filter(x=>x===i).length;
+  $('stab').innerHTML='<tr><th></th>'+[1,2,3,4,5].map(r=>'<th>REEL '+r+'</th>').join('')+'<th>FREE SPINS</th></tr>'+E.SYMBOLS.map((S,i)=>'<tr><td>'+icon(i)+'</td>'+E.STRIPS.map(st=>'<td>'+cnt(st,i)+'</td>').join('')+'<td>'+E.FS_STRIPS.map(st=>cnt(st,i)).join(' · ')+'</td></tr>').join('')+'<tr><td><b>stops</b></td>'+E.STRIPS.map(st=>'<td><b>'+st.length+'</b></td>').join('')+'<td><b>'+E.FS_STRIPS.map(st=>st.length).join(' · ')+'</b></td></tr>';
 }
 function openPays(){ buildPays(); $('pays').hidden=false; setTimeout(()=>$('paysX').focus({preventScroll:true}),0) }
 $('paysBtn').onclick=openPays; $('paysX').onclick=()=>{ $('pays').hidden=true };
@@ -346,27 +476,29 @@ $('pays').addEventListener('click',e=>{ if(e.target.id==='pays') $('pays').hidde
 
 /* ---------- 3D ---------- */
 let W=null;
-const start=E.STRIPS.map((s,i)=>[3,9,14,6,11][i]);
+const start=[3,9,14,6,11];
 try{ await Promise.race([Promise.all([document.fonts.load('40px "Lilita One"'),document.fonts.load('900 20px Nunito'),document.fonts.load('800 20px Nunito')]),wait(2500)]) }catch(e){}
 try{
   const { createWorld } = await import('./lastreel/world.js');
-  W=createWorld($('view'),{ strips:E.STRIPS, lines:E.LINES, onTick:(r,v)=>{ if(r===4&&(phase==='offer'||phase==='landing')) sTick() }, onButton:n=>{ if(n==='spin'){ if(phase==='offer') doLand(); else spin() } else if(n==='double') doDouble() } });
+  W=createWorld($('view'),{ strips:E.STRIPS, lines:E.LINES, onTick:(r,v)=>{ if(r===4&&(phase==='offer'||phase==='landing'||phase==='bonus')) sTick() }, onButton:n=>{ if(n==='spin'){ if(phase==='offer') doLand(); else spin() } else if(n==='double') doDouble() } });
   W.setStops(start);
   try{ thumbs=W.kit.thumbs(96) }catch(e){ thumbs=null }
 }catch(err){
   console.error(err);
   const g=document.createElement('div'); g.className='nogrid'; $('stage').appendChild(g);
   const cells=[]; for(let row=0;row<3;row++) for(let r=0;r<5;r++){ const d=document.createElement('div'); if(r===4) d.className='c5'; g.appendChild(d); cells[r*3+row]=d }
-  const setCol=(r,stop)=>E.column(r,stop).forEach((s,row)=>{ const d=cells[r*3+row]; d.textContent=E.SYMBOLS[s].name; d.style.background=E.SYMBOLS[s].color });
+  let strips=E.STRIPS;
+  const setCol=(r,stop)=>E.column(r,stop,strips).forEach((s,row)=>{ const d=cells[r*3+row]; d.textContent=E.SYMBOLS[s].name; d.style.background=E.SYMBOLS[s].color });
   const blank=r=>[0,1,2].forEach(row=>{ const d=cells[r*3+row]; d.textContent='?'; d.style.background='#b9addb' });
   const nop=()=>{};
-  W={ setStops:st=>st.forEach((s,r)=>setCol(r,s)), spinAll:()=>{ for(let r=0;r<5;r++) blank(r) }, stopReel:async(r,s)=>{ await wait(220); setCol(r,s) }, slow5:nop, speed5:nop, glow5:nop, candidates:nop, showWin:nop, clearWins:nop, coins:nop, celebrate:nop, setDisplay:nop, buttons:nop };
+  W={ setStops:st=>st.forEach((s,r)=>setCol(r,s)), setStrips:(s,st)=>{ strips=s; if(st) st.forEach((x,r)=>setCol(r,x)) }, spinAll:()=>{ for(let r=0;r<5;r++) blank(r) }, stopReel:async(r,s)=>{ await wait(220); setCol(r,s) }, slow5:nop, speed5:nop, glow5:nop, candidates:nop, showWin:nop, clearWins:nop, coins:nop, celebrate:nop, setDisplay:nop, buttons:nop, bonus:nop };
   W.setStops(start);
   $('stage').insertAdjacentHTML('beforeend','<div class="nogl"><div><b style="font:18px var(--display)">3D could not start</b> · the reels still play as a plain grid.</div></div>');
 }
-fairUI(); ui(); display();
+r5UI(null); fairUI(); ui(); display();
 let seen=false; try{ seen=localStorage.getItem('lastreel-how')==='1' }catch(e){} if(!seen&&!embed) openHow();
-window.__lastreel={ get state(){ const done=phase==='idle'; return {phase,bal,stake,doubled,lastWin,stops:cur&&(done?cur.stops:cur.stops.slice(0,4)),k:cur&&cur.r5&&cur.r5.k,e:cur&&cur.r5&&cur.r5.e,win:done&&cur&&cur.ev?cur.ev.total:undefined,w5:done&&cur&&cur.ev?cur.ev.w5:undefined,baseWin:done&&cur?cur.baseWin:undefined,dblWin:done&&cur?cur.dblWin:undefined} }, spin, double:doDouble, land:doLand, openPays, setStake:v=>{ $('bet').value=v; readStake(); ui() }, E }; // reel 5 and the win stay hidden until the spin is over
+// test hook: only what the player can already see (landed reels, the shown k, settled wins)
+window.__lastreel={ get state(){ const landed=cur?cur.stops.slice(0,phase==='idle'||phase==='bonus'?5:cur.landed):null; return {phase,bal,stake,doubled,lastWin,stops:landed,k:cur&&cur.r5&&cur.r5.k,e:cur&&cur.r5&&cur.r5.e,win:cur&&cur.ev&&cur.ev.total,w5:cur&&cur.ev&&cur.ev.w5,baseWin:cur&&cur.baseWin,dblWin:cur&&cur.dblWin,bonus:cur&&cur.ev?cur.ev.trigger:false,fs:fs?{spin:fs.spin,left:fs.left,mult:fs.mult,total:fs.total}:null} }, spin, double:doDouble, land:doLand, openPays, setStake:v=>{ $('bet').value=v; readStake(); ui() }, world:()=>W, E };
 </script>
 </body>
 </html>

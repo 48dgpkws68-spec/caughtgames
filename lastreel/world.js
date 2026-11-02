@@ -35,7 +35,7 @@ function ringTube(w, h, r, tube, z = 0) {
 const glowMat = (color, opacity = 1) => new THREE.MeshBasicMaterial({ color, transparent: true, opacity, toneMapped: false, depthWrite: false });
 
 export function createWorld(canvas, opts = {}) {
-  const strips = opts.strips, lines = opts.lines;
+  let strips = opts.strips; const lines = opts.lines;
   const S = createStage(canvas, {
     sky: '#4a22c4', exposure: 1.0, envIntensity: 0.6, hemi: 0.95, hemiSky: '#fff1fb', hemiGround: '#7c4dff', sun: 2.5, shadowSize: 6.5,
     sunColor: '#fff4e0', rim: 1.0, rimColor: '#7ff6ff',
@@ -61,7 +61,7 @@ export function createWorld(canvas, opts = {}) {
   for (let i = 0; i < 46; i++) {
     const m = new THREE.Sprite(new THREE.SpriteMaterial({ map: rad, color: BOKEH[i % BOKEH.length], transparent: true, opacity: 0.25 + Rnd() * 0.35, blending: THREE.AdditiveBlending, depthWrite: false }));
     const s = 0.6 + Rnd() * 1.8; m.scale.set(s, s, 1);
-    m.position.set((Rnd() - 0.5) * 30, -5 + Rnd() * 14, -8 + Rnd() * 4); m.userData = { y: m.position.y, ph: Rnd() * 6, sp: 0.2 + Rnd() * 0.4 };
+    m.position.set((Rnd() - 0.5) * 30, -5 + Rnd() * 14, -8 + Rnd() * 4); m.userData = { y: m.position.y, ph: Rnd() * 6, sp: 0.2 + Rnd() * 0.4, op: m.material.opacity };
     scene.add(m); bokeh.push(m);
   }
   // floating decor symbols beside the cabinet (seen on wide screens)
@@ -96,15 +96,21 @@ export function createWorld(canvas, opts = {}) {
     const p = new THREE.Mesh(new RoundedBoxGeometry(0.62, PANEL_T - PANEL_B + 0.5, 3.6, 4, 0.28), violet); p.position.set(s * (PANEL_W / 2 + 0.18), (PANEL_T + PANEL_B) / 2, FACE_Z - 1.5); p.castShadow = p.receiveShadow = true; cab.add(p);
   }
   const topper = new THREE.Mesh(new RoundedBoxGeometry(PANEL_W - 0.1, 1.62, 1.3, 5, 0.42), violet); topper.position.set(0, PANEL_T + 0.86, FACE_Z - 0.2); topper.castShadow = true; cab.add(topper);
-  const signTex = canvasTex(1024, 180, (g, w, h) => {
-    const gr = g.createLinearGradient(0, 0, w, 0); gr.addColorStop(0, '#2a0d85'); gr.addColorStop(0.5, '#4b1bc4'); gr.addColorStop(1, '#2a0d85');
+  let signMode = 0;
+  const drawSign = (g, w, h) => {
+    const bonusOn = signMode === 1;
+    g.clearRect(0, 0, w, h);
+    const gr = g.createLinearGradient(0, 0, w, 0);
+    if (bonusOn) { gr.addColorStop(0, '#d4145a'); gr.addColorStop(0.5, '#ff4f9e'); gr.addColorStop(1, '#d4145a'); } else { gr.addColorStop(0, '#2a0d85'); gr.addColorStop(0.5, '#4b1bc4'); gr.addColorStop(1, '#2a0d85'); }
     g.fillStyle = gr; g.beginPath(); g.roundRect(4, 4, w - 8, h - 8, 40); g.fill();
     for (let i = 0; i < 40; i++) { g.fillStyle = `rgba(255,255,255,${0.15 + Rnd() * 0.4})`; g.beginPath(); g.arc(Rnd() * w, Rnd() * h, 1 + Rnd() * 2.5, 0, 7); g.fill(); }
     g.font = '128px "Lilita One","Arial Rounded MT Bold",sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
-    g.lineJoin = 'round'; g.lineWidth = 22; g.strokeStyle = '#1d1640'; g.strokeText('LAST REEL', w / 2, h / 2 + 10);
+    const txt = bonusOn ? 'FREE SPINS' : 'LAST REEL';
+    g.lineJoin = 'round'; g.lineWidth = 22; g.strokeStyle = '#1d1640'; g.strokeText(txt, w / 2, h / 2 + 10);
     const tg = g.createLinearGradient(0, 30, 0, h - 30); tg.addColorStop(0, '#fff3a0'); tg.addColorStop(0.5, '#ffd21f'); tg.addColorStop(1, '#ff8a1f');
-    g.fillStyle = tg; g.fillText('LAST REEL', w / 2, h / 2 + 10);
-  });
+    g.fillStyle = tg; g.fillText(txt, w / 2, h / 2 + 10);
+  };
+  const signTex = canvasTex(1024, 180, drawSign);
   const sign = new THREE.Mesh(new THREE.PlaneGeometry(7.3, 1.28), new THREE.MeshBasicMaterial({ map: signTex, transparent: true, toneMapped: false }));
   sign.position.set(0, PANEL_T + 0.86, FACE_Z + 0.46); cab.add(sign);
   // console ledge with arcade buttons and a little LCD
@@ -176,7 +182,7 @@ export function createWorld(canvas, opts = {}) {
     const holders = [];
     for (let j = 0; j < 5; j++) {
       const h = new THREE.Group(), wrap = new THREE.Group(); h.add(wrap);
-      const syms = []; for (let s = 0; s < 9; s++) { const g = kit.make(s); g.visible = false; wrap.add(g); syms.push(g); }
+      const syms = []; for (let s = 0; s < 10; s++) { const g = kit.make(s); g.visible = false; wrap.add(g); syms.push(g); }
       grp.add(h); holders.push({ h, wrap, syms, cur: -1, idx: 0 });
     }
     reels.push({ grp, drumPivot, drumMat, holders, pos: 0, speed: 0, want: 0, mode: 'idle', anim: null, lastTick: 0, n: strips[r].length });
@@ -307,12 +313,13 @@ export function createWorld(canvas, opts = {}) {
     for (let i = 0; i < n; i++) {
       let c;
       if (bulbBoost > 0) { c = BULB_COLS[(i + Math.floor(t * 16)) % 3]; tmpC.copy(c).multiplyScalar(((i + Math.floor(t * 16)) % 2) ? 1.6 : 0.35); }
+      else if (bonusOn) { c = BULB_COLS[(i + Math.floor(t * 12)) % 3]; tmpC.copy(c).multiplyScalar(0.7 + 0.9 * Math.max(0, Math.sin(t * 10 + i * 0.7))); }
       else if (bulbMode >= 1) { tmpC.set(bulbMode >= 2 ? '#ff7ad9' : '#ffd84d').multiplyScalar(0.6 + 0.9 * Math.max(0, Math.sin(t * 9 - i * 0.5))); }
       else { c = BULB_COLS[Math.floor(i / 3) % 3]; tmpC.copy(c).multiplyScalar((i + Math.floor(t * 5)) % 4 === 0 ? 1.5 : 0.5); }
       bulbs.setColorAt(i, tmpC);
     }
     bulbs.instanceColor.needsUpdate = true;
-    neonMat.color.setHSL(0.5 + Math.sin(t * 0.6) * 0.04, 1, 0.68);
+    if (bonusOn) neonMat.color.setHSL((t * 0.35) % 1, 1, 0.66); else neonMat.color.setHSL(0.5 + Math.sin(t * 0.6) * 0.04, 1, 0.68);
     // coins
     let any = false;
     coins.forEach((c, i) => {
@@ -344,10 +351,33 @@ export function createWorld(canvas, opts = {}) {
   }
 
   // ---------------------------------------------------------------- API
+  // bonus look: golden cabinet, hot pink trims, sunny wall, FREE SPINS sign, rainbow bulbs
+  let bonusOn = false;
+  const wallTex2 = canvasTex(512, 512, (g, w, h) => {
+    const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#ff4f9e'); gr.addColorStop(0.5, '#ff9a3d'); gr.addColorStop(1, '#ffe14d');
+    g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    g.save(); g.translate(w / 2, h * 0.55); for (let i = 0; i < 24; i++) { g.rotate(Math.PI / 12); g.fillStyle = i % 2 ? 'rgba(255,255,255,.16)' : 'rgba(255,255,255,0)'; g.beginPath(); g.moveTo(0, 0); g.lineTo(-60, -w); g.lineTo(60, -w); g.fill(); } g.restore();
+  });
+  const look = { face: [new THREE.Color('#ff4f9e'), new THREE.Color('#ffbf2e')], body: [new THREE.Color('#6a35ff'), new THREE.Color('#ff3d8b')], neon: [new THREE.Color('#5ff6ff'), new THREE.Color('#ffffff')], neon2: [new THREE.Color('#ffe14d'), new THREE.Color('#ff5fd2')] };
+  let lookK = 0, lookWant = 0;
+  S.onFrame((dt) => {
+    if (Math.abs(lookK - lookWant) < 1e-3) return;
+    lookK += Math.sign(lookWant - lookK) * Math.min(Math.abs(lookWant - lookK), dt * 1.4);
+    pink.color.copy(look.face[0]).lerp(look.face[1], lookK); violet.color.copy(look.body[0]).lerp(look.body[1], lookK);
+    neon2Mat.color.copy(look.neon2[0]).lerp(look.neon2[1], lookK);
+  });
   function setStops(stops) { stops.forEach((s, r) => { const re = reels[r]; re.pos = s; re.speed = 0; re.mode = 'idle'; re.anim = null; layoutReel(re, r); }); }
   return {
     S, kit,
     setStops,
+    setStrips(next, stops) { strips = next; reels.forEach((re, r) => { re.n = strips[r].length; }); if (stops) setStops(stops); else reels.forEach((re, r) => layoutReel(re, r)); },
+    bonus(on) {
+      bonusOn = !!on; lookWant = on ? 1 : 0; signMode = on ? 1 : 0;
+      const g = signTex.image.getContext('2d'); drawSign(g, signTex.image.width, signTex.image.height); signTex.needsUpdate = true;
+      wall.material.map = on ? wallTex2 : wallTex; wall.material.needsUpdate = true;
+      for (const b of bokeh) b.material.opacity = on ? 0.15 : b.userData.op;
+      bulbBoost = on ? 1.2 : 0; if (on && !reduce) shake = 0.18;
+    },
     spinAll() { clearPaths(); this.candidates([]); reels.forEach((re, r) => { setTimeout(() => { re.anim = null; re.mode = 'spin'; re.want = 15 + r * 0.6; re.speed = -2.5; }, reduce ? 0 : r * 70); }); },
     stopReel(r, stop, o = {}) {
       const re = reels[r];
@@ -374,8 +404,8 @@ export function createWorld(canvas, opts = {}) {
       for (const row of rows) { const f = new THREE.Mesh(cellGeo, glowMat('#ffe14d', 0)); f.position.set(reelX(4), rowY(row), PATH_Z + 0.08); f.scale.setScalar(1.04); cab.add(f); cands.push({ frame: f, row }); }
     },
     showWin(win) {
-      clearPaths(); const col = LINE_COLORS[win.line];
-      addPath(win.line, col, 'win');
+      clearPaths(); const col = win.scatter ? '#ffe14d' : LINE_COLORS[win.line];
+      if (!win.scatter) addPath(win.line, col, 'win');
       win.cells.forEach(([r, row], i) => {
         const cf = cellFrames[i]; cf.visible = true; cf.material.color.set(col); cf.position.set(reelX(r), rowY(row), PATH_Z + 0.06);
         const ho = holderAt(r, row); if (ho) bouncing.set(ho, { t0: clock + i * 0.06, row });
