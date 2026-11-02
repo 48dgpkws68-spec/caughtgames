@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>FREEZE · Caught Games</title>
+<meta name="description" content="FREEZE by Caught Games: grandmother's footsteps as a multiplayer crash game. Every bettor is a runner on one field, freeze before the owl turns round.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Caught Games">
+<meta property="og:title" content="FREEZE · Freeze before the owl turns round">
+<meta property="og:description" content="A multiplayer crash game you can watch: every bettor is a runner on the field. Freeze to cash out, keep running and risk the owl.">
+<meta property="og:url" content="https://caughtgames.com/freeze.html">
+<meta property="og:image" content="https://caughtgames.com/art/og-freeze.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://caughtgames.com/freeze.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%238a5cf0'/%3E%3Ccircle cx='22' cy='30' r='11' fill='%23ffd84a' stroke='%231d1640' stroke-width='4'/%3E%3Ccircle cx='42' cy='30' r='11' fill='%23ffd84a' stroke='%231d1640' stroke-width='4'/%3E%3Ccircle cx='22' cy='30' r='4' fill='%231d1640'/%3E%3Ccircle cx='42' cy='30' r='4' fill='%231d1640'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;800;900&display=swap">
+<link rel="stylesheet" href="lib/shell.css">
+<style>
+:root{--bg1:#7fd3ff;--bg2:#9ef0a8;--accent:#8a5cf0;--accent2:#ffc531;--panel2:#eaf6ff;--ice:#7fe3ff}
+.brand .logo{background:var(--accent)}
+.bigm{position:absolute;z-index:3;left:50%;top:12px;transform:translateX(-50%);text-align:center;pointer-events:none}
+.bigm b{display:block;font:clamp(44px,7vw,84px)/1 var(--display);color:#fff;-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;text-shadow:0 6px 0 var(--ink)}
+.bigm span{display:inline-block;margin-top:6px;font:900 13px var(--body);letter-spacing:.06em;padding:5px 12px;border-radius:999px;background:var(--panel);border:2.5px solid var(--ink)}
+.bigm.bust b{color:var(--bad)}
+.plabel.you{background:var(--accent2)}
+.plabel.pop{background:var(--ice);pointer-events:none}
+.plabel.pop.you{background:var(--accent2)}
+.plabel.pop.bad{background:#ffd6dc;color:#9a1830}
+.plabel{pointer-events:none}
+#act{width:100%;margin-top:14px;font:28px var(--display);letter-spacing:.02em;border:3px solid var(--ink);border-radius:18px;padding:13px;cursor:pointer;color:var(--ink);background:var(--accent2);box-shadow:0 6px 0 var(--ink)}
+#act small{display:block;font:900 12px var(--body);letter-spacing:.04em;margin-top:2px}
+#act.freeze{background:var(--ice);animation:throb .7s ease-in-out infinite}
+#act.joined{background:#c9f7d2}
+#act:disabled{background:#e6e1ef;color:#8a83a3;cursor:not-allowed;animation:none}
+#act:active:not(:disabled){transform:translateY(5px);box-shadow:0 1px 0 var(--ink)}
+@keyframes throb{50%{transform:scale(1.025)}}
+.auto{display:flex;align-items:center;gap:8px;margin-top:12px;font:800 13px var(--body);color:var(--muted)}
+.auto input{width:84px;font:18px var(--display);color:var(--fg);background:#fff;border:2.5px solid var(--ink);border-radius:10px;padding:5px 8px}
+.players{max-height:250px;overflow:auto;display:grid;gap:4px;margin-top:4px}
+.players div{display:grid;grid-template-columns:14px 1fr auto auto;gap:8px;align-items:center;font:800 13px var(--body);padding:5px 8px;border-radius:10px;background:#fff;border:2px solid rgba(29,22,64,.15)}
+.players div.me{border-color:var(--ink);background:#fff6d1}
+.players i{width:12px;height:12px;border-radius:50%;border:2px solid var(--ink)}
+.players .st{font:15px var(--display)}
+.players .st.w{color:#14864a}.players .st.l{color:var(--bad)}.players .st.r{color:var(--muted)}
+.players .bt{color:var(--muted);font-weight:800}
+.note{font:800 11.5px var(--body);color:var(--muted);margin-top:8px}
+#mbar #mbAct{min-width:58%}
+#mbar #mbAct.freeze{background:var(--ice)}
+</style>
+<script defer src="https://stats.1v1battles.com/nv.js" data-website-id="4f92624d-4cbc-4758-8bb8-8515f2b5e871"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="box brand" href="index.html"><span class="logo">F</span><div><b>FREEZE</b><small>Caught Games · freeze before the owl turns</small></div></a>
+    <div class="box hist" id="hist"></div>
+    <div class="pills"><button class="box pill" id="howBtn">HOW<span class="lg"> TO PLAY</span></button><button class="box pill" id="fairBtn">FAIR<span class="lg" id="fairHash"></span></button><button class="box pill" id="snd">SOUND ON</button></div>
+  </div>
+  <div class="main">
+    <div class="stage" id="stage">
+      <canvas id="view" tabindex="0" aria-label="The field. Space joins the round or freezes your runner." aria-describedby="sr"></canvas>
+      <div class="bigm" id="bigm"><b id="bigT">5</b><span id="bigS">NEXT ROUND</span></div>
+      <div class="banner" id="banner"><b id="bnT"></b><span id="bnS"></span></div>
+      <div class="sr" id="sr" aria-live="polite"></div>
+    </div>
+    <div class="side">
+      <div class="box card meter">
+        <div id="state">JOIN THE NEXT ROUND</div>
+        <div id="mult">1.00×</div>
+        <div id="win">tap JOIN to put a runner on the field</div>
+      </div>
+      <div class="box card">
+        <div class="row2">
+          <div class="bal"><div class="lbl">Play money</div><b id="bal">1,000.00</b></div>
+          <div><div class="lbl">Stake</div><div class="stake"><input id="bet" type="number" value="10" min="1" step="1" inputmode="decimal" aria-label="Stake"><button id="half">½</button><button id="dbl">2×</button></div></div>
+        </div>
+        <label class="auto" for="autoX">Auto freeze at ×<input id="autoX" type="number" min="0" step="0.1" value="0" inputmode="decimal"> <span>0 = off</span></label>
+        <button id="act">JOIN<small>stake 10.00</small></button>
+        <p class="hint">Everyone in the round is a runner. The further the pack gets, the higher the multiplier. <b>Freeze</b> to lock in your win. When the owl turns round, every runner still moving is caught. One draw for the whole room, so any freeze moment returns <b>97%</b>.</p>
+      </div>
+      <div class="box card">
+        <div class="lbl"><span>On the field</span><span id="pCount"></span></div>
+        <div class="players" id="players"></div>
+        <p class="note">Demo room: the other runners are simulated players.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="box" id="mbar"><b id="mbMult">1.00×</b><button id="mbAct">JOIN</button></div>
+<div class="box fairbox" id="fairBox" hidden><b>Provably fair</b><p>Before each round we publish SHA-256(server seed). The crash point is c = floor(100 × 0.97 ÷ (1 − u)) ÷ 100 with u = HMAC-SHA256(seed, client:nonce:round), first 52 bits ÷ 2<sup>52</sup>, at least 1.00 and at most 10,000. So P(c ≥ x) = 0.97 ÷ x and every freeze moment returns 97%. The owl's half-turns are decoration and never end a round. After the round the seed is revealed.</p><code id="fairFull"></code><pre id="fairPrev">no round played yet</pre></div>
+<div class="how" id="how" hidden><div class="box" role="dialog" aria-modal="true" aria-labelledby="howT">
+  <h2 id="howT">How to play <span>FREEZE</span></h2>
+  <p style="margin:0;color:var(--muted);font-size:15px;line-height:1.55">Grandmother's footsteps, with the whole room on one field and a very large owl.</p>
+  <ol>
+    <li><div><b>Join a round.</b> Put in your stake while the countdown runs. Your runner wears the gold crown.</div></li>
+    <li><div><b>Everybody runs.</b> The multiplier climbs while the pack creeps toward the owl.</div></li>
+    <li><div><b>Freeze to win.</b> Tap FREEZE and your runner turns into an ice statue with the multiplier locked in.</div></li>
+    <li><div><b>Don't get caught.</b> When the owl turns round, every runner still moving loses. Half-turns are just the owl teasing.</div></li>
+  </ol>
+  <button id="go" class="go">TO THE FIELD</button>
+</div></div>
+<a class="backlink" id="backlink" href="index.html">← caughtgames.com</a>
+
+<script src="freeze-engine.js"></script>
+<script type="module">
+import { createFair } from './lib/fair.js';
+import { createSfx } from './lib/sfx.js';
+const $=id=>document.getElementById(id), E=window.FreezeEngine;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fmt=(n,d=2)=>n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fx=m=>m>=1000?fmt(m,0):fmt(m);
+const embed=location.hash==='#embed'; if(embed){ document.body.classList.add('embed'); $('backlink').remove() }
+const F=createFair('freeze-demo-client'), A=createSfx();
+const BET_MS=5500, END_MS=3200;
+const COLORS=['#ff4d7a','#55b6ff','#3fd6a6','#ff9a4d','#b58cff','#ff6fb0','#7fdc4a','#4fd1ff','#ffd84a','#ff7a5a','#9b8cff','#2fd0b0','#f06bd9'];
+const NAMES=['Kees_88','Fenna','Jayden','Mo','Tessa.v','Bram','Luuk','Sanne','Rik','Ilse','Daan','Yara','Lars','Noor','Milan','Sophie','Ahmed','Julia','Pim','Zoë','Timo','Lotte','Sem','Evi'];
+
+/* ---------- sound ---------- */
+const sTick=()=>A.tone(1200,1100,.05,.04,'square');
+const sGo=()=>A.notes([0,7,12],523,.08,.08);
+const sFreeze=()=>{ A.tone(2400,3200,.25,.06,'sine'); A.tone(3600,4200,.2,.04,'sine',.06); A.noise(.2,6000,.05,'highpass') };
+const sPeek=()=>{ A.tone(300,260,.25,.1,'sine'); A.tone(250,220,.3,.08,'sine',.18) };
+const sHoot=()=>{ A.tone(380,300,.35,.2,'sine'); A.tone(330,250,.5,.2,'sine',.38); A.noise(.6,500,.3,'lowpass',.1); A.tone(80,40,.5,.3,'sine',.05) };
+const sWin=()=>A.notes([0,4,7,12,16],659,.06,.07);
+let stepAcc=0;
+const sStep=()=>A.noise(.04,1400+Math.random()*600,.035,'bandpass');
+$('snd').onclick=()=>{ A.unlock(); $('snd').textContent=A.toggle()?'SOUND OFF':'SOUND ON' };
+
+/* ---------- state ---------- */
+let bal=1000, phase='bet', phaseT=performance.now(), crash=1, mult=1, joined=false, stake=10, me=null, players=[], hist=[], peekAt=0;
+const say=s=>{ $('sr').textContent=s };
+function readStake(){ let v=parseFloat($('bet').value); if(!isFinite(v)||v<1) v=1; v=Math.min(v,Math.max(1,bal),500); v=Math.round(v*100)/100; $('bet').value=v; return v }
+$('half').onclick=()=>{ $('bet').value=Math.max(1,Math.round(readStake()/2*100)/100); ui() };
+$('dbl').onclick=()=>{ $('bet').value=Math.min(bal,500,readStake()*2); readStake(); ui() };
+$('bet').oninput=()=>ui();
+function rnd(a,b){ return a+Math.random()*(b-a) }
+function botTarget(){ const r=Math.random(); return r<.3?rnd(1.15,1.6):r<.7?rnd(1.6,3):r<.9?rnd(3,8):r<.97?rnd(8,40):1e9 }
+function makePlayers(){
+  const n=8+Math.floor(Math.random()*6), names=[...NAMES].sort(()=>Math.random()-.5).slice(0,n);
+  const list=names.map((nm,i)=>({id:'b'+i,name:nm,color:COLORS[i%COLORS.length],stake:[1,2,5,5,10,10,20,50,100][Math.floor(Math.random()*9)],target:Math.round(botTarget()*100)/100,state:'run',out:0}));
+  if(joined){ me={id:'me',name:'You',color:'#ffffff',you:true,stake,state:'run',out:0}; list.splice(Math.floor(n/2),0,me) } else me=null;
+  return list;
+}
+function playersUI(){
+  $('pCount').textContent=players.length+' runners';
+  const sorted=[...players].sort((a,b)=>(b.you?1:0)-(a.you?1:0));
+  $('players').innerHTML=sorted.map(p=>'<div class="'+(p.you?'me':'')+'"><i style="background:'+(p.you?'#ffc531':p.color)+'"></i><span>'+p.name+'</span><span class="bt">'+fmt(p.stake,0)+'</span><span class="st '+(p.state==='out'?'w':p.state==='caught'?'l':'r')+'">'+(p.state==='out'?'×'+fx(p.out):p.state==='caught'?'CAUGHT':phase==='bet'?'ready':'running')+'</span></div>').join('');
+}
+function fairUI(){ $('fairHash').textContent=' · '+F.hash.slice(0,10)+'…'; $('fairFull').textContent=(phase==='run'?'this round':'next round')+' · nonce '+F.nonce+' · seed hash: '+F.hash }
+function multUI(cls){ const el=$('mult'); el.textContent=fx(mult)+'×'; el.className=cls||''; $('mbMult').textContent=fx(mult)+'×' }
+function ui(){
+  $('bal').textContent=fmt(bal);
+  const a=$('act'), m=$('mbAct'); let txt, sub, cls='', dis=false;
+  if(phase==='bet'){ if(joined){ txt='JOINED'; sub='tap to leave · stake '+fmt(stake); cls='joined' } else { txt='JOIN'; sub='stake '+fmt(readStake()) } }
+  else if(phase==='run'&&me&&me.state==='run'){ txt='FREEZE!'; sub='lock in '+fmt(stake*mult); cls='freeze' }
+  else if(phase==='run'){ txt=joined?'NEXT ROUND':'WATCHING'; sub=me&&me.state==='out'?'you froze at ×'+fx(me.out):'join the next round'; dis=!!(me&&me.state!=='run'); if(!joined&&!me){ txt='JOIN NEXT'; sub='stake '+fmt(readStake()); dis=false } }
+  else { txt='NEXT ROUND'; sub='starting soon'; dis=true }
+  a.className=cls; a.disabled=dis; a.innerHTML=txt+'<small>'+sub+'</small>'; m.className=cls; m.disabled=dis; m.textContent=txt==='FREEZE!'?'FREEZE '+fmt(stake*mult):txt;
+  document.body.classList.toggle('running',!!(phase==='run'&&me&&me.state==='run')||(phase==='bet'&&joined));
+  $('bet').disabled=$('half').disabled=$('dbl').disabled=joined&&phase!=='end';
+}
+function chip(c){ hist.unshift(c); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(c=>'<span class="chip '+(c>=2?'w':'l')+'">'+fx(c)+'×</span>').join('') }
+function banner(t,s,cls){ $('bnT').textContent=t; $('bnS').textContent=s; $('banner').className='banner '+cls+' on'; say(t+'. '+s) }
+const hideBanner=()=>{ $('banner').className='banner' };
+
+/* ---------- actions ---------- */
+let wantJoin=false;
+function act(){
+  A.unlock();
+  if(phase==='bet'){ if(joined){ joined=false; bal+=stake; me=null; players=players.filter(p=>!p.you); W.lineUp(players); playersUI(); ui(); return } return join() }
+  if(phase==='run'&&me&&me.state==='run') return freezeMe();
+  if(phase==='run'&&!me){ wantJoin=!wantJoin; $('state').textContent=wantJoin?'YOU JOIN THE NEXT ROUND':'WATCHING THIS ROUND'; }
+}
+function join(){
+  if(bal<1){ bal=1000 } stake=readStake(); if(bal<stake) return;
+  bal-=stake; joined=true; me={id:'me',name:'You',color:'#ffffff',you:true,stake,state:'run',out:0};
+  players.splice(Math.floor(players.length/2),0,me); W.lineUp(players); playersUI(); ui(); sTick();
+  $('state').textContent='YOU ARE ON THE START LINE'; $('win').innerHTML='freeze before the owl turns round';
+}
+function freezeMe(){
+  if(!me||me.state!=='run'||phase!=='run') return;
+  me.state='out'; me.out=mult; const win=stake*mult; bal+=win; W.freeze('me',mult); sFreeze(); sWin();
+  $('state').textContent='FROZEN SAFE AT ×'+fx(mult); $('win').innerHTML='won <b>'+fmt(win)+'</b>'; multUI('won'); say('Frozen at '+fx(mult)+' times. Won '+fmt(win));
+  playersUI(); ui();
+}
+$('act').onclick=act; $('mbAct').onclick=act;
+addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden) return; if(e.key===' '||e.key==='Enter'){ act(); e.preventDefault() } });
+$('fairBtn').onclick=()=>{ $('fairBox').hidden=!$('fairBox').hidden };
+const openHow=()=>{ $('how').hidden=false; setTimeout(()=>$('go').focus({preventScroll:true}),0) };
+$('howBtn').onclick=openHow; $('go').onclick=()=>{ $('how').hidden=true; try{ localStorage.setItem('freeze-how','1') }catch(e){} A.unlock() };
+
+/* ---------- round loop ---------- */
+function toBet(){
+  phase='bet'; phaseT=performance.now(); mult=1; joined=false; me=null;
+  if(wantJoin){ wantJoin=false; stake=readStake(); if(bal>=stake){ bal-=stake; joined=true } }
+  players=makePlayers(); W.lineUp(players); W.run(false); W.setMult(1); playersUI(); fairUI(); multUI('');
+  $('state').textContent=joined?'YOU ARE ON THE START LINE':'JOIN THE NEXT ROUND'; $('win').innerHTML=joined?'freeze before the owl turns round':'tap JOIN to put a runner on the field';
+  $('bigm').className='bigm'; ui();
+}
+function toRun(){
+  phase='run'; phaseT=performance.now(); crash=E.crashOf(F.u('round')); peekAt=performance.now()+rnd(1800,4200);
+  W.run(true); sGo(); fairUI(); ui(); $('bigS').textContent='RUN!';
+  if(me) $('state').textContent='RUNNING · STAKE '+fmt(stake);
+}
+async function toCrash(){
+  phase='end'; phaseT=performance.now(); mult=crash; W.setMult(mult);
+  for(const p of players) if(p.state==='run') p.state='caught';
+  sHoot(); $('bigm').className='bigm bust'; $('bigT').textContent=fx(crash)+'×'; $('bigS').textContent='THE OWL TURNED';
+  if(me&&me.state==='caught'){ banner('CAUGHT!','the owl turned at ×'+fx(crash)+' · lost '+fmt(stake),'bad'); multUI('bust'); $('state').textContent='CAUGHT AT ×'+fx(crash); $('win').innerHTML='lost <b>'+fmt(stake)+'</b>' }
+  else if(me&&me.state==='out'){ banner('SAFE!','frozen at ×'+fx(me.out)+' · owl turned at ×'+fx(crash),'good') }
+  else { multUI('bust'); $('state').textContent='THE OWL TURNED AT ×'+fx(crash) }
+  chip(crash); playersUI(); ui();
+  const rv=F.reveal(); $('fairPrev').textContent='round '+rv.nonce+' · client '+rv.client+'\nseed '+rv.seed+'\ncrash ×'+fx(crash);
+  await W.crash(); hideBanner();
+}
+let last=performance.now();
+function loop(now){
+  const dt=now-last; last=now;
+  if(phase==='bet'){
+    const left=Math.max(0,BET_MS-(now-phaseT)); $('bigT').textContent=Math.ceil(left/1000); $('bigS').textContent=joined?'YOU ARE IN':'NEXT ROUND';
+    if(left<=0&&W) toRun();
+  } else if(phase==='run'){
+    const el=now-phaseT; mult=E.multAt(el);
+    if(mult>=crash){ toCrash() }
+    else {
+      W.setMult(mult); $('bigT').textContent=fx(mult)+'×'; multUI(''); if(me&&me.state==='run'){ $('win').innerHTML='freeze now for <b>'+fmt(stake*mult)+'</b>'; ui() }
+      const auto=parseFloat($('autoX').value); if(me&&me.state==='run'&&auto>=1.01&&mult>=auto) freezeMe();
+      let changed=false; for(const p of players) if(!p.you&&p.state==='run'&&mult>=p.target){ p.state='out'; p.out=mult; W.freeze(p.id,mult); changed=true }
+      if(changed){ playersUI(); sFreeze() }
+      if(now>peekAt){ const lv=.35+Math.random()*.45; W.peek(lv); sPeek(); peekAt=now+rnd(2500,6000) }
+      stepAcc+=dt; if(stepAcc>110){ stepAcc=0; sStep() }
+    }
+  } else if(phase==='end'){
+    if(now-phaseT>END_MS) toBet();
+  }
+  requestAnimationFrame(loop);
+}
+
+/* ---------- 3D ---------- */
+let W=null;
+try{
+  const { createWorld } = await import('./freeze/world.js');
+  W=createWorld($('view'),{});
+}catch(err){ console.error(err); const nop=async()=>{}; W={lineUp(){},clear(){},run(){},setMult(){},freeze(){},peek(){},crash:nop}; $('stage').insertAdjacentHTML('beforeend','<div class="nogl"><div><b style="font:24px var(--display)">3D could not start</b><p>This browser blocks WebGL. The round still runs with the buttons.</p></div></div>') }
+toBet(); requestAnimationFrame(loop);
+let seen=false; try{ seen=localStorage.getItem('freeze-how')==='1' }catch(e){} if(!seen&&!embed) openHow();
+window.__freeze={ get state(){ return {phase,mult,joined,me:me&&{...me},bal} }, act };
+</script>
+</body>
+</html>

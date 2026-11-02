@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>WOBBLE · Caught Games</title>
+<meta name="description" content="WOBBLE by Caught Games: pull blocks from a rainbow tower without toppling it. Every block shows its exact fall chance and pays its true odds.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Caught Games">
+<meta property="og:title" content="WOBBLE · Pull a block, don't topple the tower">
+<meta property="og:description" content="A 3D block tower instant game. Edge blocks are steady, centre blocks pay more. Cash out before it comes down.">
+<meta property="og:url" content="https://caughtgames.com/wobble.html">
+<meta property="og:image" content="https://caughtgames.com/art/og-wobble.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://caughtgames.com/wobble.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ff6fb0'/%3E%3Crect x='14' y='40' width='36' height='9' rx='3' fill='%23ffc531' stroke='%231d1640' stroke-width='3'/%3E%3Crect x='14' y='28' width='36' height='9' rx='3' fill='%234fa8ff' stroke='%231d1640' stroke-width='3'/%3E%3Crect x='14' y='16' width='36' height='9' rx='3' fill='%237fdc4a' stroke='%231d1640' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;800;900&display=swap">
+<link rel="stylesheet" href="lib/shell.css">
+<style>
+:root{--bg1:#ffb3d9;--bg2:#ffe08a;--accent:#ff4d6d;--accent2:#ffc531;--panel2:#fff0f6}
+.choice.safe{--c:#2fd0b0}.choice.bold{--c:#ff4d6d}
+.plabel.sel{pointer-events:auto;display:grid;gap:4px;padding:7px 10px 9px}
+.plabel.sel[hidden]{display:none}
+.plabel.sel button{font:16px var(--display);border:2.5px solid var(--ink);border-radius:10px;padding:5px 12px;background:var(--accent2);cursor:pointer;box-shadow:0 3px 0 var(--ink)}
+.rot{position:absolute;z-index:3;bottom:14px;width:46px;height:46px;border-radius:50%;font:24px var(--display);cursor:pointer;color:var(--fg);background:var(--panel);border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink)}
+.rot.l{right:72px}.rot.r{right:14px}
+.selbox{margin-top:14px;padding:12px 14px;border-radius:16px;border:3px dashed rgba(29,22,64,.35);display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:center}
+.selbox.on{border-style:solid;border-color:var(--ink);background:#fff}
+.selbox b{font:20px var(--display)}
+.selbox small{font:800 12px var(--body);color:var(--muted)}
+.selbox button{grid-row:1/3;grid-column:2;font:20px var(--display);border:3px solid var(--ink);border-radius:14px;padding:9px 16px;background:var(--accent2);box-shadow:0 4px 0 var(--ink);cursor:pointer}
+.selbox button:disabled{background:#e6e1ef;color:#8a83a3;cursor:not-allowed}
+.count{font:900 12px var(--body);color:var(--muted)}
+@media(max-width:640px){.rot{width:40px;height:40px;font-size:20px;bottom:10px}.rot.l{right:58px}.rot.r{right:10px}}
+</style>
+<script defer src="https://stats.1v1battles.com/nv.js" data-website-id="4f92624d-4cbc-4758-8bb8-8515f2b5e871"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="box brand" href="index.html"><span class="logo">W</span><div><b>WOBBLE</b><small>Caught Games · pull a block, keep it standing</small></div></a>
+    <div class="box hist" id="hist"></div>
+    <div class="pills"><button class="box pill" id="howBtn">HOW<span class="lg"> TO PLAY</span></button><button class="box pill" id="fairBtn">FAIR<span class="lg" id="fairHash"></span></button><button class="box pill" id="snd">SOUND ON</button></div>
+  </div>
+  <div class="main">
+    <div class="stage" id="stage">
+      <canvas id="view" tabindex="0" aria-label="Block tower. Tap a block to select it, tap again to pull. Keys 1 and 2 pull the safest or boldest block, space cashes out." aria-describedby="sr"></canvas>
+      <div class="plabel sel" id="lab" hidden></div>
+      <button class="rot l" id="rotL" aria-label="Turn the tower left">⟲</button><button class="rot r" id="rotR" aria-label="Turn the tower right">⟳</button>
+      <div class="banner" id="banner"><b id="bnT"></b><span id="bnS"></span></div>
+      <div class="tip" id="tip">TAP A BLOCK · DRAG TO TURN</div>
+      <div class="sr" id="sr" aria-live="polite"></div>
+    </div>
+    <div class="side">
+      <div class="box card meter">
+        <div id="state">A FRESH TOWER</div>
+        <div id="mult">1.00×</div>
+        <div id="win">pick a block to start</div>
+      </div>
+      <div class="box card">
+        <div class="row2">
+          <div class="bal"><div class="lbl">Play money</div><b id="bal">1,000.00</b></div>
+          <div><div class="lbl">Stake</div><div class="stake"><input id="bet" type="number" value="10" min="1" step="1" inputmode="decimal" aria-label="Stake"><button id="half">½</button><button id="dbl">2×</button></div></div>
+        </div>
+        <div class="selbox" id="selbox"><b id="selT">No block selected</b><small id="selS">tap a block in the tower</small><button id="selPull" disabled>PULL</button></div>
+        <div class="choices">
+          <button class="choice safe" id="cSafe"><span class="ic">1</span><span class="nm">SAFEST PULL<small id="rSafe"></small></span><span class="x" id="xSafe"></span></button>
+          <button class="choice bold" id="cBold"><span class="ic">2</span><span class="nm">BOLDEST PULL<small id="rBold"></small></span><span class="x" id="xBold"></span></button>
+        </div>
+        <button id="cash" disabled>CASH OUT<small>pull your first block</small></button>
+        <p class="hint">Every block pays its <b>true odds</b>: the riskier the pull, the bigger the jump. The house edge of 3% sits in the first pull only, so <b>any pulling order returns 97%</b>. The top two layers stay put.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="box" id="mbar"><b id="mbMult">1.00×</b><button id="mbCash" disabled>CASH OUT</button></div>
+<div class="box fairbox" id="fairBox" hidden><b>Provably fair</b><p>Before each tower we publish SHA-256(server seed). Pull n uses u = HMAC-SHA256(seed, client:nonce:pull:n), first 52 bits ÷ 2<sup>52</sup>. The tower falls when u is below the fall chance shown on the block you pulled. After the round the seed is revealed.</p><p>Fall chance = base × (0.75 + 0.5 × share of tower above) × (1 + 0.035 × weakened layers + 0.12 × one-block layers). Base: edge from a full layer 5%, centre from a full layer 13%, leaving only the centre 24%, leaving one edge 42 to 46%. A safe pull pays 1 ÷ (1 − fall chance), the first pull 0.97 ÷ (1 − fall chance).</p><code id="fairFull"></code><pre id="fairPrev">no tower played yet</pre></div>
+<div class="how" id="how" hidden><div class="box" role="dialog" aria-modal="true" aria-labelledby="howT">
+  <h2 id="howT">How to play <span>WOBBLE</span></h2>
+  <p style="margin:0;color:var(--muted);font-size:15px;line-height:1.55">A rainbow tower, a steady hand and a cash-out button.</p>
+  <ol>
+    <li><div><b>Tap a block</b> to see its fall chance and what it pays. Tap again (or PULL) to slide it out.</div></li>
+    <li><div><b>Edges are steady, centres pay more.</b> Every pull weakens the tower, so the odds change all the time.</div></li>
+    <li><div><b>Cash out any time</b> after the first pull. If the tower falls, the stake is gone.</div></li>
+    <li><div><b>Drag</b> or use the arrows to turn the tower and reach every block.</div></li>
+  </ol>
+  <button id="go" class="go">LET'S PULL</button>
+</div></div>
+<a class="backlink" id="backlink" href="index.html">← caughtgames.com</a>
+
+<script src="wobble-engine.js"></script>
+<script type="module">
+import { createFair } from './lib/fair.js';
+import { createSfx } from './lib/sfx.js';
+const $=id=>document.getElementById(id), E=window.WobbleEngine;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fmt=(n,d=2)=>n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fx=m=>m>=1000?fmt(m,0):fmt(m);
+const pct=p=>(p*100).toFixed(p<0.1?1:0)+'%';
+const embed=location.hash==='#embed'; if(embed){ document.body.classList.add('embed'); $('backlink').remove() }
+const wait=ms=>new Promise(r=>setTimeout(r,reduce?Math.min(ms,150):ms));
+const F=createFair('wobble-demo-client'), A=createSfx();
+const LAYER_NAME=['edge','centre','edge'];
+
+/* ---------- sound ---------- */
+const sSel=()=>A.tone(880,990,.07,.05,'triangle');
+const sScrape=p=>{ for(let i=0;i<8;i++) A.noise(.09,700+i*90,.05+p*.06,'bandpass',i*.1) };
+const sClack=()=>{ A.tone(520,380,.08,.12,'triangle'); A.noise(.05,2500,.08,'highpass') };
+const sFall=()=>{ for(let i=0;i<22;i++){ A.tone(300+Math.random()*500,150,.12,.1,'triangle',i*.05); A.noise(.08,1500,.1,'bandpass',i*.05) } A.tone(90,40,.8,.4,'sine') };
+const sWin=()=>A.notes([0,4,7,12,16],659,.06,.07);
+$('snd').onclick=()=>{ A.unlock(); $('snd').textContent=A.toggle()?'SOUND OFF':'SOUND ON' };
+
+/* ---------- state ---------- */
+let bal=1000, stake=10, phase='idle', busy=false, tower=E.newTower(), mult=1, first=true, sel=null, log=[], hist=[], pulls=0;
+const say=s=>{ $('sr').textContent=s };
+function readStake(){ let v=parseFloat($('bet').value); if(!isFinite(v)||v<1) v=1; v=Math.min(v,Math.max(1,bal),500); v=Math.round(v*100)/100; $('bet').value=v; return v }
+$('half').onclick=()=>{ $('bet').value=Math.max(1,Math.round(readStake()/2*100)/100) };
+$('dbl').onclick=()=>{ $('bet').value=Math.min(bal,500,readStake()*2); readStake() };
+function multUI(cls){ const el=$('mult'); el.textContent=fx(mult)+'×'; el.className=cls||''; if(!cls&&!reduce){ el.classList.add('pop'); setTimeout(()=>el.classList.remove('pop'),200) } $('mbMult').textContent=fx(mult)+'×' }
+const optsNow=()=>E.options(tower,mult,first);
+const extremes=os=>os.length?[os.reduce((a,b)=>a.p<=b.p?a:b),os.reduce((a,b)=>a.p>=b.p?a:b)]:[null,null];
+function describe(o){ return 'Layer '+(o.layer+1)+' '+LAYER_NAME[o.i] }
+function ui(){
+  $('bal').textContent=fmt(bal);
+  document.body.classList.toggle('running',phase==='run');
+  const canCash=phase==='run'&&!first&&!busy;
+  $('cash').disabled=$('mbCash').disabled=!canCash;
+  $('cash').innerHTML=canCash?'CASH OUT<small>'+fmt(stake*mult)+'</small>':'CASH OUT<small>pull your first block</small>';
+  $('mbCash').textContent=canCash?'CASH '+fmt(stake*mult):'CASH OUT';
+  $('bet').disabled=$('half').disabled=$('dbl').disabled=phase==='run'||busy;
+  const os=optsNow(), [s,b]=extremes(os);
+  $('cSafe').disabled=$('cBold').disabled=busy||phase==='over'||!os.length;
+  if(s){ $('xSafe').textContent='×'+fx(s.m); $('rSafe').textContent=pct(s.p)+' fall · '+describe(s).toLowerCase(); $('xBold').textContent='×'+fx(b.m); $('rBold').textContent=pct(b.p)+' fall · '+describe(b).toLowerCase() }
+  W&&!busy&&W.hint(s?[{layer:s.layer,i:s.i},{layer:b.layer,i:b.i}]:[]);
+  const o=sel&&E.option(tower,sel.layer,sel.i,mult,first);
+  $('selbox').classList.toggle('on',!!o); $('selPull').disabled=!o||busy||phase==='over';
+  if(o){ $('selT').textContent='×'+fx(o.m)+' · '+pct(o.p)+' fall'; $('selS').textContent=describe(o)+(o.max?' · MAX WIN':''); $('lab').innerHTML='<b>×'+fx(o.m)+'</b><small>'+pct(o.p).toUpperCase()+' FALL</small><button id="labPull">PULL</button>'; $('lab').hidden=false }
+  else { $('selT').textContent=sel?'This block stays put':'No block selected'; $('selS').textContent=sel?'the top two layers and the last block of a layer cannot be pulled':'tap a block in the tower'; $('lab').hidden=true }
+}
+function chip(m,won){ hist.unshift({m,won}); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span class="chip '+(h.won?'w':'l')+'">'+(h.won?fx(h.m)+'×':'TIMBER')+'</span>').join('') }
+function banner(t,s,cls){ $('bnT').textContent=t; $('bnS').textContent=s; $('banner').className='banner '+cls+' on'; say(t+'. '+s) }
+const hideBanner=()=>{ $('banner').className='banner' };
+function fairUI(){ $('fairHash').textContent=' · '+F.hash.slice(0,10)+'…'; $('fairFull').textContent=(phase==='run'?'this tower':'next tower')+' · nonce '+F.nonce+' · seed hash: '+F.hash }
+
+/* ---------- flow ---------- */
+function select(s){ if(busy||phase==='over') return; if(s&&sel&&s.layer===sel.layer&&s.i===sel.i){ pullSel(); return } sel=s; W.select(s); if(s) sSel(); ui() }
+function pullSel(){ if(sel){ const o=E.option(tower,sel.layer,sel.i,mult,first); if(o) pull(o) } }
+async function pull(o){
+  if(busy||phase==='over'||!W) return;
+  A.unlock(); $('tip').style.opacity=0;
+  if(phase==='idle'){ if(bal<1) bal=1000; stake=readStake(); if(bal<stake) return; bal-=stake; phase='run'; $('state').textContent='PULLING · STAKE '+fmt(stake); fairUI() }
+  busy=true; sel=null; W.select(null); W.hint([]); ui();
+  pulls++; const u=F.u('pull:'+pulls), fall=u<o.p;
+  log.push({n:pulls,layer:o.layer,i:o.i,u,p:o.p,fall,m:o.m});
+  sScrape(o.p); say(describe(o)+'. '+pct(o.p)+' fall chance.');
+  await W.pull(o.layer,o.i,o.p,fall);
+  if(fall){
+    phase='over'; sFall(); banner('TIMBER!','the tower came down · lost '+fmt(stake),'bad'); $('state').textContent='THE TOWER FELL'; multUI('bust'); $('win').innerHTML='lost <b>'+fmt(stake)+'</b>';
+    chip(0,false); end(0); await wait(1400); hideBanner(); await newTower(); return;
+  }
+  sClack(); tower=E.pull(tower,o.layer,o.i); mult=o.m; first=false; multUI(); $('win').innerHTML='cash out <b>'+fmt(stake*mult)+'</b>';
+  busy=false; ui();
+  if(o.max) return cashOut(true);
+  if(!optsNow().length) return cashOut(true);
+}
+async function cashOut(auto=false){
+  if(phase!=='run'||first||(busy&&!auto)) return;
+  busy=true; phase='over'; const win=stake*mult; bal+=win; ui(); sWin();
+  banner(mult>=E.MAX_WIN?'MAX WIN!':'STILL STANDING!','×'+fx(mult)+' · won '+fmt(win),'good'); $('state').textContent='CASHED OUT'; multUI('won'); $('win').innerHTML='won <b>'+fmt(win)+'</b>';
+  chip(mult,true); end(mult); await wait(1600); hideBanner(); await newTower();
+}
+function end(cash){ const rv=F.reveal(); $('fairPrev').textContent='tower '+rv.nonce+' · client '+rv.client+'\nseed '+rv.seed+'\n'+log.map(l=>'pull '+l.n+': u='+l.u.toFixed(6)+' · layer '+(l.layer+1)+' '+LAYER_NAME[l.i]+' · fall '+(l.p*100).toFixed(2)+'% → '+(l.fall?'FELL':'stands ×'+fx(l.m))).join('\n')+(cash?'\npaid ×'+fx(cash):''); fairUI() }
+async function newTower(){ tower=E.newTower(); mult=1; first=true; log=[]; pulls=0; phase='idle'; sel=null; busy=true; ui(); await W.rebuild(tower); busy=false; $('state').textContent='A FRESH TOWER'; multUI(''); $('win').innerHTML='pick a block to start'; ui() }
+$('cSafe').onclick=()=>{ const [s]=extremes(optsNow()); if(s) pull(s) };
+$('cBold').onclick=()=>{ const [,b]=extremes(optsNow()); if(b) pull(b) };
+$('selPull').onclick=pullSel;
+$('lab').addEventListener('click',e=>{ if(e.target.id==='labPull') pullSel() });
+$('cash').onclick=()=>cashOut(); $('mbCash').onclick=()=>cashOut();
+$('rotL').onclick=()=>W&&W.rotate(-Math.PI/2); $('rotR').onclick=()=>W&&W.rotate(Math.PI/2);
+addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden) return;
+  if(e.key==='1') $('cSafe').click(); else if(e.key==='2') $('cBold').click(); else if(e.key==='ArrowLeft') $('rotL').click(); else if(e.key==='ArrowRight') $('rotR').click(); else if(e.key===' '){ cashOut(); e.preventDefault() } else if(e.key==='Enter') pullSel() });
+$('fairBtn').onclick=()=>{ $('fairBox').hidden=!$('fairBox').hidden };
+const openHow=()=>{ $('how').hidden=false; setTimeout(()=>$('go').focus({preventScroll:true}),0) };
+$('howBtn').onclick=openHow; $('go').onclick=()=>{ $('how').hidden=true; try{ localStorage.setItem('wobble-how','1') }catch(e){} A.unlock() };
+
+/* ---------- 3D ---------- */
+let W=null;
+try{
+  const { createWorld } = await import('./wobble/world.js');
+  W=createWorld($('view'),{ onSelect:s=>select(s) });
+  W.build(tower);
+  const follow=()=>{ const lab=$('lab'); if(!lab.hidden&&sel){ const p=W.anchor(sel); if(p) lab.style.transform='translate('+p.x.toFixed(1)+'px,'+p.y.toFixed(1)+'px) translate(-50%,-100%)' } requestAnimationFrame(follow) }; follow();
+}catch(err){ console.error(err); const nop=async()=>{}; W={build(){},select(){},hint(){},anchor(){return null},rotate(){},pull:nop,rebuild:nop}; $('stage').insertAdjacentHTML('beforeend','<div class="nogl"><div><b style="font:24px var(--display)">3D could not start</b><p>This browser blocks WebGL. You can still play with the SAFEST and BOLDEST buttons.</p></div></div>') }
+fairUI(); ui();
+let seen=false; try{ seen=localStorage.getItem('wobble-how')==='1' }catch(e){} if(!seen&&!embed) openHow();
+window.__wobble={ get state(){ return {phase,mult,first,busy,bal,sel} }, pull:(L,i)=>{ const o=E.option(tower,L,i,mult,first); if(o) return pull(o) }, safest:()=>$('cSafe').click(), boldest:()=>$('cBold').click(), select, cashOut };
+</script>
+</body>
+</html>

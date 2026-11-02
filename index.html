@@ -210,6 +210,19 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
   .sheet td,.sheet th{padding:9px 6px;font-size:12px}
 }
 /* game sheets */
+.classics{display:grid;gap:28px;margin-top:48px}
+.classic{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:32px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:28px;padding:18px}
+.classic:nth-child(even) .cimg{order:2}
+.cimg{position:relative;display:block;aspect-ratio:1200/630;border-radius:20px;background:var(--img) center/cover no-repeat;box-shadow:0 30px 60px -30px rgba(0,0,0,.8);transition:transform .3s}
+.cimg:hover{transform:translateY(-4px) rotate(-.4deg)}
+.cimg .newtag{position:absolute;left:14px;top:14px}
+.cbody{display:grid;gap:12px;padding:10px 12px;min-width:0}
+.cbody .ctag{font:600 12px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+.cbody h3{font:800 clamp(30px,3.6vw,44px)/1 var(--display);margin:0}
+.cbody p{color:var(--muted);margin:0}
+.cbody ul{margin:0;padding-left:18px;color:var(--fg);display:grid;gap:6px;font-size:15px}
+.cbody .btn{justify-self:start}
+@media (max-width:860px){.classic{grid-template-columns:minmax(0,1fr)}.classic:nth-child(even) .cimg{order:0}}
 .tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:44px}
 @media (max-width:1100px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:760px){.tiles{grid-template-columns:minmax(0,1fr)}}
@@ -221,8 +234,9 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 .tile .ts{font:600 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .glass-tile{background:radial-gradient(80% 60% at 50% 40%,rgba(143,227,255,.35),transparent 60%),linear-gradient(160deg,#2a1a5a,#0d0b14)}
 .glass-tile::before{content:"";position:absolute;left:50%;top:38%;width:70px;height:110px;transform:translate(-50%,-50%);background:linear-gradient(180deg,#fff,#8fe3ff);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);filter:drop-shadow(0 0 30px rgba(143,227,255,.8))}
-.sheet{margin-top:28px;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:8px 18px 14px}
+.sheet{overflow-x:auto;margin-top:28px;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:8px 18px 14px}
 .sheet td{font-size:14px}
+.sheet.wide table{min-width:1100px}
 .sheet td:first-child{color:var(--muted);font-family:var(--body)}
 .sheet tbody tr:hover td{color:var(--gold2)}
 /* process */
@@ -339,7 +353,7 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
       <svg class="eye" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#b8862b"/><stop offset=".5" stop-color="#f8e3a3"/><stop offset="1" stop-color="#e9c46a"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="#13101d" stroke="#2a2438"/><g class="lid"><path d="M8 32c8-12 16-17 24-17s16 5 24 17c-8 12-16 17-24 17S16 44 8 32z" fill="none" stroke="url(#g1)" stroke-width="3.5"/><circle cx="32" cy="32" r="9" fill="#ff2d6f"/><circle cx="35" cy="29" r="3" fill="#fff"/></g></svg>
       <span>CAUGHT GAMES<small>CASINO GAME STUDIO</small></span>
     </a>
-    <div class="nl"><a href="#games">PEEK!</a><a href="peek.html#play-vault">Vault Heist</a><a href="#sneak">SNEAK <span class="newtag">NEW</span></a><a href="#sonar">SONAR</a><a href="#lab">Math lab</a><a href="#fair">Provably fair</a><a href="#sheets">Game sheets</a><a href="#custom">Custom builds</a><a href="#revenue">Revenue</a><a href="#models">Partnership</a></div>
+    <div class="nl"><a href="#games">PEEK!</a><a href="peek.html#play-vault">Vault Heist</a><a href="#classics">Goose · Freeze · Wobble <span class="newtag">NEW</span></a><a href="#sneak">SNEAK</a><a href="#sonar">SONAR</a><a href="#lab">Math lab</a><a href="#fair">Provably fair</a><a href="#sheets">Game sheets</a><a href="#custom">Custom builds</a><a href="#revenue">Revenue</a><a href="#models">Partnership</a></div>
     <a class="btn gold-b" href="#contact">Book a demo</a>
   </div>
 </nav>
@@ -384,6 +398,46 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
   </div>
 </section>
 
+
+<section id="classics" style="padding-top:0">
+  <div class="w">
+    <span class="eyebrow rv">Three classics, rebuilt as instant games <span class="newtag">NEW</span></span>
+    <h2 class="rv">Games your players <span class="gold">already know how to play.</span></h2>
+    <p class="lead rv">A famous game sells itself in the lobby thumbnail. We took a centuries-old board game, a playground classic and the block tower, and gave each a cash-out button, a provably fair draw and a colourful real-time 3D look. No brand owner to pay or to ask.</p>
+    <div class="classics">
+      <article class="classic rv">
+        <a class="cimg" href="goose.html" style="--img:url(art/og-goose.jpg)"><span class="newtag">NEW · PLAYABLE</span></a>
+        <div class="cbody">
+          <span class="ctag">Game of the Goose</span>
+          <h3>GOOSE 63</h3>
+          <p>The 63-square board game every European grew up with. Before each throw the player picks one die or two, with the exact trap chance on the button. Geese fly you on, the bridge jumps ahead, the inn, the well, the prison and the skull end the run. Land on 63 for the golden goose.</p>
+          <ul><li>Public domain, one name per market: Ganzenbord, Juego de la Oca, Gioco dell'Oca, Jeu de l'oie</li><li>Risk shown live: the board lights up every square a throw can end on</li><li>97% for one die, two dice or any mix</li></ul>
+          <a class="btn gold-b" href="goose.html">Play GOOSE 63 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+        </div>
+      </article>
+      <article class="classic rv">
+        <a class="cimg" href="freeze.html" style="--img:url(art/og-freeze.jpg)"><span class="newtag">NEW · PLAYABLE</span></a>
+        <div class="cbody">
+          <span class="ctag">Grandmother's footsteps</span>
+          <h3>FREEZE</h3>
+          <p>A multiplayer crash game you can actually watch. Every bettor in the round is a runner on one field, creeping toward a giant owl. Tap freeze to lock in your multiplier as an ice statue. When the owl turns round, everyone still moving is caught.</p>
+          <ul><li>Playground classic, no licence and no Squid Game look</li><li>Social by design: the whole room on screen, made for streams</li><li>Same proven crash curve: 97% for any freeze moment</li></ul>
+          <a class="btn gold-b" href="freeze.html">Play FREEZE <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+        </div>
+      </article>
+      <article class="classic rv">
+        <a class="cimg" href="wobble.html" style="--img:url(art/og-wobble.jpg)"><span class="newtag">NEW · PLAYABLE</span></a>
+        <div class="cbody">
+          <span class="ctag">The block tower</span>
+          <h3>WOBBLE</h3>
+          <p>A rainbow tower of glossy blocks. The player taps any block to see its exact fall chance and what it pays, then pulls it out and watches the tower sway. Edge blocks are steady, centre blocks pay more, and every pull weakens the tower.</p>
+          <ul><li>Physical comedy that reads in one second</li><li>Every block priced from its own fall chance</li><li>97% for any pulling order</li></ul>
+          <a class="btn gold-b" href="wobble.html">Play WOBBLE <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
 
 <section id="sneak" style="padding-top:0">
   <div class="w">
@@ -545,33 +599,36 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
   <div class="w">
     <span class="eyebrow rv">Game sheets</span>
     <h2 class="rv">The numbers your <span class="gold">team will ask for.</span></h2>
-    <p class="lead rv">Four titles: two crash skins on one tested engine, SONAR and SNEAK, two new instant game types. Every value below is configurable per market; these are the defaults in the live demos.</p>
+    <p class="lead rv">Seven titles: two crash skins on one tested engine, SONAR and SNEAK, and three classics everyone knows rebuilt as instant games. Every value below is configurable per market; these are the defaults in the live demos.</p>
     <div class="tiles rv">
       <a class="tile" href="peek.html#play-peek" style="--img:url(art/bg.webp);--pos:62% 40%"><span class="tt">PEEK!</span><span class="ts">Crash · comedy</span></a>
       <a class="tile" href="peek.html#play-vault" style="--img:url(art/vault_bg.webp);--pos:55% 45%"><span class="tt">VAULT HEIST</span><span class="ts">Crash · neutral skin</span></a>
       <a class="tile" href="sonar.html" style="--img:url(art/og-sonar.jpg);--pos:50% 50%"><span class="tt">SONAR</span><span class="ts">New game type · skill-read mines</span></a>
       <a class="tile" href="sneak.html" style="--img:url(art/og-sneak.jpg);--pos:50% 50%"><span class="tt">SNEAK</span><span class="ts">New · 3D heist step game</span></a>
+      <a class="tile" href="goose.html" style="--img:url(art/og-goose.jpg);--pos:50% 50%"><span class="tt">GOOSE 63</span><span class="ts">New · game of the goose</span></a>
+      <a class="tile" href="freeze.html" style="--img:url(art/og-freeze.jpg);--pos:50% 50%"><span class="tt">FREEZE</span><span class="ts">New · multiplayer crash</span></a>
+      <a class="tile" href="wobble.html" style="--img:url(art/og-wobble.jpg);--pos:50% 50%"><span class="tt">WOBBLE</span><span class="ts">New · block tower</span></a>
     </div>
-    <div class="tbl sheet rv"><table>
-      <thead><tr><th>Specification</th><th>PEEK!</th><th>Vault Heist</th><th>SONAR</th><th>SNEAK</th></tr></thead>
+    <div class="tbl sheet wide rv"><table>
+      <thead><tr><th>Specification</th><th>PEEK!</th><th>Vault Heist</th><th>SONAR</th><th>SNEAK</th><th>GOOSE 63</th><th>FREEZE</th><th>WOBBLE</th></tr></thead>
       <tbody>
-        <tr><td>Game type</td><td>Crash, single cash-out</td><td>Crash, single cash-out</td><td>Instant, player-paced</td><td>Step game, risk chosen per step</td></tr>
-        <tr><td>Default RTP</td><td>97.00%</td><td>97.00%</td><td>Up to 97.50%, skill-based</td><td>97.00% for every strategy</td></tr>
-        <tr><td>RTP range</td><td>95.0 to 99.0%</td><td>95.0 to 99.0%</td><td>Hard cap 97.5% for any strategy</td><td>95.0 to 99.0%</td></tr>
-        <tr><td>Max multiplier</td><td>10,000×</td><td>10,000×</td><td>5,000×</td><td>10,000×</td></tr>
-        <tr><td>Max win payout</td><td>Always paid at 10,000×</td><td>Always paid at 10,000×</td><td>Always paid at 5,000×</td><td>Always paid at 10,000×</td></tr>
-        <tr><td>Volatility</td><td>High</td><td>High</td><td>Player-chosen (3 to 12 mines)</td><td>Player-chosen on every step</td></tr>
-        <tr><td>Hit frequency at 2×</td><td>48.5%</td><td>48.5%</td><td>Depends on mines and reading</td><td>Up to 48.5%, route-dependent</td></tr>
-        <tr><td>Instant bust (1.00×)</td><td>3.96%</td><td>3.96%</td><td>8.3 to 33% (blind first tile)</td><td>10 to 55% (first plate)</td></tr>
-        <tr><td>Betting window</td><td>6 s</td><td>6 s</td><td>None, start any time</td><td>None, start any time</td></tr>
-        <tr><td>Average round</td><td>13 s</td><td>13 s</td><td>20 to 60 s</td><td>Player-paced</td></tr>
-        <tr><td>Rounds per hour</td><td>~190</td><td>~190</td><td>~90</td><td>Player-paced</td></tr>
-        <tr><td>Auto cash-out</td><td>Yes</td><td>Yes</td><td>At max win or cleared sea</td><td>At 10,000× or the diamond (row 16)</td></tr>
-        <tr><td>Fairness</td><td>Provably fair, SHA-256 / HMAC</td><td>Provably fair, SHA-256 / HMAC</td><td>Provably fair, SHA-256 / HMAC</td><td>Provably fair, SHA-256 / HMAC</td></tr>
-        <tr><td>Rendering</td><td>HTML5 canvas, illustrated</td><td>HTML5 canvas, illustrated</td><td>HTML5 canvas, procedural</td><td>Real-time 3D (WebGL)</td></tr>
-        <tr><td>Orientation</td><td>Landscape and portrait</td><td>Landscape and portrait</td><td>Landscape and portrait</td><td>Landscape and portrait</td></tr>
-        <tr><td>Languages</td><td>EN, NL (more on request)</td><td>EN, NL (more on request)</td><td>EN (more on request)</td><td>EN (more on request)</td></tr>
-        <tr><td>Status</td><td>Playable demo</td><td>Playable demo</td><td>Playable demo</td><td>Playable demo</td></tr>
+        <tr><td>Game type</td><td>Crash, single cash-out</td><td>Crash, single cash-out</td><td>Instant, player-paced</td><td>Step game, risk chosen per step</td><td>Board game, dice choice per throw</td><td>Multiplayer crash, live field</td><td>Step game, risk per block</td></tr>
+        <tr><td>Default RTP</td><td>97.00%</td><td>97.00%</td><td>Up to 97.50%, skill-based</td><td>97.00% for every strategy</td><td>97.00% for every strategy</td><td>97.00%</td><td>97.00% for every order</td></tr>
+        <tr><td>RTP range</td><td>95.0 to 99.0%</td><td>95.0 to 99.0%</td><td>Hard cap 97.5% for any strategy</td><td>95.0 to 99.0%</td><td>95.0 to 99.0%</td><td>95.0 to 99.0%</td><td>95.0 to 99.0%</td></tr>
+        <tr><td>Max multiplier</td><td>10,000×</td><td>10,000×</td><td>5,000×</td><td>10,000×</td><td>10,000×</td><td>10,000×</td><td>10,000×</td></tr>
+        <tr><td>Max win payout</td><td>Always paid at 10,000×</td><td>Always paid at 10,000×</td><td>Always paid at 5,000×</td><td>Always paid at 10,000×</td><td>Always paid at 10,000×</td><td>Always paid at 10,000×</td><td>Always paid at 10,000×</td></tr>
+        <tr><td>Volatility</td><td>High</td><td>High</td><td>Player-chosen (3 to 12 mines)</td><td>Player-chosen on every step</td><td>Player-chosen per throw</td><td>High</td><td>Player-chosen per block</td></tr>
+        <tr><td>Hit frequency at 2×</td><td>48.5%</td><td>48.5%</td><td>Depends on mines and reading</td><td>Up to 48.5%, route-dependent</td><td>Up to 48.5%, route-dependent</td><td>48.5%</td><td>Up to 48.5%, route-dependent</td></tr>
+        <tr><td>Instant bust (1.00×)</td><td>3.96%</td><td>3.96%</td><td>8.3 to 33% (blind first tile)</td><td>10 to 55% (first plate)</td><td>0% (first throws are trap-free)</td><td>3.96%</td><td>4 to 16% (first block)</td></tr>
+        <tr><td>Betting window</td><td>6 s</td><td>6 s</td><td>None, start any time</td><td>None, start any time</td><td>None, start any time</td><td>5.5 s</td><td>None, start any time</td></tr>
+        <tr><td>Average round</td><td>13 s</td><td>13 s</td><td>20 to 60 s</td><td>Player-paced</td><td>Player-paced</td><td>About 15 s</td><td>Player-paced</td></tr>
+        <tr><td>Rounds per hour</td><td>~190</td><td>~190</td><td>~90</td><td>Player-paced</td><td>Player-paced</td><td>~150</td><td>Player-paced</td></tr>
+        <tr><td>Auto cash-out</td><td>Yes</td><td>Yes</td><td>At max win or cleared sea</td><td>At 10,000× or the diamond (row 16)</td><td>On square 63 or at 10,000×</td><td>Auto freeze at any ×</td><td>At 10,000× or a cleared tower</td></tr>
+        <tr><td>Fairness</td><td>Provably fair, SHA-256 / HMAC</td><td>Provably fair, SHA-256 / HMAC</td><td>Provably fair, SHA-256 / HMAC</td><td>Provably fair, SHA-256 / HMAC</td><td>Provably fair, SHA-256 / HMAC</td><td>Provably fair, SHA-256 / HMAC</td><td>Provably fair, SHA-256 / HMAC</td></tr>
+        <tr><td>Rendering</td><td>HTML5 canvas, illustrated</td><td>HTML5 canvas, illustrated</td><td>HTML5 canvas, procedural</td><td>Real-time 3D (WebGL)</td><td>Real-time 3D (WebGL)</td><td>Real-time 3D (WebGL)</td><td>Real-time 3D (WebGL)</td></tr>
+        <tr><td>Orientation</td><td>Landscape and portrait</td><td>Landscape and portrait</td><td>Landscape and portrait</td><td>Landscape and portrait</td><td>Landscape and portrait</td><td>Landscape and portrait</td><td>Landscape and portrait</td></tr>
+        <tr><td>Languages</td><td>EN, NL (more on request)</td><td>EN, NL (more on request)</td><td>EN (more on request)</td><td>EN (more on request)</td><td>EN (more on request)</td><td>EN (more on request)</td><td>EN (more on request)</td></tr>
+        <tr><td>Status</td><td>Playable demo</td><td>Playable demo</td><td>Playable demo</td><td>Playable demo</td><td>Playable demo</td><td>Playable demo</td><td>Playable demo</td></tr>
       </tbody>
     </table></div>
     <p class="note rv" style="margin-top:14px">Certification by an accredited lab (GLI, BMM or iTech Labs) is part of the launch plan for your markets. Demo RNG runs in the browser; the live version runs server-side.</p>
@@ -799,11 +856,11 @@ if('IntersectionObserver' in window&&!reduce){
 /* ---------- marquee feed ---------- */
 (function feed(){
   const names=['Kees_88','Fenna','Jayden','Mo','Tessa.v','Bram','Luuk','Sanne','Rik','Ilse','Daan','Yara','Lars','Noor','Milan','Sophie','Ahmed','Julia'];
-  const games=['PEEK!','VAULT HEIST','SONAR','SNEAK'];
+  const games=['PEEK!','VAULT HEIST','SONAR','SNEAK','GOOSE 63','FREEZE','WOBBLE'];
   let h='';
   for(let i=0;i<26;i++){ const c=crash(.97,10000), bet=[1,2,5,10,20,50][i%6], win=Math.random()<.2;
     const m=win?Math.max(1.2,Math.min(c,2+Math.random()*40)):c;
-    const g=games[i%games.length], lost=g==='SONAR'?'hit a <i>MINE</i>':g==='SNEAK'?'tripped the <i>ALARM</i>':g==='VAULT HEIST'?'got <i>BUSTED</i>':'got <i>CAUGHT</i>';
+    const g=games[i%games.length], lost=g==='SONAR'?'hit a <i>MINE</i>':g==='SNEAK'?'tripped the <i>ALARM</i>':g==='GOOSE 63'?'fell in the <i>WELL</i>':g==='FREEZE'?'got <i>CAUGHT</i> by the owl':g==='WOBBLE'?'toppled the <i>TOWER</i>':g==='VAULT HEIST'?'got <i>BUSTED</i>':'got <i>CAUGHT</i>';
     h+= win||m>=1.5 ? `<span>${names[i%names.length]} cashed out <b>${fmt(m,2)}×</b> on ${g} · €${fmt(bet*m,2)}</span>` : `<span>${names[i%names.length]} ${lost} at ${fmt(m,2)}× on ${g}</span>`;
   }
   $('feed').innerHTML=h+h+'<span style="color:var(--dim)">Simulated feed</span>';
