@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>SKYLINE · Caught Games</title>
+<meta name="description" content="SKYLINE by Caught Games: a crash game across sunset rooftops. The multiplier climbs while the thief runs. At every gap: jump to triple it, or take the plank.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Caught Games">
+<meta property="og:title" content="SKYLINE · Jump the gap, triple the multiplier">
+<meta property="og:description" content="A rooftop crash game with a choice at every gap: one in three jumps triples the multiplier, the plank keeps you running. Cash out before the helicopter finds you.">
+<meta property="og:url" content="https://caughtgames.com/skyline.html">
+<meta property="og:image" content="https://caughtgames.com/art/og-skyline.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://caughtgames.com/skyline.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ff3d8b'/%3E%3Crect x='8' y='30' width='14' height='26' rx='3' fill='%23ffc531' stroke='%231d1640' stroke-width='3'/%3E%3Crect x='25' y='20' width='14' height='36' rx='3' fill='%234fc8ff' stroke='%231d1640' stroke-width='3'/%3E%3Crect x='42' y='34' width='14' height='22' rx='3' fill='%239a7bff' stroke='%231d1640' stroke-width='3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;800;900&display=swap">
+<link rel="stylesheet" href="lib/shell.css">
+<style>
+:root{--bg1:#ff8a5c;--bg2:#7b4fe0;--accent:#ff3d8b;--accent2:#ffc531;--panel2:#fff0e8;--jump:#ff6a3d}
+.brand .logo{background:var(--accent)}
+.stage{background:#ff9a6a}
+.bigm{position:absolute;z-index:3;left:50%;top:12px;transform:translateX(-50%);text-align:center;pointer-events:none}
+.bigm b{display:block;font:clamp(44px,7vw,84px)/1 var(--display);color:#fff;-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;text-shadow:0 6px 0 var(--ink);transition:transform .25s cubic-bezier(.2,1.6,.4,1)}
+.bigm span{display:inline-block;margin-top:6px;font:900 13px var(--body);letter-spacing:.06em;padding:5px 12px;border-radius:999px;background:var(--panel);border:2.5px solid var(--ink)}
+.bigm.bust b{color:var(--bad)}.bigm.won b{color:var(--accent2)}
+.bigm.pop b{transform:scale(1.25) rotate(-3deg);color:var(--accent2)}
+.stage:has(.banner.on) .bigm span{opacity:0}
+.banner.hi{top:27%}
+.stage:has(.banner.hi.on) .bigm{opacity:0}
+.bigm{transition:opacity .3s}
+.bigm.gap span{background:var(--jump);color:#fff;animation:throb .45s ease-in-out infinite}
+.plabel{pointer-events:none}
+.plabel.pop.win{background:var(--accent2)}
+.plabel.pop.bad{background:#ffd6dc;color:#9a1830}
+.jring{position:absolute;left:0;top:0;z-index:3;width:clamp(74px,9vw,104px);aspect-ratio:1;display:grid;place-items:center;align-content:center;pointer-events:none;will-change:transform;filter:drop-shadow(0 4px 0 var(--ink))}
+.jring[hidden]{display:none}
+.jring svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.jring circle{fill:none;stroke-width:11}
+.jring .bg{fill:rgba(255,250,240,.94);stroke:var(--ink);stroke-width:15}
+.jring .fg{stroke:var(--jump);stroke-dasharray:100;stroke-linecap:round}
+.jring.late .fg{stroke:var(--bad)}
+.jring b{position:relative;font:clamp(24px,3vw,34px)/1 var(--display);color:var(--accent2);-webkit-text-stroke:2px var(--ink);paint-order:stroke fill}
+.jring small{position:relative;font:900 10px var(--body);letter-spacing:.12em;color:var(--ink)}
+.jring.late{animation:throb .3s ease-in-out infinite}
+#jump{width:100%;margin-top:14px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;text-align:left;cursor:pointer;color:var(--ink);border:3px solid var(--ink);border-radius:18px;padding:10px 14px;background:#fff;box-shadow:0 6px 0 var(--ink);position:relative;overflow:hidden}
+#jump .ic{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font:18px var(--display);color:#fff;-webkit-text-stroke:1.5px var(--ink);paint-order:stroke fill;border:2.5px solid var(--ink);background:conic-gradient(var(--jump) calc(var(--k,1)*360deg),#ffd9c9 0)}
+#jump .nm{font:24px/1 var(--display)}
+#jump .nm small{display:block;font:800 12px var(--body);color:var(--muted);margin-top:3px}
+#jump .x{font:22px var(--display)}
+#jump.open{background:#ffe3d6;animation:throb .5s ease-in-out infinite}
+#jump:disabled{cursor:not-allowed;background:#f3eef6;color:#8a83a3;box-shadow:0 6px 0 rgba(29,22,64,.35);border-color:rgba(29,22,64,.4)}
+#jump:disabled .ic{background:#d9d2e6}
+#jump:active:not(:disabled){transform:translateY(5px);box-shadow:0 1px 0 var(--ink)}
+#cash.go{background:var(--accent);color:#fff;-webkit-text-stroke:1.5px var(--ink);paint-order:stroke fill}
+#cash.go small{-webkit-text-stroke:0;color:#fff}
+@keyframes throb{50%{transform:scale(1.03)}}
+.auto{display:flex;align-items:center;gap:8px;margin-top:12px;font:800 13px var(--body);color:var(--muted)}
+.auto input{width:84px;font:18px var(--display);color:var(--fg);background:#fff;border:2.5px solid var(--ink);border-radius:10px;padding:5px 8px}
+.runlog{display:grid;gap:4px;max-height:200px;overflow:auto}
+.runlog div{display:flex;justify-content:space-between;gap:8px;font:800 13px var(--body);padding:5px 9px;border-radius:10px;background:#fff;border:2px solid rgba(29,22,64,.15)}
+.runlog div b{font:15px var(--display)}
+.runlog .ok b{color:#14864a}.runlog .no b{color:var(--bad)}.runlog .pl b{color:var(--muted)}
+.runlog:empty::before{content:"Gaps you pass show up here.";font:800 12px var(--body);color:var(--muted)}
+.fade{position:absolute;inset:0;z-index:5;background:#ffb38a;opacity:0;pointer-events:none;transition:opacity .35s}
+.fade.on{opacity:1}
+#mbar #mbJump{background:var(--jump);color:#fff;-webkit-text-stroke:1px var(--ink);paint-order:stroke fill}
+#mbar #mbJump:disabled{background:#e6e1ef;color:#8a83a3;-webkit-text-stroke:0}
+#mbar #mbCash.go{background:var(--accent);color:#fff}
+body.idle #mbar{transform:none!important}
+@media(max-width:640px){
+  #mbar{gap:8px}#mbar b{font-size:24px}#mbar button{padding:11px 12px;font-size:17px}
+  body.idle .wrap,body.running .wrap{padding-bottom:96px}
+  .bigm{top:8px}.bigm span{font-size:11px}
+}
+</style>
+<script defer src="https://stats.1v1battles.com/nv.js" data-website-id="4f92624d-4cbc-4758-8bb8-8515f2b5e871"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+</head>
+<body class="idle">
+<div class="wrap">
+  <div class="top">
+    <a class="box brand" href="index.html"><span class="logo">S</span><div><b>SKYLINE</b><small>Caught Games · jump the gap, triple it</small></div></a>
+    <div class="box hist" id="hist"></div>
+    <div class="pills"><button class="box pill" id="howBtn">HOW<span class="lg"> TO PLAY</span></button><button class="box pill" id="fairBtn">FAIR<span class="lg" id="fairHash"></span></button><button class="box pill" id="snd">SOUND ON</button></div>
+  </div>
+  <div class="main">
+    <div class="stage" id="stage">
+      <canvas id="view" tabindex="0" aria-label="Sunset rooftops. Space starts the run or cashes out, J jumps when a gap window is open." aria-describedby="sr"></canvas>
+      <div class="bigm" id="bigm"><b id="bigT">1.00×</b><span id="bigS">READY TO RUN</span></div>
+      <div class="banner" id="banner"><b id="bnT"></b><span id="bnS"></span></div>
+      <div class="fade" id="fade"></div>
+      <div class="sr" id="sr" aria-live="polite"></div>
+    </div>
+    <div class="side">
+      <div class="box card meter">
+        <div id="state">READY ON THE ROOF</div>
+        <div id="mult">1.00×</div>
+        <div id="win">press RUN to start</div>
+      </div>
+      <div class="box card">
+        <div class="row2">
+          <div class="bal"><div class="lbl">Play money</div><b id="bal">1,000.00</b></div>
+          <div><div class="lbl">Stake</div><div class="stake"><input id="bet" type="number" value="10" min="1" step="1" inputmode="decimal" aria-label="Stake"><button id="half">½</button><button id="dbl">2×</button></div></div>
+        </div>
+        <label class="auto" for="autoX">Auto cash at ×<input id="autoX" type="number" min="0" step="0.1" value="0" inputmode="decimal"> <span>0 = off</span></label>
+        <button id="jump" disabled><span class="ic">J</span><span class="nm">JUMP<small id="jumpS">waits for the next gap</small></span><span class="x" id="jumpX">×3</span></button>
+        <button id="cash" class="go">RUN<small>stake 10.00</small></button>
+        <p class="hint">At every gap a <b>JUMP</b> window opens. <b>One in three</b> jumps triples the multiplier on the spot, the rest miss and fall. Do nothing and a plank carries you across. The house edge of 3% is charged once at the start, so <b>every way of playing returns 97%</b>.</p>
+      </div>
+      <div class="box card">
+        <div class="lbl"><span>This run</span><span id="segL"></span></div>
+        <div class="runlog" id="runlog"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="box" id="mbar"><b id="mbMult">1.00×</b><button id="mbJump" disabled>JUMP</button><button id="mbCash" class="go">RUN</button></div>
+<div class="box fairbox" id="fairBox" hidden><b>Provably fair</b><p>Before each run we publish SHA-256(server seed). Every draw is u = HMAC-SHA256(seed, client:nonce:message), first 52 bits ÷ 2<sup>52</sup>.</p><p>The run is split into segments. In segment k the multiplier is base × e<sup>t × ln2 / 8 s</sup>, rounded down to the cent, and the helicopter catches the thief once it passes the crash point. Segment 0 (message <b style="font:inherit">seg:0</b>): base 1.00, crash point r0 = floor(100 × 0.97 ÷ (1 − u)) ÷ 100, at least 1.00, so P(reach m) = 0.97 ÷ m. A jump (message <b style="font:inherit">jump:n</b>) succeeds when u &lt; 1/3 and pays 3 × m, then segment k + 1 (message <b style="font:inherit">seg:k</b>) starts at base 3m with crash point base × 1 ÷ (1 − u), so P(reach m) = base ÷ m with no edge. A jump that would pass 10,000× pays exactly 10,000× and succeeds when u &lt; m ÷ 10,000. The curve stops at 10,000× with an automatic cash-out. After the run the seed is revealed.</p><code id="fairFull"></code><pre id="fairPrev">no run played yet</pre></div>
+<div class="how" id="how" hidden><div class="box" role="dialog" aria-modal="true" aria-labelledby="howT">
+  <h2 id="howT">How to play <span>SKYLINE</span></h2>
+  <p style="margin:0;color:var(--muted);font-size:15px;line-height:1.55">A thief, a sunset and a lot of rooftops. Play money only.</p>
+  <ol>
+    <li><div><b>Press RUN.</b> The thief sprints across the roofs and the multiplier climbs.</div></li>
+    <li><div><b>Gap ahead!</b> A ring counts down. Press <b>JUMP</b> and one in three times the multiplier <b>triples</b> on the spot. Miss and the run is over.</div></li>
+    <li><div><b>Or play it safe.</b> Do nothing and a plank slides across the gap. The run carries on.</div></li>
+    <li><div><b>Cash out any time.</b> When the police helicopter's searchlight finds the thief, everything still running is lost.</div></li>
+  </ol>
+  <button id="go" class="go">TO THE ROOFS</button>
+</div></div>
+<a class="backlink" id="backlink" href="index.html">← caughtgames.com</a>
+
+<script src="skyline-engine.js"></script>
+<script type="module">
+import { createFair } from './lib/fair.js';
+import { createSfx } from './lib/sfx.js';
+const $=id=>document.getElementById(id), E=window.SkylineEngine;
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fmt=(n,d=2)=>n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fx=m=>m>=1000?fmt(m,0):fmt(m);
+const embed=location.hash==='#embed'; if(embed){ document.body.classList.add('embed'); $('backlink').remove() }
+const F=createFair('skyline-demo-client'), A=createSfx();
+const L={ E0:E.SPEED*(E.GAP_FIRST+E.WINDOW)/1000, PERIOD:E.SPEED*E.GAP_EVERY/1000, JUMP:E.SPEED*(E.GAP_EVERY-E.GAP_FIRST-E.WINDOW)/1000 };
+
+/* ---------- sound ---------- */
+const sGo=()=>{ A.notes([0,4,7,12],523,.07,.08); A.noise(.3,2500,.05,'highpass') };
+const sStep=()=>A.noise(.035,1500+Math.random()*700,.03,'bandpass');
+const sOpen=()=>{ A.tone(660,1320,.16,.08,'triangle'); A.tone(990,1980,.12,.05,'triangle',.08) };
+const sTick=late=>A.tone(late?1700:1300,late?1600:1250,.04,.035,'square');
+const sJump=()=>{ A.tone(260,900,.4,.12,'sine'); A.noise(.45,3000,.08,'highpass') };
+const sLand=()=>{ A.tone(160,60,.25,.25,'sine'); A.notes([0,4,7,12,16,19],659,.05,.09) };
+const sBonk=()=>{ A.tone(320,110,.18,.22,'square'); A.noise(.12,900,.2,'lowpass') };
+const sFall=()=>{ A.tone(1500,170,1.1,.09,'sine'); A.tone(90,40,.4,.35,'sine',1.15) };
+const sPlank=()=>{ A.tone(430,300,.07,.1,'triangle'); A.noise(.06,900,.08,'bandpass') };
+const sCash=()=>{ for(let i=0;i<6;i++) A.tone(1568+i*90,1568+i*90,.12,.05,'triangle',i*.06); A.notes([0,4,7,12],784,.06,.07) };
+const sCaught=()=>{ for(let i=0;i<26;i++) A.noise(.07,260,.22,'lowpass',i*.075); for(let i=0;i<4;i++){ A.tone(740,740,.32,.05,'triangle',.9+i*.64); A.tone(990,990,.32,.05,'triangle',1.22+i*.64) } };
+const sMax=()=>{ A.notes([0,4,7,12,16,19,24],523,.08,.1); A.notes([0,7,12,19,24],392,.12,.08,'sine') };
+$('snd').onclick=()=>{ A.unlock(); $('snd').textContent=A.toggle()?'SOUND OFF':'SOUND ON' };
+
+/* ---------- state ---------- */
+let bal=1000, stake=10, phase='idle', seg=null, segT=0, segX0=0, mult=1, jumps=0, log=[], hist=[], gapI=-1, gapsPassed=0, tickAcc=0, endAt=0, winOpen=null;
+const say=s=>{ $('sr').textContent=s };
+function readStake(){ let v=parseFloat($('bet').value); if(!isFinite(v)||v<1) v=1; v=Math.min(v,Math.max(1,bal),500); v=Math.round(v*100)/100; $('bet').value=v; return v }
+$('half').onclick=()=>{ $('bet').value=Math.max(1,Math.round(readStake()/2*100)/100); ui() };
+$('dbl').onclick=()=>{ $('bet').value=Math.min(bal,500,readStake()*2); readStake(); ui() };
+$('bet').oninput=()=>ui();
+const edgeOf=i=>segX0+E.SPEED*(E.gapOpen(i)+E.WINDOW)/1000;
+const edgeIndex=i=>Math.round((edgeOf(i)-L.E0)/L.PERIOD);
+function multUI(cls){ const el=$('mult'); el.textContent=fx(mult)+'×'; el.className=cls||''; $('mbMult').textContent=fx(mult)+'×'; $('bigT').textContent=fx(mult)+'×' }
+function fairUI(){ $('fairHash').textContent=' · '+F.hash.slice(0,10)+'…'; $('fairFull').textContent=(phase==='idle'?'next run':'this run')+' · nonce '+F.nonce+' · seed hash: '+F.hash }
+function ui(){
+  $('bal').textContent=fmt(bal);
+  const run=phase==='run', canCash=run&&seg&&E.canAct(seg,mult);
+  const c=$('cash'), mc=$('mbCash');
+  if(phase==='idle'||phase==='end'){ const s=readStake(); c.className='go'; c.disabled=phase==='end'&&performance.now()-endAt<900; c.innerHTML='RUN<small>stake '+fmt(s)+'</small>'; mc.className='go'; mc.disabled=c.disabled; mc.textContent='RUN '+fmt(s,s%1?2:0) }
+  else { c.className=''; c.disabled=!canCash; c.innerHTML='CASH OUT<small>'+(canCash?fmt(stake*mult):phase==='jump'?'in the air…':'from ×1.01')+'</small>'; mc.className=''; mc.disabled=!canCash; mc.textContent=canCash?'CASH '+fmt(stake*mult):'CASH' }
+  const open=run&&winOpen&&E.canAct(seg,mult), o=open?E.jumpOdds(mult):null;
+  const j=$('jump'); j.disabled=!open; j.classList.toggle('open',!!open); $('mbJump').disabled=!open;
+  j.style.setProperty('--k',open?(1-winOpen.k).toFixed(3):1);
+  $('jumpX').textContent=o?'×'+fx(o.to):'×3';
+  $('jumpS').textContent=o?(o.max?'max win · '+(o.p*100).toFixed(2)+'% chance':'1 in 3 · '+fmt(stake*o.to)+' if you make it'):phase==='jump'?'mid-air…':run?'waits for the next gap':'opens at every gap';
+  $('mbJump').textContent=o?'JUMP ×3':'JUMP';
+  document.body.classList.toggle('running',run||phase==='jump'); document.body.classList.toggle('idle',phase==='idle'||phase==='end');
+  $('bet').disabled=$('half').disabled=$('dbl').disabled=run||phase==='jump';
+  $('segL').textContent=seg&&phase!=='idle'?'segment '+(seg.k+1)+' · '+jumps+' jump'+(jumps===1?'':'s'):'';
+}
+function chip(m,won,lbl){ hist.unshift({m,won,lbl}); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span class="chip '+(h.won?'w':'l')+'">'+(h.lbl||fx(h.m)+'×')+'</span>').join('') }
+function banner(t,s,cls){ $('bnT').textContent=t; $('bnS').textContent=s; $('banner').className='banner '+cls+' on'; say(t+'. '+s) }
+const hideBanner=()=>{ $('banner').className='banner' };
+function logRow(txt,res,cls){ const d=document.createElement('div'); d.className=cls; d.innerHTML='<span>'+txt+'</span><b>'+res+'</b>'; $('runlog').prepend(d) }
+function big(t,s,cls){ if(t!=null) $('bigT').textContent=t; if(s!=null) $('bigS').textContent=s; $('bigm').className='bigm '+(cls||'') }
+
+/* ---------- actions ---------- */
+function act(){ A.unlock(); if(phase==='idle'||phase==='end') return start(); if(phase==='run') return cash() }
+async function start(){
+  if(phase==='end'){ if(performance.now()-endAt<900) return; await toIdle() }
+  if(phase!=='idle') return;
+  if(bal<1) bal=1000; stake=readStake(); if(bal<stake) return;
+  bal-=stake; jumps=0; gapI=-1; gapsPassed=0; log=[]; $('runlog').innerHTML='';
+  seg=E.newSeg(0,1,F.u('seg:0')); log.push({m:'seg:0',u:seg.u,txt:'r0 = '+fx(seg.r)});
+  segT=0; segX0=0; mult=1; phase='run'; winOpen=null;
+  sGo(); hideBanner(); big('1.00×','RUN!'); $('state').textContent='RUNNING · STAKE '+fmt(stake); $('win').innerHTML='cash out from <b>×1.01</b>';
+  multUI(''); fairUI(); ui(); say('Running. Stake '+fmt(stake));
+}
+function cash(auto){
+  if(phase!=='run'||!E.canAct(seg,mult)) return;
+  finishWin(false);
+}
+function finishWin(max){
+  phase='end'; endAt=performance.now(); W.ring(null); winOpen=null;
+  const win=stake*mult; bal+=win;
+  W.cash(max); (max?sMax:sCash)();
+  banner(max?'MAX WIN!':'ESCAPED!','×'+fx(mult)+' · won '+fmt(win),'good'); big(null,max?'MAX WIN':'CASHED OUT','won');
+  $('state').textContent=max?'MAX WIN':'CASHED OUT AT ×'+fx(mult); $('win').innerHTML='won <b>'+fmt(win)+'</b>'; multUI('won');
+  chip(mult,true); reveal('paid ×'+fx(mult)); ui(); later();
+}
+async function jump(){
+  if(phase!=='run'||!winOpen||!E.canAct(seg,mult)) return;
+  A.unlock(); phase='jump';
+  const i=winOpen.i, n=edgeIndex(i), from=mult; winOpen=null;
+  jumps++; const o=E.jumpOdds(from), u=F.u('jump:'+jumps), ok=u<o.p;
+  log.push({m:'jump:'+jumps,u,txt:'needs < '+o.p.toFixed(o.max?6:4)+' at ×'+fx(from)+' → '+(ok?'made it, ×'+fx(o.to):'missed')});
+  sJump(); big(null,'JUMP!','gap'); $('state').textContent='JUMPING AT ×'+fx(from); $('win').innerHTML='in the air…'; ui(); say('Jump at '+fx(from)+' times');
+  await W.jump(n,ok,o.max);
+  if(ok){
+    gapsPassed++; logRow('Gap '+gapsPassed+' · jumped at ×'+fx(from),'×3 ✓','ok');
+    mult=o.to; multUI('pop'); big(null,'TRIPLED!','pop'); setTimeout(()=>{ if(phase==='run') big(null,'RUN!','') },900);
+    if(o.max){ return finishWin(true) }
+    const k=seg.k+1; seg=E.newSeg(k,o.to,F.u('seg:'+k)); log.push({m:'seg:'+k,u:seg.u,txt:'base ×'+fx(seg.base)+' · r = '+seg.r.toFixed(4)+' · crash ×'+fx(E.caughtAt(seg))});
+    segX0=W.edgeX(n)+L.JUMP; segT=0; gapI=-1; phase='run';
+    $('state').textContent='RUNNING · SEGMENT '+(k+1); ui(); return;
+  }
+  gapsPassed++; logRow('Gap '+gapsPassed+' · jumped at ×'+fx(from),'MISSED','no');
+  phase='end'; endAt=performance.now(); multUI('bust'); big(null,'MISSED THE ROOF','bust');
+  banner('MISSED!','the jump fell short · lost '+fmt(stake),'bad'); $('state').textContent='FELL AT THE GAP'; $('win').innerHTML='lost <b>'+fmt(stake)+'</b>';
+  chip(from,false,'FELL'); reveal(); ui(); later();
+}
+async function caught(){
+  phase='end'; endAt=performance.now()+1900; winOpen=null; W.ring(null);
+  mult=E.caughtAt(seg); multUI('bust'); big(null,'POLICE!','bust'); $('state').textContent='SEARCHLIGHT!'; $('win').innerHTML='the helicopter is here…'; ui(); sCaught();
+  await W.caught();
+  banner('CAUGHT!','caught at ×'+fx(mult)+' · lost '+fmt(stake),'bad hi'); big(null,'CAUGHT AT ×'+fx(mult),'bust');
+  $('state').textContent='CAUGHT AT ×'+fx(mult); $('win').innerHTML='lost <b>'+fmt(stake)+'</b>';
+  chip(mult,false); reveal(); ui(); later();
+}
+function reveal(extra){ const rv=F.reveal(); $('fairPrev').textContent='run '+rv.nonce+' · client '+rv.client+'\nseed '+rv.seed+'\n'+log.map(l=>l.m+': u='+l.u.toFixed(6)+' · '+l.txt).join('\n')+(extra?'\n'+extra:''); fairUI() }
+let laterT=0;
+function later(){ clearTimeout(laterT); laterT=setTimeout(()=>{ if(phase==='end') toIdle() },3600) }
+async function toIdle(){
+  clearTimeout(laterT); if(phase!=='end') return;
+  phase='idle'; $('fade').classList.add('on'); await new Promise(r=>setTimeout(r,reduce?30:360));
+  W.reset(); hideBanner(); seg=null; mult=1; multUI(''); big('1.00×','READY TO RUN');
+  $('state').textContent='READY ON THE ROOF'; $('win').innerHTML='press RUN to start'; ui();
+  $('fade').classList.remove('on');
+}
+$('cash').onclick=act; $('mbCash').onclick=act; $('jump').onclick=jump; $('mbJump').onclick=jump;
+addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden) return;
+  if(e.key===' '||e.key==='Enter'){ act(); e.preventDefault() } else if(e.key==='j'||e.key==='J'||e.key==='ArrowUp'){ jump(); e.preventDefault() } });
+$('fairBtn').onclick=()=>{ $('fairBox').hidden=!$('fairBox').hidden };
+const openHow=()=>{ $('how').hidden=false; setTimeout(()=>$('go').focus({preventScroll:true}),0) };
+$('howBtn').onclick=openHow; $('go').onclick=()=>{ $('how').hidden=true; try{ localStorage.setItem('skyline-how','1') }catch(e){} A.unlock() };
+
+/* ---------- frame loop ---------- */
+let last=performance.now();
+function loop(now){
+  const dt=Math.min(100,now-last); last=now;
+  if(phase==='run'){
+    segT+=dt;
+    const m=E.multAt(seg.base,segT);
+    if(!E.alive(seg,m)){ caught() }
+    else {
+      mult=m; multUI('');
+      W.run(segX0+E.SPEED*segT/1000);
+      const w=E.windowAt(segT);
+      if(w&&(seg.k>0||m>=1.01)){
+        if(w.i!==gapI){ gapI=w.i; sOpen(); tickAcc=0 }
+        winOpen=w; W.ring(edgeIndex(w.i),w.k,w.k>0.7?'NOW!':'JUMP'); big(null,'GAP! JUMP ×3?','gap');
+        tickAcc+=dt; if(tickAcc>(w.k>0.7?140:300)){ tickAcc=0; sTick(w.k>0.7) }
+      } else {
+        if(winOpen){ gapsPassed++; logRow('Gap '+gapsPassed+' · plank at ×'+fx(mult),'SAFE','pl'); big(null,'RUN!','') }
+        winOpen=null; W.ring(null);
+      }
+      if(E.canAct(seg,m)) $('win').innerHTML='cash out now for <b>'+fmt(stake*m)+'</b>';
+      const auto=parseFloat($('autoX').value);
+      if(auto>=1.01&&m>=auto&&E.canAct(seg,m)) cash(true);
+      else if(m>=E.MAX_WIN) finishWin(true);
+      ui();
+    }
+  } else if(phase==='end'&&performance.now()-endAt>900&&$('cash').disabled) ui();
+  requestAnimationFrame(loop);
+}
+
+/* ---------- 3D ---------- */
+let W=null;
+try{
+  const { createWorld } = await import('./skyline/world.js');
+  W=createWorld($('view'),{ engine:E, onStep:()=>{ if(phase==='run') sStep() }, onPlank:sPlank, onLand:sLand, onBonk:sBonk, onFall:sFall });
+}catch(err){ console.error(err); const nop=async()=>{}; W={reset(){},run(){},ring(){},jump:nop,cash(){},caught:nop,pop(){},edgeX:n=>L.E0+n*L.PERIOD}; $('stage').insertAdjacentHTML('beforeend','<div class="nogl"><div><b style="font:24px var(--display)">3D could not start</b><p>This browser blocks WebGL. The run still works with the RUN, JUMP and CASH OUT buttons.</p></div></div>') }
+fairUI(); ui(); requestAnimationFrame(loop);
+let seen=false; try{ seen=localStorage.getItem('skyline-how')==='1' }catch(e){} if(!seen&&!embed) openHow();
+window.__skyline={ get state(){ const live=phase==='run'||phase==='jump'; return {phase,mult,segT,seg:seg&&(live?{k:seg.k,base:seg.base}:{...seg}),jumps,bal,window:winOpen&&{...winOpen},log:live?[]:log.map(l=>({...l}))} }, run:start, cash, jump, act }; // during a run only public info: never the crash factor or the draws
+</script>
+</body>
+</html>

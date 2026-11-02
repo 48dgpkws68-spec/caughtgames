@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>PASS IT · Caught Games</title>
+<meta name="description" content="PASS IT by Caught Games: a multiplayer crash game with a hot potato. The bomb hops around the party table and you can only cash out while it is in your hands.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Caught Games">
+<meta property="og:title" content="PASS IT · Cash out while the bomb is in your hands">
+<meta property="og:description" content="A party crash game: everyone sits round one table, the bomb hops from hand to hand and the multiplier climbs. Cash out only while you hold it.">
+<meta property="og:url" content="https://caughtgames.com/passit.html">
+<meta property="og:image" content="https://caughtgames.com/art/og-passit.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://caughtgames.com/passit.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ff4a3d'/%3E%3Ccircle cx='30' cy='38' r='17' fill='%231d1640'/%3E%3Ccircle cx='24' cy='32' r='4' fill='%23fff' opacity='.8'/%3E%3Cpath d='M38 24 Q44 14 50 14' stroke='%23ffe08a' stroke-width='4' fill='none' stroke-linecap='round'/%3E%3Ccircle cx='51' cy='13' r='5' fill='%23ffd23f'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;800;900&display=swap">
+<link rel="stylesheet" href="lib/shell.css">
+<style>
+:root{--bg1:#ffa24d;--bg2:#d957ff;--accent:#ff4a3d;--accent2:#ffd23f;--panel2:#fff1df;--hot:#ff3b3b}
+.brand .logo{background:var(--accent)}
+.stage{background:#ff9a6a}
+.bigm{position:absolute;z-index:3;left:18px;top:12px;text-align:left;pointer-events:none}
+.bigm b{display:block;font:clamp(44px,7vw,84px)/1 var(--display);color:#fff;-webkit-text-stroke:3px var(--ink);paint-order:stroke fill;text-shadow:0 6px 0 var(--ink);transition:color .2s}
+.bigm span{display:inline-block;margin-top:6px;font:900 13px var(--body);letter-spacing:.06em;padding:5px 12px;border-radius:999px;background:var(--panel);border:2.5px solid var(--ink)}
+.bigm.mine b{color:var(--accent2)}
+.bigm.mine span{background:var(--hot);color:#fff}
+.bigm.bust b{color:var(--bad)}
+.bigm.maxw b{color:var(--accent2)}
+.plabel{pointer-events:none}
+.ptag{padding:3px 9px 4px;border-radius:11px;border-width:2.5px;box-shadow:0 3px 0 var(--ink);transition:background .15s}
+.ptag::after{bottom:-9px;border-width:6px}
+.ptag b{font:14px/1 var(--display);white-space:nowrap}
+.ptag small{font:900 10px var(--body);letter-spacing:.04em;white-space:nowrap}
+.ptag small[hidden]{display:none}
+.ptag.you{background:var(--accent2)}
+.ptag.hot{background:var(--hot);color:#fff;animation:tagHot .3s ease-in-out infinite alternate}
+.ptag.hot small{color:#fff}
+.ptag.safe{background:#c9f7d2}.ptag.safe small{color:#14864a}
+.ptag.bad{background:#3a3446;color:#fff}.ptag.bad small{color:#ffb3bd}
+@keyframes tagHot{to{transform-origin:50% 100%;filter:brightness(1.15)}}
+#youhave{position:absolute;z-index:5;right:16px;bottom:16px;transform:scale(.6);transform-origin:100% 100%;opacity:0;pointer-events:none;transition:opacity .15s,transform .3s cubic-bezier(.2,1.6,.4,1);border:3px solid var(--ink);border-radius:22px;padding:10px 22px 12px;background:var(--hot);color:#fff;box-shadow:0 6px 0 var(--ink);cursor:pointer;text-align:center;min-width:250px}
+#youhave.on{opacity:1;transform:scale(1);pointer-events:auto;animation:hotPulse .45s ease-in-out infinite alternate}
+#youhave b{display:block;font:clamp(28px,4.2vw,44px)/1 var(--display);-webkit-text-stroke:2px var(--ink);paint-order:stroke fill;text-shadow:0 4px 0 var(--ink);color:var(--accent2)}
+#youhave span{display:block;font:900 14px var(--body);letter-spacing:.06em;margin-top:5px}
+#youhave i{display:block;height:7px;border-radius:9px;margin-top:8px;background:rgba(29,22,64,.35);overflow:hidden}
+#youhave i::before{content:"";display:block;height:100%;width:var(--left,100%);background:var(--accent2);border-radius:9px}
+@keyframes hotPulse{to{box-shadow:0 6px 0 var(--ink),0 0 0 8px rgba(255,210,63,.55)}}
+#incoming{position:absolute;z-index:4;right:18px;bottom:22px;font:900 14px var(--body);letter-spacing:.1em;padding:7px 16px;border-radius:999px;background:var(--accent2);border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);opacity:0;transition:opacity .12s;pointer-events:none}
+#incoming.on{opacity:1}
+#act{width:100%;margin-top:14px;font:28px var(--display);letter-spacing:.02em;border:3px solid var(--ink);border-radius:18px;padding:13px;cursor:pointer;color:var(--ink);background:var(--accent2);box-shadow:0 6px 0 var(--ink);position:relative;overflow:hidden}
+#act small{display:block;font:900 12px var(--body);letter-spacing:.04em;margin-top:2px}
+#act.hot{background:var(--hot);color:#fff;animation:throb .45s ease-in-out infinite}
+#act.hot::after{content:"";position:absolute;left:0;bottom:0;height:6px;width:var(--left,100%);background:var(--accent2)}
+#act.joined{background:#c9f7d2}
+#act.wait{background:#ffe7c7}
+#act:disabled{background:#e6e1ef;color:#8a83a3;cursor:not-allowed;animation:none}
+#act.wait:disabled{background:#ffe7c7;color:var(--muted)}
+#act:active:not(:disabled){transform:translateY(5px);box-shadow:0 1px 0 var(--ink)}
+@keyframes throb{50%{transform:scale(1.03)}}
+.auto{display:flex;align-items:center;gap:8px;margin-top:12px;font:800 13px var(--body);color:var(--muted);flex-wrap:wrap}
+.auto input{width:84px;font:18px var(--display);color:var(--fg);background:#fff;border:2.5px solid var(--ink);border-radius:10px;padding:5px 8px}
+.players{display:grid;gap:4px;margin-top:4px}
+.players div{display:grid;grid-template-columns:14px 1fr auto auto;gap:8px;align-items:center;font:800 13px var(--body);padding:5px 8px;border-radius:10px;background:#fff;border:2px solid rgba(29,22,64,.15)}
+.players div.me{border-color:var(--ink);background:#fff6d1}
+.players div.hold{background:#ffe0dc;border-color:var(--hot)}
+.players i{width:12px;height:12px;border-radius:50%;border:2px solid var(--ink)}
+.players .st{font:15px var(--display)}
+.players .st.w{color:#14864a}.players .st.l{color:var(--bad)}.players .st.r{color:var(--muted)}.players .st.h{color:var(--hot)}
+.players .bt{color:var(--muted);font-weight:800}
+.note{font:800 11.5px var(--body);color:var(--muted);margin-top:8px}
+#mbar #mbAct{min-width:58%}
+#mbar #mbAct.hot{background:var(--hot);color:#fff}
+#mbar #mbAct.wait:disabled{background:#ffe7c7;color:var(--muted)}
+@media(max-width:640px){
+  .ptag{padding:2px 6px 3px;border-width:2px;border-radius:9px;box-shadow:0 2px 0 var(--ink)}
+  .ptag b{font-size:11px}.ptag small{font-size:8.5px}
+  .ptag::after{bottom:-8px;border-width:5px}
+  .bigm{top:8px;left:12px}.bigm b{font-size:40px}.bigm span{font-size:11px;padding:4px 10px}
+  #youhave{min-width:0;padding:7px 12px 9px;bottom:10px;right:10px}#youhave b{font-size:22px}#youhave span{display:none}#youhave i{margin-top:6px;height:6px}
+  #incoming{right:10px;bottom:12px;font-size:12px}
+}
+</style>
+<script defer src="https://stats.1v1battles.com/nv.js" data-website-id="4f92624d-4cbc-4758-8bb8-8515f2b5e871"></script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="box brand" href="index.html"><span class="logo">P</span><div><b>PASS IT</b><small>Caught Games · cash out while you hold the bomb</small></div></a>
+    <div class="box hist" id="hist"></div>
+    <div class="pills"><button class="box pill" id="howBtn">HOW<span class="lg"> TO PLAY</span></button><button class="box pill" id="fairBtn">FAIR<span class="lg" id="fairHash"></span></button><button class="box pill" id="snd">SOUND ON</button></div>
+  </div>
+  <div class="main">
+    <div class="stage" id="stage">
+      <canvas id="view" tabindex="0" aria-label="The party table. Space joins the round, or cashes out while you hold the bomb." aria-describedby="sr"></canvas>
+      <div class="bigm" id="bigm"><b id="bigT">6</b><span id="bigS">NEXT ROUND</span></div>
+      <div class="banner" id="banner"><b id="bnT"></b><span id="bnS"></span></div>
+      <div id="incoming">INCOMING!</div>
+      <button id="youhave" type="button" tabindex="-1" aria-hidden="true"><b>YOU HAVE IT!</b><span id="yhS">TAP TO CASH OUT</span><i></i></button>
+      <div class="sr" id="sr" aria-live="polite"></div>
+    </div>
+    <div class="side">
+      <div class="box card meter">
+        <div id="state">JOIN THE NEXT ROUND</div>
+        <div id="mult">1.00×</div>
+        <div id="win">tap JOIN to take a seat at the table</div>
+      </div>
+      <div class="box card">
+        <div class="row2">
+          <div class="bal"><div class="lbl">Play money</div><b id="bal">1,000.00</b></div>
+          <div><div class="lbl">Stake</div><div class="stake"><input id="bet" type="number" value="10" min="1" step="1" inputmode="decimal" aria-label="Stake"><button id="half">½</button><button id="dbl">2×</button></div></div>
+        </div>
+        <label class="auto" for="autoX">Auto cash on a catch at ×<input id="autoX" type="number" min="0" step="0.1" value="0" inputmode="decimal"> <span>0 = off</span></label>
+        <button id="act">JOIN<small>stake 10.00</small></button>
+        <p class="hint">The bomb hops from hand to hand while the multiplier climbs for everyone. You can only <b>cash out while it is in your hands</b>. When it goes off, everyone still in loses. One draw for the whole room and a bomb route that never looks at it, so every cash-out rule returns <b>97%</b>.</p>
+      </div>
+      <div class="box card">
+        <div class="lbl"><span>Round the table</span><span id="pCount"></span></div>
+        <div class="players" id="players"></div>
+        <p class="note">Demo room with play money: the other seven players are simulated.</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="box" id="mbar"><b id="mbMult">1.00×</b><button id="mbAct">JOIN</button></div>
+<div class="box fairbox" id="fairBox" hidden><b>Provably fair</b>
+<p>Before each round we publish SHA-256(server seed). Every number is u = HMAC-SHA256(seed, client:nonce:message), first 52 bits ÷ 2<sup>52</sup>.</p>
+<p><b style="font:inherit;color:var(--fg)">Crash.</b> c = floor(100 × 0.97 ÷ (1 − u<sub>round</sub>)) ÷ 100, at least 1.00 and at most 10,000, so P(c ≥ x) = 0.97 ÷ x. A cash-out at ×m wins when m ≤ c (cash-outs start at ×1.01). If the multiplier reaches ×10,000 the fuse burns out and everyone still in is paid ×10,000.</p>
+<p><b style="font:inherit;color:var(--fg)">Bomb route.</b> Pass k uses u<sub>pass:k</sub> and never looks at c. The next holder is any seat except the current one, weight 4 for your seat when you play this round and 1 for every other seat. x = u × total weight picks the seat, and the leftover f inside that seat's weight (uniform 0 to 1) sets the hold: 1.5 + f s in your hands, 0.8 + 0.7 f s for others, plus a 0.48 s throw. Because the route ignores c, any rule for when you cash returns 97%.</p>
+<code id="fairFull"></code><pre id="fairPrev">no round played yet</pre></div>
+<div class="how" id="how" hidden><div class="box" role="dialog" aria-modal="true" aria-labelledby="howT">
+  <h2 id="howT">How to play <span>PASS IT</span></h2>
+  <p style="margin:0;color:var(--muted);font-size:15px;line-height:1.55">Hot potato at a party table, with a real fuse and the whole room playing one round.</p>
+  <ol>
+    <li><div><b>Take a seat.</b> Put in your stake while the countdown runs. You sit at the front with the gold crown.</div></li>
+    <li><div><b>Pass it.</b> The bomb hops from hand to hand every second or two while the multiplier climbs for everyone.</div></li>
+    <li><div><b>Cash out while you hold it.</b> When the bomb lands in your hands, the CASH OUT button lights up. Take the multiplier or let it fly on.</div></li>
+    <li><div><b>Boom.</b> When the bomb goes off, everyone who has not cashed out loses. It does not matter who holds it.</div></li>
+  </ol>
+  <button id="go" class="go">TO THE PARTY</button>
+</div></div>
+<a class="backlink" id="backlink" href="index.html">← caughtgames.com</a>
+
+<script src="passit-engine.js"></script>
+<script type="module">
+import { createFair } from './lib/fair.js';
+import { createSfx } from './lib/sfx.js';
+const $=id=>document.getElementById(id), E=window.PassItEngine;
+const fmt=(n,d=2)=>n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fx=m=>m>=1000?fmt(m,0):fmt(m);
+const embed=location.hash==='#embed'; if(embed){ document.body.classList.add('embed'); $('backlink').remove() }
+const F=createFair('passit-demo-client'), A=createSfx();
+const BET_MS=6000, END_MS=3900;
+const SEAT_COLORS=['#ffcf33','#ff4d7a','#4fb3ff','#2fd39a','#a46bff','#ff8a3d','#8be04a','#ff6fd8'];
+const NAMES=['Kees_88','Fenna','Jayden','Mo','Tessa.v','Bram','Luuk','Sanne','Rik','Ilse','Daan','Yara','Lars','Noor','Milan','Sophie','Ahmed','Julia','Pim','Zoë','Timo','Lotte','Sem','Evi'];
+
+/* ---------- sound ---------- */
+const sTick=()=>A.tone(1200,1100,.05,.04,'square');
+const sLight=()=>{ A.noise(.5,5000,.08,'highpass'); A.tone(300,900,.35,.05,'sawtooth') };
+const sFizz=()=>A.noise(.05,3500+Math.random()*2500,.025,'highpass');
+const sThrow=()=>{ A.tone(260,760,.32,.05,'sine'); A.noise(.28,900,.05,'bandpass') };
+const sCatch=()=>{ A.tone(170,80,.14,.16,'sine'); A.noise(.06,1800,.05,'lowpass') };
+const sYou=()=>{ A.notes([0,4,7,12],660,.045,.08,'square'); A.tone(90,60,.25,.18,'sine') };
+const sCash=()=>{ A.tone(500,1400,.18,.07,'sine'); A.notes([0,7,12,16,19],784,.05,.07) };
+const sBot=()=>A.notes([0,7],1046,.05,.035);
+const sBoom=()=>{ A.noise(1.6,700,.55,'lowpass'); A.noise(.35,3000,.3,'highpass'); A.tone(110,28,1.1,.45,'sine'); A.tone(420,700,.25,.06,'sawtooth',.25); A.notes([12,16,19],880,.05,.04) };
+const sMax=()=>{ A.noise(.4,5000,.08,'highpass'); A.notes([0,4,7,12,16,19,24],523,.07,.08) };
+$('snd').onclick=()=>{ A.unlock(); $('snd').textContent=A.toggle()?'SOUND OFF':'SOUND ON' };
+
+/* ---------- state ---------- */
+let bal=1000, phase='bet', phaseT=performance.now(), crash=1, mult=1, joined=false, stake=10, seats=[], route=[], hist=[], warp=1, endEl=0;
+let holdEnd=false, hs=-1, lastHs=-2, holdIdx=-1, fizzAcc=0, wantJoin=false;
+const me=()=>joined?seats[0]:null;
+const uOf=msg=>F.u(msg);
+const say=s=>{ $('sr').textContent=s };
+function readStake(){ let v=parseFloat($('bet').value); if(!isFinite(v)||v<1) v=1; v=Math.min(v,Math.max(1,bal),500); v=Math.round(v*100)/100; $('bet').value=v; return v }
+$('half').onclick=()=>{ $('bet').value=Math.max(1,Math.round(readStake()/2*100)/100); ui(true) };
+$('dbl').onclick=()=>{ $('bet').value=Math.min(bal,500,readStake()*2); readStake(); ui(true) };
+$('bet').oninput=()=>ui(true);
+function rnd(a,b){ return a+Math.random()*(b-a) }
+function botTarget(){ const r=Math.random(); return r<.3?rnd(1.1,1.5):r<.7?rnd(1.5,3):r<.9?rnd(3,8):r<.97?rnd(8,40):1e9 }
+function bot(nm){ return {name:nm,you:false,stake:[1,2,5,5,10,10,20,50,100][Math.floor(Math.random()*9)],target:Math.round(botTarget()*100)/100,react:rnd(150,650),state:'in',out:0} }
+function makeSeats(){
+  const names=[...NAMES].sort(()=>Math.random()-.5).slice(0,8);
+  const list=names.map(bot);
+  if(joined) list[0]={name:'You',you:true,stake,state:'in',out:0};
+  return list;
+}
+const nameOf=i=>seats[i]?(seats[i].you?'You':seats[i].name):'?';
+let playersKey='';
+function playersUI(){
+  const key=phase+'|'+hs+'|'+seats.map(p=>p.name+p.state+p.out).join(',');
+  if(key===playersKey) return; playersKey=key;
+  $('pCount').textContent=(joined?'you + 7':'8')+' players';
+  $('players').innerHTML=seats.map((p,i)=>{
+    const hold=i===hs&&phase==='run'&&p.state==='in';
+    const st=p.state==='out'?['w','×'+fx(p.out)]:p.state==='boom'?['l','BOOM']:p.state==='max'?['w','×10,000']:hold?['h','HAS IT']:['r',phase==='bet'?'ready':'in'];
+    return '<div class="'+(p.you?'me ':'')+(hold?'hold':'')+'"><i style="background:'+SEAT_COLORS[i]+'"></i><span>'+(p.you?'You':p.name)+'</span><span class="bt">'+fmt(p.stake,0)+'</span><span class="st '+st[0]+'">'+st[1]+'</span></div>' }).join('');
+}
+function fairUI(){ $('fairHash').textContent=' · '+F.hash.slice(0,10)+'…'; $('fairFull').textContent=(phase==='run'?'this round':'next round')+' · nonce '+F.nonce+' · seed hash: '+F.hash }
+function multUI(cls){ const el=$('mult'); el.textContent=fx(mult)+'×'; el.className=cls||''; $('mbMult').textContent=fx(mult)+'×' }
+const canCash=()=>phase==='run'&&joined&&seats[0].state==='in'&&hs===0&&mult>=E.MIN_CASH;
+let uiKey='';
+function ui(force){
+  $('bal').textContent=fmt(bal);
+  let txt, sub, cls='', dis=false, mtxt;
+  const m=me();
+  if(phase==='bet'){ if(joined){ txt='JOINED'; sub='tap to leave · stake '+fmt(stake); cls='joined' } else { txt='JOIN'; sub='stake '+fmt(readStake()) } }
+  else if(phase==='run'&&m&&m.state==='in'){
+    if(canCash()){ txt='CASH OUT!'; sub='×'+fx(mult)+' · '+fmt(stake*mult); cls='hot'; mtxt='CASH '+fmt(stake*mult) }
+    else { txt=hs===0?'HOLD ON':W.next===0&&hs<0?'INCOMING!':'WAIT FOR IT'; sub=hs>0?'the bomb is with '+nameOf(hs):'you can cash out while you hold it'; cls='wait'; dis=true }
+  }
+  else if(phase==='run'&&m){ txt='CASHED'; sub='at ×'+fx(m.out)+' · '+fmt(stake*m.out); dis=true }
+  else if(phase==='run'){ txt=wantJoin?'JOINING NEXT':'JOIN NEXT'; sub=wantJoin?'tap to cancel':'stake '+fmt(readStake()); cls=wantJoin?'joined':'' }
+  else { txt='NEXT ROUND'; sub='starting soon'; dis=true }
+  const key=txt+sub+cls+dis+bal;
+  if(key!==uiKey||force){ uiKey=key;
+    const a=$('act'), b=$('mbAct'); a.className=cls; a.disabled=dis; a.innerHTML=txt+'<small>'+sub+'</small>'; b.className=cls; b.disabled=dis; b.textContent=mtxt||txt;
+    document.body.classList.toggle('running',!!(phase==='run'&&m&&m.state==='in')||(phase==='bet'&&joined));
+    $('bet').disabled=$('half').disabled=$('dbl').disabled=joined&&phase!=='end';
+  }
+}
+function chip(c){ hist.unshift(c); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(c=>'<span class="chip '+(c>=2?'w':'l')+'">'+fx(c)+'×</span>').join('') }
+function banner(t,s,cls){ $('bnT').textContent=t; $('bnS').textContent=s; $('banner').className='banner '+cls+' on'; say(t+'. '+s) }
+const hideBanner=()=>{ $('banner').className='banner' };
+
+/* ---------- actions ---------- */
+function act(){
+  A.unlock();
+  if(phase==='bet'){ if(joined) return leave(); return join() }
+  if(phase==='run'&&joined&&seats[0].state==='in') return cash();
+  if(phase==='run'&&!joined){ wantJoin=!wantJoin; $('state').textContent=wantJoin?'YOU JOIN THE NEXT ROUND':'WATCHING THIS ROUND'; ui(true) }
+}
+function join(){
+  if(phase!=='bet'||joined) return;
+  if(bal<1) bal=1000; stake=readStake(); if(bal<stake) return;
+  bal-=stake; joined=true; seats[0]={name:'You',you:true,stake,state:'in',out:0};
+  W.seats(seats); tagsBet(); playersUI(); ui(true); sTick();
+  $('state').textContent='YOU HAVE A SEAT'; $('win').innerHTML='cash out while the bomb is in your hands';
+}
+function leave(){
+  if(phase!=='bet'||!joined) return;
+  joined=false; bal+=stake; seats[0]=bot(NAMES.find(n=>!seats.some(p=>p.name===n))||'Guest');
+  W.seats(seats); tagsBet(); playersUI(); ui(true);
+  $('state').textContent='JOIN THE NEXT ROUND'; $('win').innerHTML='tap JOIN to take a seat at the table';
+}
+function cash(fromTick){
+  if(fromTick!==true) tick(performance.now());   // bring the round up to this exact moment first
+  if(!canCash()) return false;
+  const m=seats[0]; m.state='out'; m.out=mult; const win=stake*mult; bal+=win;
+  W.cashed(0,mult); W.tag(0,'×'+fx(mult),'safe'); sCash();
+  $('state').textContent='SAFE AT ×'+fx(mult); $('win').innerHTML='won <b>'+fmt(win)+'</b>'; multUI('won'); say('Cashed out at '+fx(mult)+' times. Won '+fmt(win));
+  $('youhave').classList.remove('on'); $('bigm').classList.remove('mine');
+  playersUI(); ui(true); return true;
+}
+$('act').onclick=act; $('mbAct').onclick=act;
+$('youhave').onclick=e=>{ e.stopPropagation(); A.unlock(); cash() };
+$('youhave').addEventListener('pointerdown',e=>e.stopPropagation());
+$('view').addEventListener('pointerdown',()=>{ A.unlock(); if(canCash()) cash() });
+addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden) return; if(e.key===' '||e.key==='Enter'){ act(); e.preventDefault() } if(e.key==='Escape') $('fairBox').hidden=true });
+$('fairBtn').onclick=()=>{ $('fairBox').hidden=!$('fairBox').hidden };
+const openHow=()=>{ $('how').hidden=false; setTimeout(()=>$('go').focus({preventScroll:true}),0) };
+$('howBtn').onclick=openHow; $('go').onclick=()=>{ $('how').hidden=true; try{ localStorage.setItem('passit-how','1') }catch(e){} A.unlock() };
+
+/* ---------- round loop ---------- */
+function tagsBet(){ seats.forEach((p,i)=>W.tag(i,p.you?'stake '+fmt(p.stake):'','')) }
+function toBet(){
+  phase='bet'; phaseT=performance.now(); mult=1; joined=false; hs=-1; lastHs=-2; route=[];
+  if(wantJoin){ wantJoin=false; stake=readStake(); if(bal<1) bal=1000; if(bal>=stake){ bal-=stake; joined=true } }
+  seats=makeSeats(); W.seats(seats); W.ready(); tagsBet(); playersUI(); fairUI(); multUI('');
+  $('state').textContent=joined?'YOU HAVE A SEAT':'JOIN THE NEXT ROUND'; $('win').innerHTML=joined?'cash out while the bomb is in your hands':'tap JOIN to take a seat at the table';
+  $('bigm').className='bigm'; $('youhave').classList.remove('on'); $('incoming').classList.remove('on'); hideBanner(); ui(true);
+}
+function toRun(){
+  phase='run'; phaseT=performance.now(); endEl=0;
+  crash=E.crashOf(F.u('round'));
+  route=E.route(uOf,joined,8000); W.setRoute(route); W.setTime(0,1); W.light();
+  seats.forEach((p,i)=>W.tag(i,'',''));
+  sLight(); fairUI(); ui(true); $('bigS').textContent='PASS IT!';
+  if(joined) $('state').textContent='IN THE ROUND · STAKE '+fmt(stake);
+  else $('state').textContent='WATCHING THIS ROUND';
+}
+async function toEnd(kind,el){
+  phase='end'; phaseT=performance.now(); endEl=el;
+  const youAt=joined?seats[0]:null;
+  $('youhave').classList.remove('on'); $('incoming').classList.remove('on');
+  if(kind==='max'){
+    mult=E.MAX_WIN;
+    seats.forEach((p,i)=>{ if(p.state==='in'){ p.state='max'; p.out=E.MAX_WIN; W.tag(i,'×10,000','safe') } });
+    if(youAt&&youAt.state==='max'){ const win=stake*E.MAX_WIN; bal+=win; banner('FUSE OUT!','max win ×10,000 · won '+fmt(win),'good'); $('win').innerHTML='won <b>'+fmt(win)+'</b>'; multUI('won') }
+    else banner('FUSE OUT!','everyone still in wins ×10,000','good');
+    sMax(); $('bigm').className='bigm maxw'; $('bigT').textContent='10,000×'; $('bigS').textContent='MAX WIN';
+    $('state').textContent='THE FUSE BURNT OUT';
+  } else {
+    mult=crash;
+    seats.forEach((p,i)=>{ if(p.state==='in'){ p.state='boom'; W.tag(i,'BOOM','bad') } });
+    sBoom(); $('bigm').className='bigm bust'; $('bigT').textContent=fx(crash)+'×'; $('bigS').textContent='BOOM!';
+    if(youAt&&youAt.state==='boom'){ banner('BOOM!','it blew at ×'+fx(crash)+' · lost '+fmt(stake),'bad'); multUI('bust'); $('state').textContent='BLOWN UP AT ×'+fx(crash); $('win').innerHTML='lost <b>'+fmt(stake)+'</b>' }
+    else if(youAt&&youAt.state==='out'){ banner('SAFE!','cashed at ×'+fx(youAt.out)+' · it blew at ×'+fx(crash),'good') }
+    else { banner('BOOM!','the bomb blew at ×'+fx(crash),''); multUI('bust'); $('state').textContent='THE BOMB BLEW AT ×'+fx(crash) }
+  }
+  chip(kind==='max'?E.MAX_WIN:crash); playersUI(); ui(true);
+  const rv=F.reveal(), used=route.filter(r=>r.t0<=el);
+  $('fairPrev').textContent='round '+rv.nonce+' · client '+rv.client+'\nseed '+rv.seed+'\ncrash ×'+fx(crash)+(kind==='max'?' (fuse burnt out, everyone in paid ×10,000)':'')+'\n'+
+    used.map(r=>'pass:'+r.k+' u='+r.u.toFixed(6)+' → '+(r.seat===0&&joined?'you':'seat '+r.seat+' '+seats[r.seat].name)+' · holds '+((r.t1-r.t0)/1000).toFixed(2)+' s').join('\n');
+  if(kind==='max') await W.burnOut(); else await W.explode();
+}
+function tick(now){
+  if(phase!=='run') return;
+  const el=(now-phaseT)*warp; mult=E.multAt(el);
+  const end=E.endAt(mult,crash);
+  if(end){ toEnd(end,el); return }
+  if(route[route.length-1].t0<el+4000){ route=E.route(uOf,joined,el+9000,route); W.setRoute(route) }
+  W.setTime(el,mult);
+  const hi=E.holderAt(route,el); hs=hi>=0?route[hi].seat:-1;
+  // bots cash out while they hold it
+  if(hs>=0){ const p=seats[hs]; if(!p.you&&p.state==='in'&&mult>=p.target&&el-route[hi].t0>=p.react&&mult>=E.MIN_CASH){ p.state='out'; p.out=mult; W.cashed(hs,mult); W.tag(hs,'×'+fx(mult),'safe'); sBot() } }
+  // hold changes
+  if(hs!==lastHs){
+    if(hs>=0) sCatch(); else if(lastHs>=0) sThrow();
+    if(hs===0&&joined&&seats[0].state==='in'){ sYou(); say('You have the bomb. Cash out now at '+fx(mult)+' times, or let it go.') }
+    lastHs=hs; holdIdx=hi;
+  }
+  const mine=joined&&seats[0].state==='in';
+  const yh=$('youhave'), cc=canCash();
+  yh.classList.toggle('on',cc); $('bigm').classList.toggle('mine',hs===0&&mine);
+  if(cc){ const r=route[hi], left=Math.max(0,(r.t1-el)/(r.t1-r.t0)); const pct=(left*100).toFixed(1)+'%'; yh.style.setProperty('--left',pct); $('act').style.setProperty('--left',pct); $('yhS').textContent='CASH OUT ×'+fx(mult)+' · '+fmt(stake*mult) }
+  $('incoming').classList.toggle('on',mine&&hs<0&&W.next===0);
+  $('bigS').textContent=hs===0&&mine?'YOU HAVE IT!':hs===0&&joined?'YOU PASS IT ON':hs>=0?nameOf(hs).toUpperCase()+' HAS IT':'IN THE AIR';
+  // auto cash on a catch
+  const auto=parseFloat($('autoX').value); if(cc&&auto>=E.MIN_CASH&&mult>=auto) cash(true);
+}
+let last=performance.now();
+function loop(now){
+  const dt=now-last; last=now;
+  if(phase==='bet'){
+    const left=Math.max(0,BET_MS-(now-phaseT)), s=Math.ceil(left/1000);
+    if($('bigT').textContent!==String(s)){ $('bigT').textContent=s; if(s<=3&&s>0) sTick() }
+    $('bigS').textContent=joined?'YOU ARE IN':'NEXT ROUND';
+    if(left<=0) toRun();
+  } else if(phase==='run'){
+    tick(now);
+    if(phase==='run'){
+      $('bigT').textContent=fx(mult)+'×'; if(!(joined&&seats[0].state!=='in')) multUI('');
+      if(joined&&seats[0].state==='in') $('win').innerHTML=hs===0?'cash now for <b>'+fmt(stake*mult)+'</b>':'worth <b>'+fmt(stake*mult)+'</b> if you get it';
+      fizzAcc+=dt; if(fizzAcc>Math.max(45,130-Math.log(mult)*25)){ fizzAcc=0; sFizz() }
+      playersUI(); ui();
+    }
+  } else if(phase==='end'){
+    if(now-phaseT>END_MS&&!holdEnd) toBet();
+  }
+  requestAnimationFrame(loop);
+}
+
+/* ---------- 3D ---------- */
+let W=null;
+try{
+  const { createWorld } = await import('./passit/world.js');
+  W=createWorld($('view'),{});
+}catch(err){ console.error(err); const nop=async()=>{}; let nx=-1, rr=[], tt=0; W={seats(){},ready(){},light(){},setRoute(r){ rr=r },setTime(ms){ tt=ms },get holder(){ return -1 },get next(){ const i=E.holderAt(rr,tt); if(i>=0) return -1; for(const r of rr) if(r.t0>tt) return r.seat; return -1 },tag(){},cashed(){},explode:nop,burnOut:nop}; $('stage').insertAdjacentHTML('beforeend','<div class="nogl"><div><b style="font:24px var(--display)">3D could not start</b><p>This browser blocks WebGL. The round still runs with the buttons: watch the status line, CASH OUT lights up when the bomb is yours.</p></div></div>') }
+toBet(); requestAnimationFrame(loop);
+let seen=false; try{ seen=localStorage.getItem('passit-how')==='1' }catch(e){} if(!seen&&!embed) openHow();
+window.__passit={ get state(){ return {phase,mult,joined,holder:hs,canCash:canCash(),me:joined?{...seats[0]}:null,bal,crash:phase==='end'?crash:undefined,passes:route.length,seats:seats.map(p=>({name:p.name,state:p.state,out:p.out}))} }, act, join, leave, cash,
+};
+</script>
+</body>
+</html>
