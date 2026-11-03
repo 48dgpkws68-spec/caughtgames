@@ -44,7 +44,7 @@ for p in index battles peek sonar sneak goose freeze wobble skyline passit lastr
   bad=$(python3 -c "import re,sys;t=open(sys.argv[1],encoding='utf-8',errors='replace').read();t=re.sub(r'(?is)<(script|style|template)\b.*?</\1>','',t);t=re.sub(r'<[^>]+>',' ',t);print('\n'.join(sorted(set(m.group(0) for m in re.finditer(r'.{0,40}\b(undefined|NaN|\[object Object\])\b.{0,20}',t)))))" "$OUT/$p-dom.html")
   if [ -n "$bad" ]; then echo "FOUT $p (dom):"; echo "$bad" | head -5; FAIL=1; else echo "ok   $p (dom)"; fi
   # merkregel: het kindermerk (GLORPZ / TANKED / 1v1battles.com) en merken van andere uitgevers nooit op caughtgames.com
-  # (tekst, links en alt-teksten; scripts tellen niet mee, de bezoekersteller op stats.1v1battles.com is een script)
+  # (tekst, links en alt-teksten; scripts tellen niet mee, de bezoekersteller op play.caughtgames.com/nv.js is een script)
   brand=$(python3 -c "import re,sys;t=open(sys.argv[1],encoding='utf-8',errors='replace').read();t=re.sub(r'(?is)<(script|style|template)\b.*?</\1>','',t);print(' '.join(sorted(set(m.group(0) for m in re.finditer(r'(?i)glorpz|\btanked\b|1v1battles\.com|clash\s*royale|supercell|fortnite|brawl\s*stars',t)))))" "$OUT/$p-dom.html")
   if [ -n "$brand" ]; then echo "FOUT $p (merk): $brand"; FAIL=1; else echo "ok   $p (merk)"; fi
 done
