@@ -146,7 +146,7 @@ body.embed .brand{display:none}
 <div class="wrap">
   <div class="top">
     <a class="glass brand" href="index.html" style="color:inherit;text-decoration:none"><span class="dot"></span><div>SNEAK<small>CAUGHT GAMES · PICK YOUR RISK EVERY STEP</small></div></a>
-    <div class="glass hist" id="hist"></div>
+    <div class="glass hist" id="hist" role="list" aria-label="Previous rounds"></div>
     <div class="pills"><button class="glass pill" id="howBtn">HOW<span class="lg"> TO PLAY</span></button><button class="glass pill" id="fairBtn">FAIR · <span id="fairHash">…</span></button><button class="glass pill" id="snd">SOUND ON</button></div>
   </div>
   <div class="main">
@@ -273,7 +273,7 @@ function ui(){
   E.KINDS.forEach((k,i)=>{ const st=E.step(mult,i,first); $('px'+i).textContent='×'+fx(st.m); $('pr'+i).textContent=(st.p*100).toFixed(st.max?1:0)+'% alarm'+(st.max?' · MAX':''); picks[i].disabled=busy||phase==='over'||row>=ROWS });
   if(W&&!busy&&phase!=='over'&&row<ROWS){ W.showNext(row+1,[0,1,2].map(c=>{ const st=E.step(mult,layouts[row+1][c],first); return {mult:'×'+fx(st.m),risk:(st.p*100).toFixed(st.max?1:0)+'%'} })) }
 }
-function chip(m,won){ hist.unshift({m,won}); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span class="chip '+(h.won?'w':'l')+'">'+(h.won?fx(h.m)+'×':'CAUGHT')+'</span>').join('') }
+function chip(m,won){ hist.unshift({m,won}); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span role="listitem" class="chip '+(h.won?'w':'l')+'">'+(h.won?fx(h.m)+'×':'CAUGHT')+'</span>').join('') }
 function banner(t,s,cls){ $('bnT').textContent=t; $('bnS').textContent=s; const b=$('banner'); b.className='banner '+cls+' on'; say(t+'. '+s) }
 const hideBanner=()=>{ $('banner').className='banner' };
 
@@ -313,9 +313,10 @@ async function cashOut(auto=false){
   await W.escape(isMax); chip(mult,true); rotateSeed(steps,mult); await wait(500); hideBanner(); busy=false; await W.reset(); newRound();
 }
 $('cash').onclick=()=>cashOut(); $('mbCash').onclick=()=>cashOut();
-addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden) return;
+addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden) return; if((e.key===' '||e.key==='Enter')&&/^(BUTTON|A|SUMMARY)$/.test(e.target.tagName)) return;
   if(e.key==='1'||e.key==='2'||e.key==='3'){ pickKind(+e.key-1); e.preventDefault() }
   else if(e.key===' '||e.key==='Enter'){ cashOut(); e.preventDefault() } });
+addEventListener('click',e=>{ const b=e.detail>0&&e.target.closest&&e.target.closest('button'); if(b) b.blur() },true); // a mouse/touch click leaves no focus behind, so Space/Enter stay the game shortcuts; Tab focus keeps native button activation
 $('fairBtn').onclick=()=>{ $('fairBox').hidden=!$('fairBox').hidden };
 const openHow=()=>{ $('how').hidden=false; setTimeout(()=>$('go').focus({preventScroll:true}),0) };
 $('howBtn').onclick=openHow; $('go').onclick=()=>{ $('how').hidden=true; try{ localStorage.setItem('sneak-how','1') }catch(e){} au() };

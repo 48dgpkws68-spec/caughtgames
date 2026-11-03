@@ -120,3 +120,10 @@
 - Gedaan: PEEK!/Vault en SONAR kappen de geschiedenis-array af boven 200 rondes (houdt de laatste 100, getoond worden er 30 / 14). Waarom: geen geheugengroei in een tabblad dat dagen open staat bij een operator (backlog). RTP ongewijzigd.
 - Idee voor later: SONAR-verifier uitbetaling per tegel; aria-lijst voor SONAR-geschiedenis; og-afbeelding SONAR vernieuwen als het bord verandert.
 - Voor Nick: niets
+
+## 2026-11-03
+- Gevonden: rooktest volledig ok (alle 12 pagina's + Vault + zonder WebGL), geen console-fouten, screenshots netjes (how-to van SQUISH JAR loopt op 360px onder de vouw maar scrollt). Codecheck SKYLINE: RTP-opbouw klopt (segment 0 draagt de 3%, sprong en cash-out zijn elk precies m waard, max win eerlijk), testhook lekt niets. Wel: de globale Space/Enter-sneltoets kaapte knoppen met toetsenbordfocus. Tab naar SOUND of JUMP + Enter startte een run (inzet weg) of cashte uit; zelfde patroon in LAST REEL, FREEZE, PASS IT, SNEAK, GOOSE 63 en WOBBLE.
+- Gedaan: in die 7 games laten Space/Enter een gefocuste knop/link gewoon zijn eigen actie doen; na een muis/touch-klik verliest de knop de focus, zodat Space/Enter voor muisspelers de spelsneltoets blijven. Headless bewezen: oude code SKYLINE en LAST REEL Enter op SOUND = 10.00 inzet weg, nieuwe code 0 in alle 7; Enter op de pagina start nog steeds een run. Geen RTP-wijziging.
+- Gedaan: geschiedenisrij in alle 10 toy/SONAR-games heeft nu role=list + aria-label ("Previous rounds" / "Previous dives") met listitems, zoals PEEK! (backlog).
+- Idee voor later: winst/verlies-chips voor schermlezers; compacte how-to op 360px; codecheck PASS IT of LAST REEL volgende nacht.
+- Voor Nick: niets

@@ -85,7 +85,7 @@
 <div class="wrap">
   <div class="top">
     <a class="box brand" href="index.html"><span class="logo">S</span><div><b>SONAR 3D</b><small>Caught Games · read the reef, dive the safe clams</small></div></a>
-    <div class="box hist" id="hist"></div>
+    <div class="box hist" id="hist" role="list" aria-label="Previous dives"></div>
     <div class="pills"><button class="box pill" id="howBtn">HOW<span class="lg"> TO PLAY</span></button><button class="box pill" id="fairBtn">FAIR<span class="lg" id="fairHash"></span></button><button class="box pill" id="snd">SOUND ON</button></div>
   </div>
   <div class="main">
@@ -273,7 +273,7 @@ function cashOut(why){ if(phase!=='run'||first||busy) return; A.unlock(); const 
   banner(why==='MAX WIN'?'MAX WIN!':why==='SEA CLEARED'?'REEF CLEARED!':'TREASURE!','×'+fmt(mult)+' · won '+fmt(w),'good');
   pushHist(mult); finish(); say((why?why.charAt(0)+why.slice(1).toLowerCase():'Cashed out')+' at '+fmt(mult)+'×. Won '+fmt(w)+'. Press Enter or New dive for a fresh reef.') }
 function finish(){ rotateSeed(mines); ui(); debrief() }
-function pushHist(x){ hist.unshift(x); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span class="chip '+(h?'w':'l')+'">'+(h?fmt(h)+'×':'MINE')+'</span>').join('') }
+function pushHist(x){ hist.unshift(x); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span role="listitem" class="chip '+(h?'w':'l')+'">'+(h?fmt(h)+'×':'MINE')+'</span>').join('') }
 $('cash').onclick=()=>{ A.unlock(); if(phase==='run') cashOut(); else if(phase!=='idle'){ newBoard(); sPing(.08); toast('Fresh reef · pick your <b>first clam</b>') } };
 $('mbCash').onclick=()=>cashOut();
 const togglePing=()=>{ if(phase!=='run'||busy||$('ping').disabled&&!pingArm) return; pingArm=!pingArm; A.unlock(); sTick(); ui(); if(pingArm) toast('Tap a hidden clam to <b>ping</b> it') };

@@ -58,7 +58,7 @@
 <div class="wrap">
   <div class="top">
     <a class="box brand" href="index.html"><span class="logo">F</span><div><b>FREEZE</b><small>Caught Games · freeze before the owl turns</small></div></a>
-    <div class="box hist" id="hist"></div>
+    <div class="box hist" id="hist" role="list" aria-label="Previous rounds"></div>
     <div class="pills"><button class="box pill" id="howBtn">HOW<span class="lg"> TO PLAY</span></button><button class="box pill" id="fairBtn">FAIR<span class="lg" id="fairHash"></span></button><button class="box pill" id="snd">SOUND ON</button></div>
   </div>
   <div class="main">
@@ -164,7 +164,7 @@ function ui(){
   document.body.classList.toggle('running',!!(phase==='run'&&me&&me.state==='run')||(phase==='bet'&&joined));
   $('bet').disabled=$('half').disabled=$('dbl').disabled=joined&&phase!=='end';
 }
-function chip(c){ hist.unshift(c); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(c=>'<span class="chip '+(c>=2?'w':'l')+'">'+fx(c)+'×</span>').join('') }
+function chip(c){ hist.unshift(c); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(c=>'<span role="listitem" class="chip '+(c>=2?'w':'l')+'">'+fx(c)+'×</span>').join('') }
 function banner(t,s,cls){ $('bnT').textContent=t; $('bnS').textContent=s; $('banner').className='banner '+cls+' on'; say(t+'. '+s) }
 const hideBanner=()=>{ $('banner').className='banner' };
 
@@ -189,7 +189,8 @@ function freezeMe(){
   playersUI(); ui();
 }
 $('act').onclick=act; $('mbAct').onclick=act;
-addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden) return; if(e.key===' '||e.key==='Enter'){ act(); e.preventDefault() } });
+addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden) return; if((e.key===' '||e.key==='Enter')&&/^(BUTTON|A|SUMMARY)$/.test(e.target.tagName)) return; if(e.key===' '||e.key==='Enter'){ act(); e.preventDefault() } });
+addEventListener('click',e=>{ const b=e.detail>0&&e.target.closest&&e.target.closest('button'); if(b) b.blur() },true); // a mouse/touch click leaves no focus behind, so Space/Enter stay the game shortcuts; Tab focus keeps native button activation
 $('fairBtn').onclick=()=>{ $('fairBox').hidden=!$('fairBox').hidden };
 const openHow=()=>{ $('how').hidden=false; setTimeout(()=>$('go').focus({preventScroll:true}),0) };
 $('howBtn').onclick=openHow; $('go').onclick=()=>{ $('how').hidden=true; try{ localStorage.setItem('freeze-how','1') }catch(e){} A.unlock() };

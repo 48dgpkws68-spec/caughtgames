@@ -84,7 +84,7 @@ body.idle #mbar{transform:none!important}
 <div class="wrap">
   <div class="top">
     <a class="box brand" href="index.html"><span class="logo">S</span><div><b>SKYLINE</b><small>Caught Games · jump the gap, triple it</small></div></a>
-    <div class="box hist" id="hist"></div>
+    <div class="box hist" id="hist" role="list" aria-label="Previous rounds"></div>
     <div class="pills"><button class="box pill" id="howBtn">HOW<span class="lg"> TO PLAY</span></button><button class="box pill" id="fairBtn">FAIR<span class="lg" id="fairHash"></span></button><button class="box pill" id="snd">SOUND ON</button></div>
   </div>
   <div class="main">
@@ -187,7 +187,7 @@ function ui(){
   $('bet').disabled=$('half').disabled=$('dbl').disabled=run||phase==='jump';
   $('segL').textContent=seg&&phase!=='idle'?'segment '+(seg.k+1)+' · '+jumps+' jump'+(jumps===1?'':'s'):'';
 }
-function chip(m,won,lbl){ hist.unshift({m,won,lbl}); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span class="chip '+(h.won?'w':'l')+'">'+(h.lbl||fx(h.m)+'×')+'</span>').join('') }
+function chip(m,won,lbl){ hist.unshift({m,won,lbl}); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span role="listitem" class="chip '+(h.won?'w':'l')+'">'+(h.lbl||fx(h.m)+'×')+'</span>').join('') }
 function banner(t,s,cls){ $('bnT').textContent=t; $('bnS').textContent=s; $('banner').className='banner '+cls+' on'; say(t+'. '+s) }
 const hideBanner=()=>{ $('banner').className='banner' };
 function logRow(txt,res,cls){ const d=document.createElement('div'); d.className=cls; d.innerHTML='<span>'+txt+'</span><b>'+res+'</b>'; $('runlog').prepend(d) }
@@ -257,8 +257,9 @@ async function toIdle(){
   $('fade').classList.remove('on');
 }
 $('cash').onclick=act; $('mbCash').onclick=act; $('jump').onclick=jump; $('mbJump').onclick=jump;
-addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden) return;
+addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden) return; if((e.key===' '||e.key==='Enter')&&/^(BUTTON|A|SUMMARY)$/.test(e.target.tagName)) return;
   if(e.key===' '||e.key==='Enter'){ act(); e.preventDefault() } else if(e.key==='j'||e.key==='J'||e.key==='ArrowUp'){ jump(); e.preventDefault() } });
+addEventListener('click',e=>{ const b=e.detail>0&&e.target.closest&&e.target.closest('button'); if(b) b.blur() },true); // a mouse/touch click leaves no focus behind, so Space/Enter stay the game shortcuts; Tab focus keeps native button activation
 $('fairBtn').onclick=()=>{ $('fairBox').hidden=!$('fairBox').hidden };
 const openHow=()=>{ $('how').hidden=false; setTimeout(()=>$('go').focus({preventScroll:true}),0) };
 $('howBtn').onclick=openHow; $('go').onclick=()=>{ $('how').hidden=true; try{ localStorage.setItem('skyline-how','1') }catch(e){} A.unlock() };

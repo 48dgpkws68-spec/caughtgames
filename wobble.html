@@ -43,7 +43,7 @@
 <div class="wrap">
   <div class="top">
     <a class="box brand" href="index.html"><span class="logo">W</span><div><b>WOBBLE</b><small>Caught Games · pull a block, keep it standing</small></div></a>
-    <div class="box hist" id="hist"></div>
+    <div class="box hist" id="hist" role="list" aria-label="Previous rounds"></div>
     <div class="pills"><button class="box pill" id="howBtn">HOW<span class="lg"> TO PLAY</span></button><button class="box pill" id="fairBtn">FAIR<span class="lg" id="fairHash"></span></button><button class="box pill" id="snd">SOUND ON</button></div>
   </div>
   <div class="main">
@@ -141,7 +141,7 @@ function ui(){
   if(o){ $('selT').textContent='×'+fx(o.m)+' · '+pct(o.p)+' fall'; $('selS').textContent=describe(o)+(o.max?' · MAX WIN':''); $('lab').innerHTML='<b>×'+fx(o.m)+'</b><small>'+pct(o.p).toUpperCase()+' FALL</small><button id="labPull">PULL</button>'; $('lab').hidden=false }
   else { $('selT').textContent=sel?'This block stays put':'No block selected'; $('selS').textContent=sel?'the top two layers and the last block of a layer cannot be pulled':'tap a block in the tower'; $('lab').hidden=true }
 }
-function chip(m,won){ hist.unshift({m,won}); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span class="chip '+(h.won?'w':'l')+'">'+(h.won?fx(h.m)+'×':'TIMBER')+'</span>').join('') }
+function chip(m,won){ hist.unshift({m,won}); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span role="listitem" class="chip '+(h.won?'w':'l')+'">'+(h.won?fx(h.m)+'×':'TIMBER')+'</span>').join('') }
 function banner(t,s,cls){ $('bnT').textContent=t; $('bnS').textContent=s; $('banner').className='banner '+cls+' on'; say(t+'. '+s) }
 const hideBanner=()=>{ $('banner').className='banner' };
 function fairUI(){ $('fairHash').textContent=' · '+F.hash.slice(0,10)+'…'; $('fairFull').textContent=(phase==='run'?'this tower':'next tower')+' · nonce '+F.nonce+' · seed hash: '+F.hash }
@@ -181,8 +181,9 @@ $('selPull').onclick=pullSel;
 $('lab').addEventListener('click',e=>{ if(e.target.id==='labPull') pullSel() });
 $('cash').onclick=()=>cashOut(); $('mbCash').onclick=()=>cashOut();
 $('rotL').onclick=()=>W&&W.rotate(-Math.PI/2); $('rotR').onclick=()=>W&&W.rotate(Math.PI/2);
-addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden) return;
+addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden) return; if((e.key===' '||e.key==='Enter')&&/^(BUTTON|A|SUMMARY)$/.test(e.target.tagName)) return;
   if(e.key==='1') $('cSafe').click(); else if(e.key==='2') $('cBold').click(); else if(e.key==='ArrowLeft') $('rotL').click(); else if(e.key==='ArrowRight') $('rotR').click(); else if(e.key===' '){ cashOut(); e.preventDefault() } else if(e.key==='Enter') pullSel() });
+addEventListener('click',e=>{ const b=e.detail>0&&e.target.closest&&e.target.closest('button'); if(b) b.blur() },true); // a mouse/touch click leaves no focus behind, so Space/Enter stay the game shortcuts; Tab focus keeps native button activation
 $('fairBtn').onclick=()=>{ $('fairBox').hidden=!$('fairBox').hidden };
 const openHow=()=>{ $('how').hidden=false; setTimeout(()=>$('go').focus({preventScroll:true}),0) };
 $('howBtn').onclick=openHow; $('go').onclick=()=>{ $('how').hidden=true; try{ localStorage.setItem('wobble-how','1') }catch(e){} A.unlock() };
