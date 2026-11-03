@@ -71,7 +71,8 @@ nav .w{display:flex;align-items:center;justify-content:space-between;height:74px
 .logo small{display:block;font:500 10px var(--mono);letter-spacing:.2em;color:var(--muted)}
 .nl{display:flex;gap:22px;font-size:14px;font-weight:500;color:var(--muted);white-space:nowrap}
 .logo,nav .btn{white-space:nowrap;flex-shrink:0}
-@media (max-width:1360px){.nl a:nth-child(n+8){display:none}}
+/* the bar fits 6 links at the 1240px container; the rest stay reachable by scrolling */
+.nl a:nth-child(n+7){display:none}
 @media (max-width:1180px){.nl a:nth-child(n+6){display:none}}
 .nl a{text-decoration:none;position:relative;padding:6px 0}
 .nl a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:1px;background:var(--gold);transition:right .3s}
@@ -239,6 +240,17 @@ input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;bac
 .sheet.wide table{min-width:1100px}
 .sheet td:first-child{color:var(--muted);font-family:var(--body)}
 .sheet tbody tr:hover td{color:var(--gold2)}
+/* 1v1 Battles teaser */
+.bt{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:56px;align-items:center;background:radial-gradient(60% 80% at 85% 40%,rgba(255,45,111,.12),transparent 70%),var(--panel);border:1px solid var(--line);border-radius:28px;padding:clamp(22px,4vw,56px)}
+@media (max-width:960px){.bt{grid-template-columns:minmax(0,1fr)}}
+.btvis{position:relative;display:block;min-height:420px;text-decoration:none}
+.btph,.btbd{position:absolute;display:block;padding:8px;border-radius:30px;background:linear-gradient(145deg,#2b2438,#100d18 40%,#2b2438);box-shadow:0 30px 80px -20px rgba(0,0,0,.9),0 0 0 1px var(--line2);transition:transform .3s}
+.btph{left:6%;top:0;width:min(250px,52%);transform:rotate(-3deg)}
+.btbd{right:2%;top:22%;width:min(270px,56%);border-radius:24px;transform:rotate(4deg)}
+.btph img,.btbd img{display:block;width:100%;height:auto;border-radius:22px}
+.btbd img{border-radius:17px}
+.btvis:hover .btph{transform:rotate(-4deg) translateY(-6px)}.btvis:hover .btbd{transform:rotate(5deg) translateY(-6px)}
+@media (max-width:960px){.btvis{min-height:0;aspect-ratio:1/1;max-width:440px;width:100%;margin-inline:auto}.btph{width:48%}.btbd{width:52%}}
 /* process */
 .steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:22px;margin-top:64px;position:relative}
 @media (max-width:980px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -353,7 +365,7 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
       <svg class="eye" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#b8862b"/><stop offset=".5" stop-color="#f8e3a3"/><stop offset="1" stop-color="#e9c46a"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="#13101d" stroke="#2a2438"/><g class="lid"><path d="M8 32c8-12 16-17 24-17s16 5 24 17c-8 12-16 17-24 17S16 44 8 32z" fill="none" stroke="url(#g1)" stroke-width="3.5"/><circle cx="32" cy="32" r="9" fill="#ff2d6f"/><circle cx="35" cy="29" r="3" fill="#fff"/></g></svg>
       <span>CAUGHT GAMES<small>CASINO GAME STUDIO</small></span>
     </a>
-    <div class="nl"><a href="#games">PEEK!</a><a href="peek.html#play-vault">Vault Heist</a><a href="#classics">9 new games <span class="newtag">NEW</span></a><a href="#sneak">SNEAK</a><a href="#sonar">SONAR</a><a href="#lab">Math lab</a><a href="#fair">Provably fair</a><a href="#sheets">Game sheets</a><a href="#custom">Custom builds</a><a href="#revenue">Revenue</a><a href="#models">Partnership</a></div>
+    <div class="nl"><a href="#games">PEEK!</a><a href="peek.html#play-vault">Vault Heist</a><a href="#classics">9 new games <span class="newtag">NEW</span></a><a href="battles.html">1v1 Battles <span class="newtag">NEW</span></a><a href="#sneak">SNEAK</a><a href="#sonar">SONAR</a><a href="#lab">Math lab</a><a href="#fair">Provably fair</a><a href="#sheets">Game sheets</a><a href="#custom">Custom builds</a><a href="#revenue">Revenue</a><a href="#models">Partnership</a></div>
     <a class="btn gold-b" href="#contact">Book a demo</a>
   </div>
 </nav>
@@ -511,6 +523,27 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
         <tr><td>Status</td><td>Playable demo</td><td>Playable demo, other players simulated</td><td>Playable demo</td><td>Playable demo</td><td>Playable demo</td></tr>
       </tbody>
     </table></div>
+  </div>
+</section>
+
+<section id="battles" style="padding-top:0">
+  <div class="w">
+    <div class="bt">
+      <div class="rv">
+        <span class="eyebrow">New product line · 1v1 Battles <span class="newtag">NEW</span></span>
+        <h2>Players against players. <span class="gold">Your casino takes the fee.</span></h2>
+        <p class="lead">1v1 Battles are real-time skill duels. Two players get the same game from one seed, stake against each other and the better player takes the pot minus your fee. A draw returns both stakes. No house edge decides the result, and every match can be replayed move by move.</p>
+        <ul class="bul">
+          <li><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><path d="M4 7h7v10H4zM13 7h7v10h-7z"/></svg></span><div><b>MIRROR · playable demo</b><span>A real-time 1v1 army battler on three lanes. Same 12 cards in the same order for both players, with a demo casino and API docs.</span></div></li>
+          <li><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></span><div><b>SURGE · prototype</b><span>A 60-second tap duel: pop groups, build heat up to ×10, bank before you burn.</span></div></li>
+        </ul>
+        <div class="playbar"><a class="btn gold-b" href="battles.html">Explore 1v1 Battles <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a><a class="btn ghost" href="https://play.caughtgames.com/mirror/" target="_blank" rel="noopener">Play MIRROR <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a></div>
+      </div>
+      <a class="btvis rv" href="battles.html" aria-label="1v1 Battles: MIRROR and SURGE">
+        <span class="btph"><img src="art/battles-mirror.webp" width="600" height="1298" loading="lazy" alt="MIRROR match in progress on three lanes"></span>
+        <span class="btbd"><img src="art/battles-surge.webp" width="600" height="696" loading="lazy" alt="SURGE field of neon orbs at maximum heat"></span>
+      </a>
+    </div>
   </div>
 </section>
 
@@ -807,7 +840,7 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
       <div><label for="fn">Name</label><input id="fn" name="name" required autocomplete="name"></div>
       <div><label for="fc">Casino or company</label><input id="fc" name="company" required autocomplete="organization"></div>
       <div><label for="fe">Work email</label><input id="fe" name="email" type="email" required autocomplete="email"></div>
-      <div><label for="fi">Interested in</label><select id="fi" name="interest"><option>PEEK! / Vault Heist</option><option>SONAR</option><option>Branded reskin</option><option>Custom game</option><option>Full catalogue</option><option>Publishing or distribution partner</option></select></div>
+      <div><label for="fi">Interested in</label><select id="fi" name="interest"><option>PEEK! / Vault Heist</option><option>SONAR</option><option>Branded reskin</option><option>Custom game</option><option>1v1 Battles</option><option>Full catalogue</option><option>Publishing or distribution partner</option></select></div>
       <div class="full"><label for="fm">Message</label><textarea id="fm" name="message" placeholder="Markets, expected traffic, your game idea..."></textarea></div>
       <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
       <div class="full"><button class="btn gold-b" type="submit">Send request <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg></button><p class="fmsg" id="fmsg" aria-live="polite"></p></div>
@@ -818,7 +851,7 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
 
 <footer>
   <div class="w">
-    <span>© 2026 Caught Games · <a href="mailto:nick@caughtgames.com" style="color:inherit">nick@caughtgames.com</a> · PEEK! · Vault Heist · SONAR</span>
+    <span>© 2026 Caught Games · <a href="mailto:nick@caughtgames.com" style="color:inherit">nick@caughtgames.com</a> · PEEK! · Vault Heist · SONAR · <a href="battles.html" style="color:inherit">1v1 Battles</a></span>
     <span><span class="age">18+</span>Supplied to licensed operators only. All demos on this site use play money; no real-money gambling is offered here.</span>
   </div>
 </footer>
@@ -1153,6 +1186,7 @@ const CODE=[['c','// 1. Launch PEEK! for a player\n'],['k','const '],['','game =
 })();
 
 /* ---------- contact form (FormSubmit) ---------- */
+if(new URLSearchParams(location.search).get('interest')==='battles') $('fi').value='1v1 Battles';
 $('form').addEventListener('submit',async e=>{
   e.preventDefault(); const f=e.target, msg=$('fmsg');
   if(!f.checkValidity()){ msg.style.color='var(--pink)'; msg.textContent='Please fill in your name, company and a valid work email.'; return }

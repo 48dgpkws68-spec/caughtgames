@@ -9,7 +9,7 @@ PORT=$(python3 -c "import socket;s=socket.socket();s.bind(('',0));print(s.getsoc
 python3 -m http.server $PORT --bind 127.0.0.1 >/dev/null 2>&1 & SRV=$!
 sleep 1
 FAIL=0
-for p in index peek sonar sneak goose freeze wobble skyline passit lastreel squish sonar3d; do
+for p in index battles peek sonar sneak goose freeze wobble skyline passit lastreel squish sonar3d; do
   code=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:$PORT/$p.html")
   [ "$code" != 200 ] && { echo "FOUT $p: HTTP $code"; FAIL=1; continue; }
   for size in "1440,900:desk" "390,844:mob" "360,780:mob360"; do
@@ -43,6 +43,10 @@ for p in index peek sonar sneak goose freeze wobble skyline passit lastreel squi
   if [ ! -s "$OUT/$p-dom.html" ]; then echo "FOUT $p (dom): geen DOM-dump"; FAIL=1; continue; fi
   bad=$(python3 -c "import re,sys;t=open(sys.argv[1],encoding='utf-8',errors='replace').read();t=re.sub(r'(?is)<(script|style|template)\b.*?</\1>','',t);t=re.sub(r'<[^>]+>',' ',t);print('\n'.join(sorted(set(m.group(0) for m in re.finditer(r'.{0,40}\b(undefined|NaN|\[object Object\])\b.{0,20}',t)))))" "$OUT/$p-dom.html")
   if [ -n "$bad" ]; then echo "FOUT $p (dom):"; echo "$bad" | head -5; FAIL=1; else echo "ok   $p (dom)"; fi
+  # merkregel: het kindermerk (GLORPZ / TANKED / 1v1battles.com) en merken van andere uitgevers nooit op caughtgames.com
+  # (tekst, links en alt-teksten; scripts tellen niet mee, de bezoekersteller op stats.1v1battles.com is een script)
+  brand=$(python3 -c "import re,sys;t=open(sys.argv[1],encoding='utf-8',errors='replace').read();t=re.sub(r'(?is)<(script|style|template)\b.*?</\1>','',t);print(' '.join(sorted(set(m.group(0) for m in re.finditer(r'(?i)glorpz|\btanked\b|1v1battles\.com|clash\s*royale|supercell|fortnite|brawl\s*stars',t)))))" "$OUT/$p-dom.html")
+  if [ -n "$brand" ]; then echo "FOUT $p (merk): $brand"; FAIL=1; else echo "ok   $p (merk)"; fi
 done
 # Vault-skin van PEEK! (#play-vault): screenshot + console + DOM, zelfde controles
 rm -rf "$PROF"; mkdir -p "$PROF"; rm -f "$OUT/vault-desk.png"

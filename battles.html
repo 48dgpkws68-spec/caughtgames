@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>1v1 Battles · Real-time skill duels for your casino · Caught Games</title>
+<meta name="description" content="1v1 Battles by Caught Games: real-time skill duels where two players stake against each other under identical conditions. The winner takes the pot minus your fee. MIRROR and SURGE are playable now.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Caught Games">
+<meta property="og:title" content="1v1 Battles · Real-time skill duels for your casino">
+<meta property="og:description" content="Two players, the same game, the same seed. They stake against each other, the better player wins the pot and you earn a fee on every match.">
+<meta property="og:url" content="https://caughtgames.com/battles.html">
+<meta property="og:image" content="https://caughtgames.com/art/og-battles.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://caughtgames.com/battles.html">
+<meta name="theme-color" content="#07060b">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%2307060b'/%3E%3Cpath d='M8 32c8-12 16-17 24-17s16 5 24 17c-8 12-16 17-24 17S16 44 8 32z' fill='none' stroke='%23e9c46a' stroke-width='4'/%3E%3Ccircle cx='32' cy='32' r='8' fill='%23ff2d6f'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* 1v1 Battles: same VIP-lounge canvas as the homepage. Gold = money and trust, pink = player one, cyan = player two. One dark theme by design. */
+:root{
+  --bg:#07060b; --bg2:#0d0b14; --panel:#13101d; --panel2:#1a1626; --line:#2a2438; --line2:#3a3150;
+  --fg:#f6f1e6; --muted:#a39cb5; --dim:#6e6785;
+  --gold:#e9c46a; --gold2:#f8e3a3; --gold3:#b8862b; --pink:#ff2d6f; --cyan:#4de2ff; --mint:#3ff0b0;
+  --goldg:linear-gradient(100deg,#b8862b 0%,#f8e3a3 30%,#e9c46a 55%,#fff4cf 70%,#b8862b 100%);
+  --display:"Bricolage Grotesque","Arial Black",system-ui,sans-serif;
+  --body:"Manrope",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.6;overflow-x:hidden}
+img,canvas,svg,iframe{max-width:100%}
+a{color:inherit}
+::selection{background:var(--pink);color:#fff}
+.w{max-width:1240px;margin:0 auto;padding-inline:20px}
+section{padding-block:clamp(72px,10vw,130px);position:relative}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.02;letter-spacing:-.02em;text-wrap:balance}
+h2{font-size:clamp(34px,5.4vw,72px);font-weight:800}
+h3{font-size:21px;font-weight:700;letter-spacing:-.01em}
+p{margin:0}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font:600 12px var(--mono);letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:22px}
+.eyebrow::before{content:"";width:28px;height:1px;background:var(--gold)}
+.lead{color:var(--muted);font-size:clamp(17px,1.6vw,20px);max-width:60ch;margin-top:22px}
+.gold{background:var(--goldg);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 7s linear infinite}
+@keyframes shine{to{background-position:-250% 0}}
+.btn{position:relative;display:inline-flex;align-items:center;gap:10px;padding:16px 26px;border-radius:999px;font:700 15px var(--body);text-decoration:none;border:0;cursor:pointer;transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s}
+.btn.gold-b{background:var(--goldg);background-size:200% 100%;color:#1b1406;box-shadow:0 10px 40px -10px rgba(233,196,106,.6)}
+.btn.gold-b:hover{box-shadow:0 14px 60px -8px rgba(233,196,106,.85);background-position:100% 0}
+.btn.ghost{color:var(--fg);border:1px solid var(--line2);background:rgba(255,255,255,.02)}
+.btn.ghost:hover{border-color:var(--gold)}
+.btn svg{transition:transform .25s}.btn:hover svg{transform:translateX(4px)}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.newtag{display:inline-block;margin-left:6px;padding:2px 7px;border-radius:99px;background:#3ff0d0;color:#04201b;font:700 10px/1.4 var(--mono);letter-spacing:.06em;vertical-align:middle}
+#grain{position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.06;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
+#progress{position:fixed;top:0;left:0;height:2px;width:0;background:var(--goldg);z-index:60}
+main,header,nav,footer{position:relative;z-index:1}
+
+/* nav */
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;transition:background .3s,border-color .3s;border-bottom:1px solid transparent}
+nav.scrolled{background:rgba(7,6,11,.72);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);border-color:var(--line)}
+nav .w{display:flex;align-items:center;justify-content:space-between;height:74px;gap:20px}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none;font:800 18px var(--display);letter-spacing:-.01em;white-space:nowrap;flex-shrink:0}
+.logo .eye{width:40px;height:40px}
+.logo small{display:block;font:500 10px var(--mono);letter-spacing:.2em;color:var(--muted)}
+nav .btn{white-space:nowrap;flex-shrink:0}
+.nl{display:flex;gap:22px;font-size:14px;font-weight:500;color:var(--muted);white-space:nowrap}
+.nl a{text-decoration:none;position:relative;padding:6px 0}
+.nl a::after{content:"";position:absolute;left:0;right:100%;bottom:0;height:1px;background:var(--gold);transition:right .3s}
+.nl a:hover{color:var(--fg)}.nl a:hover::after{right:0}
+@media (max-width:1320px){.nl a:nth-child(n+7){display:none}}
+@media (max-width:1180px){.nl a:nth-child(n+6){display:none}}
+@media (max-width:1000px){.nl{display:none}}
+@media (max-width:520px){nav .btn{padding:12px 16px;font-size:13px}.logo small{display:none}}
+.blink .lid{animation:blink 5s infinite;transform-origin:50% 50%}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.08)}}
+
+/* hero */
+.hero{padding-top:110px;margin-top:-74px;padding-bottom:70px;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background:radial-gradient(50% 60% at 82% 40%,rgba(255,45,111,.16),transparent 70%),radial-gradient(40% 50% at 95% 70%,rgba(77,226,255,.10),transparent 70%),radial-gradient(50% 60% at 10% 20%,rgba(233,196,106,.08),transparent 70%);pointer-events:none}
+.hgrid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:48px;align-items:center;position:relative}
+@media (max-width:960px){.hgrid{grid-template-columns:minmax(0,1fr)}}
+.hero h1{font-size:clamp(44px,7.4vw,104px);font-weight:800;letter-spacing:-.035em;line-height:.94}
+.hero h1 .ln{display:block}
+.hero h1 .sub{display:block;font-size:.5em;line-height:1.02;margin-top:.24em;letter-spacing:-.025em}
+.hero .cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:36px}
+.facts{margin-top:46px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--line);border-radius:20px;background:rgba(13,11,20,.6);overflow:hidden}
+@media (max-width:760px){.facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.facts div{padding:16px 18px;border-right:1px solid var(--line)}
+.facts div:last-child{border-right:0}
+@media (max-width:760px){.facts div:nth-child(2){border-right:0}.facts div:nth-child(-n+2){border-bottom:1px solid var(--line)}}
+.facts b{display:block;font:600 clamp(18px,2vw,24px) var(--mono);color:var(--fg)}
+.facts span{font-size:12px;color:var(--muted);display:block;line-height:1.45;margin-top:2px}
+.hvis{position:relative;display:grid;justify-items:center}
+.phone{position:relative;border-radius:36px;padding:10px;background:linear-gradient(145deg,#2b2438,#100d18 40%,#2b2438);box-shadow:0 40px 120px -30px rgba(255,45,111,.35),0 0 0 1px var(--line2),inset 0 1px 0 rgba(255,255,255,.08)}
+.phone img,.phone iframe{display:block;width:100%;height:auto;border-radius:27px;background:#0b0912}
+.phone iframe{aspect-ratio:9/18;border:0;height:auto}
+.hvis .phone{width:min(320px,78vw);transform:rotate(2.5deg)}
+.pot{position:absolute;left:0;bottom:8%;width:250px;background:rgba(19,16,29,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line2);border-radius:20px;padding:16px 18px;box-shadow:0 30px 70px -20px rgba(0,0,0,.9);font-size:14px}
+@media (max-width:960px){.pot{position:relative;left:auto;bottom:auto;margin-top:-40px;width:min(320px,88vw)}}
+.pot .h{font:600 11px var(--mono);letter-spacing:.14em;color:var(--gold);text-transform:uppercase;margin-bottom:10px}
+.pot .vs{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;text-align:center;margin-bottom:12px}
+.pot .vs span{font:600 13px var(--mono);padding:8px 6px;border-radius:12px;border:1px solid var(--line2)}
+.pot .vs .p1{color:var(--pink);border-color:rgba(255,45,111,.45)}.pot .vs .p2{color:var(--cyan);border-color:rgba(77,226,255,.45)}
+.pot .vs i{font:700 12px var(--mono);font-style:normal;color:var(--dim)}
+.pot dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:6px 12px}
+.pot dt{color:var(--muted)}.pot dd{margin:0;font:600 14px var(--mono);text-align:right}
+.pot dd.win{color:var(--mint)}.pot dd.fee{color:var(--gold2)}
+.pot .n{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line2);color:var(--dim);font-size:12px;line-height:1.5}
+
+/* steps */
+.steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:22px;margin-top:64px;position:relative}
+@media (max-width:1100px){.steps{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:760px){.steps{grid-template-columns:minmax(0,1fr)}}
+.step{position:relative;padding-top:58px}
+.step .n{position:absolute;top:0;left:0;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--bg);border:1px solid var(--gold);font:700 14px var(--mono);color:var(--gold)}
+.step p{color:var(--muted);font-size:15px;margin-top:10px}
+.step .t{display:inline-block;margin-top:14px;font:600 12px var(--mono);color:var(--mint)}
+
+/* comparison + sheet tables */
+.tbl{overflow-x:auto;margin-top:48px;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:8px 18px 12px}
+.tbl table{width:100%;border-collapse:collapse}
+.tbl th{text-align:left;font:700 15px var(--display);padding:14px 14px 12px;border-bottom:1px solid var(--line2)}
+.tbl td{padding:12px 14px;border-bottom:1px solid var(--line);vertical-align:top;font-size:15px}
+.tbl tr:last-child td{border-bottom:0}
+.tbl td:first-child{color:var(--muted);white-space:nowrap;padding-right:28px}
+.tbl.cmp td:nth-child(2){color:var(--muted)}
+.tbl.cmp th:nth-child(3){color:var(--mint)}
+.tbl.sheet table{min-width:620px}
+.tbl.sheet th:nth-child(2){color:var(--pink)}.tbl.sheet th:nth-child(3){color:var(--cyan)}
+@media (max-width:760px){.tbl{padding:4px 8px 8px}.tbl th,.tbl td{padding:9px 7px;font-size:13px}.tbl td:first-child{white-space:normal;padding-right:10px}}
+
+/* cards */
+.lab{background:var(--bg2);border-block:1px solid var(--line)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:clamp(20px,2.4vw,30px);position:relative;overflow:hidden;min-width:0}
+.why{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:56px}
+@media (max-width:900px){.why{grid-template-columns:minmax(0,1fr)}}
+.why .card b{display:block;font:700 24px var(--display);margin:16px 0 8px}
+.why .card p{color:var(--muted);font-size:15px}
+.seal{width:46px;height:46px;border-radius:50%;border:1px solid var(--gold);display:grid;place-items:center}
+
+/* title blocks */
+.title{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:center}
+@media (max-width:1020px){.title{grid-template-columns:minmax(0,1fr)}}
+.title h2 .gold{display:block;font-size:.62em;margin-top:.12em}
+@media (min-width:1021px){.title.flip>:first-child{order:2}}
+.bul{list-style:none;padding:0;margin:30px 0 0;display:grid;gap:16px}
+.bul li{display:grid;grid-template-columns:36px minmax(0,1fr);gap:14px;align-items:start}
+.bul .ic{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--panel2);border:1px solid var(--line2)}
+.bul b{display:block;font-weight:700}.bul span{color:var(--muted);font-size:15px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+.chip{font:600 11px var(--mono);letter-spacing:.06em;padding:7px 12px;border-radius:999px;border:1px solid var(--line2);color:var(--muted)}
+.playbar{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+@media (max-width:600px){.playbar .btn{flex:1 1 100%;justify-content:center}}
+.shots{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:520px){.shots{grid-template-columns:minmax(0,1fr);justify-items:center}.shots figure{width:min(320px,100%)}}
+.shots figure{margin:0}
+.shots figure:nth-child(2){margin-top:64px}
+@media (max-width:520px){.shots figure:nth-child(2){margin-top:0}}
+.shots.playing{grid-template-columns:minmax(0,1fr);justify-items:center}
+.shots.playing figure{width:min(380px,100%)}
+.shots.playing figure:nth-child(2){display:none}
+figcaption{font:500 12px var(--mono);color:var(--dim);margin-top:12px;text-align:center;line-height:1.5}
+.liveplay{display:flex;justify-content:center;margin-top:14px}
+.mini{font:600 13px var(--body);padding:10px 16px;border-radius:999px;border:1px solid var(--line2);background:var(--panel2);color:var(--fg);cursor:pointer}
+.mini:hover{border-color:var(--gold)}
+.board{position:relative;border-radius:28px;padding:10px;background:linear-gradient(145deg,#2b2438,#100d18 40%,#2b2438);box-shadow:0 40px 120px -30px rgba(77,226,255,.3),0 0 0 1px var(--line2);max-width:440px;margin-inline:auto}
+.board img{display:block;width:100%;height:auto;border-radius:20px}
+.board .tagl{position:absolute;left:22px;top:22px;font:700 12px var(--mono);letter-spacing:.06em;padding:6px 11px;border-radius:999px;background:rgba(7,6,11,.82);border:1px solid rgba(255,45,111,.5);color:#ff7aa6}
+.board .tagr{position:absolute;right:22px;bottom:22px;font:700 12px var(--mono);letter-spacing:.06em;padding:6px 11px;border-radius:999px;background:rgba(7,6,11,.82);border:1px solid rgba(233,196,106,.5);color:var(--gold2)}
+.status{margin-top:22px;padding:14px 16px;border:1px dashed var(--line2);border-radius:14px;color:var(--muted);font-size:14px}
+.status b{color:var(--fg)}
+
+/* fee calculator */
+.calc{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);gap:28px;margin-top:56px}
+@media (max-width:1020px){.calc{grid-template-columns:minmax(0,1fr)}}
+.ctl{margin-top:22px}
+.ctl:first-of-type{margin-top:6px}
+.ctl label{display:flex;justify-content:space-between;gap:10px;font:600 12px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.ctl label output{color:var(--gold);font-size:14px;letter-spacing:0}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:6px;background:linear-gradient(90deg,var(--gold) var(--p,50%),var(--line2) var(--p,50%));outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--gold2);border:4px solid var(--bg);box-shadow:0 0 0 1px var(--gold),0 0 20px rgba(233,196,106,.6);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--gold2);border:4px solid var(--bg);box-shadow:0 0 0 1px var(--gold);cursor:pointer}
+.kv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.kv div{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px 16px;min-width:0}
+.kv b{display:block;font:600 clamp(18px,2vw,24px) var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kv span{font-size:12px;color:var(--muted)}
+.kv .hl{border-color:rgba(233,196,106,.5)}.kv .hl b{color:var(--gold2)}
+.kv .ok b{color:var(--mint)}
+.note{font-size:13px;color:var(--dim);margin-top:14px}
+
+/* integration */
+.integ{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;margin-top:56px}
+@media (max-width:900px){.integ{grid-template-columns:minmax(0,1fr)}}
+.side h3{font-size:26px;margin-top:12px}
+.side .for{font:600 12px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}
+.side.us .for{color:var(--mint)}
+.side ul{list-style:none;padding:0;margin:20px 0 0;display:grid;gap:10px;font-size:15px}
+.side li{padding-left:26px;position:relative;color:var(--fg)}
+.side li span{color:var(--muted)}
+.side li::before{content:"";position:absolute;left:2px;top:8px;width:12px;height:7px;border-left:2px solid var(--gold);border-bottom:2px solid var(--gold);transform:rotate(-45deg)}
+.side.us li::before{border-color:var(--mint)}
+.term{background:#05040a;border:1px solid var(--line2);border-radius:20px;overflow:hidden;font:13px/1.7 var(--mono);margin-top:22px}
+.term .bar{display:flex;gap:7px;padding:12px 16px;border-bottom:1px solid var(--line);align-items:center}
+.term .bar i{width:11px;height:11px;border-radius:50%;background:#3a3150}.term .bar i:first-child{background:#ff5f57}.term .bar i:nth-child(2){background:#febc2e}.term .bar i:nth-child(3){background:#28c840}
+.term .bar span{margin-left:10px;color:var(--dim);font-size:12px}
+pre.code{margin:0;padding:22px;font:13px/1.75 var(--mono);color:#cfc8e4;overflow-x:auto;white-space:pre}
+.code .k{color:var(--pink)}.code .s{color:var(--mint)}.code .c{color:var(--dim)}.code .f{color:var(--cyan)}.code .n{color:var(--gold)}
+.feats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:22px}
+@media (max-width:900px){.feats{grid-template-columns:minmax(0,1fr)}}
+.feats div{border:1px solid var(--line);border-radius:16px;padding:18px;background:var(--panel)}
+.feats b{display:block;font-weight:700;margin-bottom:4px}
+.feats span{color:var(--muted);font-size:14px}
+
+/* faq + contact */
+.faq{max-width:900px;margin:48px auto 0}
+details{border-bottom:1px solid var(--line);padding-block:22px}
+summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:20px;font:700 clamp(18px,2vw,22px) var(--display);letter-spacing:-.01em}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font:400 28px var(--mono);color:var(--gold);line-height:1;transition:transform .3s}
+details[open] summary::after{transform:rotate(45deg)}
+details p{color:var(--muted);margin-top:14px;max-width:70ch}
+.contact{background:radial-gradient(60% 80% at 80% 0%,rgba(255,45,111,.12),transparent 60%),radial-gradient(60% 80% at 0% 100%,rgba(233,196,106,.1),transparent 60%),var(--bg2);border-top:1px solid var(--line);text-align:center}
+.contact .lead{margin-inline:auto}
+.contact .cta{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:34px}
+footer{border-top:1px solid var(--line);padding-block:44px;color:var(--muted);font-size:14px}
+footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;align-items:center}
+.age{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;border:1.5px solid var(--muted);font:700 11px var(--mono);margin-right:10px;vertical-align:middle}
+
+@media (max-width:600px){
+  section{padding-block:64px}
+  .hero{padding-top:100px;padding-bottom:40px}
+  .hero .cta .btn,.contact .cta .btn{flex:1 1 100%;justify-content:center}
+  .lead{font-size:16px}
+  .facts div{padding:13px 14px}
+  .phone{border-radius:30px;padding:8px}.phone img,.phone iframe{border-radius:23px}
+}
+
+/* reveal: visible by default; only animated when JS adds .pre */
+.rv.pre{opacity:0;transform:translateY(40px)}
+.rv{transition:opacity 1s cubic-bezier(.2,.8,.2,1),transform 1s cubic-bezier(.2,.8,.2,1)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv.pre{opacity:1;transform:none}html{scroll-behavior:auto}}
+</style>
+<script defer src="https://stats.1v1battles.com/nv.js" data-website-id="4f92624d-4cbc-4758-8bb8-8515f2b5e871"></script>
+</head>
+<body>
+<div id="progress"></div><div id="grain"></div>
+
+<nav id="nav">
+  <div class="w">
+    <a class="logo blink" href="index.html" aria-label="Caught Games home">
+      <svg class="eye" viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="g1" x1="0" x2="1"><stop offset="0" stop-color="#b8862b"/><stop offset=".5" stop-color="#f8e3a3"/><stop offset="1" stop-color="#e9c46a"/></linearGradient></defs><rect width="64" height="64" rx="16" fill="#13101d" stroke="#2a2438"/><g class="lid"><path d="M8 32c8-12 16-17 24-17s16 5 24 17c-8 12-16 17-24 17S16 44 8 32z" fill="none" stroke="url(#g1)" stroke-width="3.5"/><circle cx="32" cy="32" r="9" fill="#ff2d6f"/><circle cx="35" cy="29" r="3" fill="#fff"/></g></svg>
+      <span>CAUGHT GAMES<small>1V1 BATTLES</small></span>
+    </a>
+    <div class="nl"><a href="#how">How it works</a><a href="#mirror">MIRROR</a><a href="#surge">SURGE</a><a href="#fees">Fee model</a><a href="#integration">Integration</a><a href="#why">Why our own games</a><a href="#faq">FAQ</a><a href="index.html">All games</a></div>
+    <a class="btn gold-b" href="index.html?interest=battles#contact">Book a demo</a>
+  </div>
+</nav>
+
+<main>
+<header class="hero" id="top">
+  <div class="w hgrid">
+    <div>
+      <span class="eyebrow">New product line · player vs player</span>
+      <h1><span class="ln">1v1 Battles</span><span class="sub gold">Real-time skill duels for your casino.</span></h1>
+      <p class="lead">Two players get exactly the same game: the same cards in the same order, the same field, the same clock. They stake against each other, the better player takes the pot and your casino earns a fee on every match. Skill decides who wins, not a house edge.</p>
+      <div class="cta">
+        <a class="btn gold-b" href="https://play.caughtgames.com/mirror/" target="_blank" rel="noopener">Play MIRROR <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+        <a class="btn ghost" href="https://play.caughtgames.com/mirror/demo-casino/" target="_blank" rel="noopener">Open the demo casino</a>
+      </div>
+      <div class="facts">
+        <div><b>1v1</b><span>real players, same stake, matched by rating</span></div>
+        <div><b>1 seed</b><span>identical conditions for both sides</span></div>
+        <div><b>Fee</b><span>per match, set by you</span></div>
+        <div><b>Replay</b><span>every match, move by move</span></div>
+      </div>
+    </div>
+    <div class="hvis">
+      <div class="phone"><img src="art/battles-mirror.webp" width="600" height="1298" alt="MIRROR match in progress: three lanes, red bunkers at the top, blue bunkers at the bottom, an airstrike and a tank pushing over the bridges, a hand of four cards below" fetchpriority="high"></div>
+      <div class="pot" aria-label="Example stake match">
+        <div class="h">Stake match · example</div>
+        <div class="vs"><span class="p1">€10</span><i>VS</i><span class="p2">€10</span></div>
+        <dl><dt>Pot</dt><dd>€20.00</dd><dt>Winner receives</dt><dd class="win">€19.00</dd><dt>Your fee (5%)</dt><dd class="fee">€1.00</dd></dl>
+        <p class="n">Draw: both stakes back. Server restart mid-match: both refunded automatically.</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="how" class="lab">
+  <div class="w">
+    <span class="eyebrow rv">How a match works</span>
+    <h2 class="rv">Same game, same seed. <span class="gold">The better player wins.</span></h2>
+    <p class="lead rv">Players are matched one against one under exactly equal conditions. Nobody plays against the house and nothing in the outcome is left to a random number.</p>
+    <div class="steps">
+      <div class="step rv"><span class="n">01</span><h3>Pick a stake</h3><p>The player opens the game from your lobby and picks one of your stakes. We check the balance with your wallet first.</p><span class="t">Your stakes, your currency</span></div>
+      <div class="step rv"><span class="n">02</span><h3>Get matched</h3><p>Two real players at the same stake and a similar rating are paired. Both see the stake and the opponent and tap Accept. Nothing is debited before that.</p><span class="t">Human against human only</span></div>
+      <div class="step rv"><span class="n">03</span><h3>Same game, both sides</h3><p>MIRROR deals both players the same cards in the same order from one seed. SURGE gives both the same field and the same refills from one shared seed.</p><span class="t">Identical conditions</span></div>
+      <div class="step rv"><span class="n">04</span><h3>The server decides</h3><p>The match runs on our server as a deterministic simulation. Phones only send their moves. The result is final and can be replayed from the seed.</p><span class="t">Server-authoritative</span></div>
+      <div class="step rv"><span class="n">05</span><h3>Settle</h3><p>The winner gets the pot minus your fee. A draw returns both stakes. If our server restarts mid-match, both stakes go back automatically.</p><span class="t">Credit, refund or rollback</span></div>
+    </div>
+    <div class="tbl cmp rv"><table>
+      <thead><tr><th></th><th>Classic casino game</th><th>1v1 Battle</th></tr></thead>
+      <tbody>
+        <tr><td>Who plays</td><td>The player against the house</td><td>A player against another player</td></tr>
+        <tr><td>What decides</td><td>RNG and the house edge</td><td>Choices and speed, under identical conditions</td></tr>
+        <tr><td>How you earn</td><td>Gross gaming revenue</td><td>A fee on every settled match</td></tr>
+        <tr><td>Your exposure</td><td>You pay every win</td><td>None on the result: winnings come from the pot</td></tr>
+        <tr><td>Proof</td><td>A provably fair seed per round</td><td>One seed for both players and a full replay</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<section id="mirror">
+  <div class="w title">
+    <div class="rv">
+      <span class="eyebrow">Title 01 · playable demo</span>
+      <h2>MIRROR <span class="gold">Same troops. Pure skill.</span></h2>
+      <p class="lead">A real-time 1v1 army battler on three lanes. Each side defends three bunkers and an HQ. Players deploy soldiers, vehicles, a machine gun nest and airstrikes from a hand of four cards, and the better tactician breaks through.</p>
+      <ul class="bul">
+        <li><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><path d="M4 7h7v10H4zM13 7h7v10h-7z"/></svg></span><div><b>Identical armies</b><span>Both players draw from the same 12 cards in the same order, generated from one seed. Same energy, mirrored field, and you can see your opponent's hand. No decks, no upgrades, nothing to buy.</span></div></li>
+        <li><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg></span><div><b>Every match ends</b><span>2:00 regular time with double supply in the last minute, then 1:00 sudden death with a meltdown finale in the last 20 seconds. Three minutes at most.</span></div></li>
+        <li><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></span><div><b>Server-authoritative</b><span>Integer-only simulation on our server: the same seed and the same moves give the same result on any device. Clients send nothing but card placements.</span></div></li>
+        <li><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg></span><div><b>Stake safety built in</b><span>Accept step before any debit, a capped rating gap, no stake matches between players on the same network, a daily limit per pair and never a bot in stake mode.</span></div></li>
+      </ul>
+      <div class="chips" aria-label="The 12 cards"><span class="chip">Shield</span><span class="chip">Riflemen</span><span class="chip">Tank</span><span class="chip">Raiders</span><span class="chip">Rocketeer</span><span class="chip">Breacher</span><span class="chip">Jeep</span><span class="chip">Sniper</span><span class="chip">Grenadier</span><span class="chip">MG Nest</span><span class="chip">Airstrike</span><span class="chip">Flashbang</span></div>
+      <div class="playbar">
+        <a class="btn gold-b" href="https://play.caughtgames.com/mirror/" target="_blank" rel="noopener">Play the demo <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+        <a class="btn ghost" href="https://play.caughtgames.com/mirror/demo-casino/" target="_blank" rel="noopener">Demo casino</a>
+        <a class="btn ghost" href="https://play.caughtgames.com/mirror/docs/" target="_blank" rel="noopener">API docs</a>
+      </div>
+    </div>
+    <div class="shots rv">
+      <figure>
+        <div class="phone" id="mirrorPhone"><img src="art/battles-mirror.webp" width="600" height="1298" loading="lazy" alt="MIRROR battle against a practice bot with double supply active"></div>
+        <figcaption>Live match against a practice bot</figcaption>
+        <div class="liveplay"><button class="mini" type="button" id="playHere">Play it in this page</button></div>
+      </figure>
+      <figure>
+        <div class="phone"><img src="art/battles-stake.webp" width="520" height="929" loading="lazy" alt="MIRROR stake picker inside the demo casino: balance 100 dollars, stakes of 1, 5, 10 and 25 dollars with the winnings after a 5% fee"></div>
+        <figcaption>Stake picker inside the demo casino, play money</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="surge" class="lab">
+  <div class="w title flip">
+    <div class="rv">
+      <span class="eyebrow">Title 02 · prototype</span>
+      <h2>SURGE <span class="gold">60 seconds. Bank or burn.</span></h2>
+      <p class="lead">A 60-second tap duel on a field of neon orbs. Tap a group of three or more touching orbs of one colour to pop it. Every good tap pushes the heat multiplier up, from ×1 to ×10. Points stay open until you bank them, and one wrong tap loses them.</p>
+      <ul class="bul">
+        <li><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4de2ff" stroke-width="2"><path d="M12 2c2 4 6 6 6 11a6 6 0 0 1-12 0c0-3 2-5 3-7 1 2 2 3 3 3 0-3-1-5 0-7z"/></svg></span><div><b>Heat ×1 to ×10</b><span>+1 heat per good tap, +2 for a group of seven or more. A group of n orbs scores 5 × n × (n - 1), times heat.</span></div></li>
+        <li><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4de2ff" stroke-width="2"><rect x="3" y="7" width="18" height="12" rx="2"/><path d="M7 7V5h10v2M12 11v4"/></svg></span><div><b>Bank or keep going</b><span>BANK locks the open points in and drops heat back to ×1. A tap on a group of one or two, or a burnt fuse, loses the open points. The fuse gets shorter as heat climbs.</span></div></li>
+        <li><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4de2ff" stroke-width="2"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></span><div><b>Overdrive</b><span>The last 10 seconds score double. Whatever is still open at the buzzer is lost.</span></div></li>
+        <li><span class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4de2ff" stroke-width="2"><path d="M4 7h7v10H4zM13 7h7v10h-7z"/></svg></span><div><b>Same seed for both</b><span>Both players get the same start field and every column refills in the same fixed order. After the buzzer the server replays both runs and decides the winner.</span></div></li>
+      </ul>
+      <p class="status"><b>Status:</b> playable prototype with free play and trophies. The wallet integration is not built yet and the interface is in Dutch for now.</p>
+      <div class="playbar">
+        <a class="btn gold-b" href="https://play.caughtgames.com/surge/" target="_blank" rel="noopener">Play SURGE <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+      </div>
+    </div>
+    <figure class="rv" style="margin:0">
+      <div class="board"><img src="art/battles-surge.webp" width="600" height="696" loading="lazy" alt="SURGE field of 80 neon orbs in five colours at maximum heat"><span class="tagl">HEAT ×10</span><span class="tagr">BANK OR KEEP GOING</span></div>
+      <figcaption>Practice duel at maximum heat</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="sheet">
+  <div class="w">
+    <span class="eyebrow rv">Game sheet</span>
+    <h2 class="rv">Two titles, <span class="gold">one way of settling.</span></h2>
+    <div class="tbl sheet rv"><table>
+      <thead><tr><th>Specification</th><th>MIRROR</th><th>SURGE</th></tr></thead>
+      <tbody>
+        <tr><td>Format</td><td>Real-time 1v1 army battler, three lanes, 12 cards, hand of four</td><td>1v1 tap duel, 8 × 10 field, five colours</td></tr>
+        <tr><td>Match length</td><td>2:00 plus 1:00 sudden death, three minutes at most</td><td>60 seconds</td></tr>
+        <tr><td>Equal conditions</td><td>Same cards in the same order from one seed, mirrored field, same energy</td><td>Same start field and same refills from one shared seed</td></tr>
+        <tr><td>Decided by</td><td>Card choice, placement and timing</td><td>Group choice, speed and when to bank</td></tr>
+        <tr><td>Randomness in the result</td><td>None: the seed only sets the shared card order</td><td>None: the seed only sets the shared field</td></tr>
+        <tr><td>Result</td><td>Deterministic simulation on our server</td><td>Server replays both input logs after the buzzer</td></tr>
+        <tr><td>Settlement</td><td>Winner gets the pot minus your fee, a draw refunds both, a restart refunds both</td><td>Not wired to stakes yet</td></tr>
+        <tr><td>Wallet</td><td>Seamless wallet: balance, debit, credit, rollback, HMAC-SHA256 signed</td><td>Not wired yet</td></tr>
+        <tr><td>Replays</td><td>Every match stored with its seed and every command</td><td>Every run is a seed plus an input log</td></tr>
+        <tr><td>Platform</td><td>HTML5, portrait, from 320 px wide, mobile and desktop browsers</td><td>HTML5, mobile and desktop browsers</td></tr>
+        <tr><td>Status</td><td>Playable demo, demo casino and API docs</td><td>Playable prototype, free play</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<section id="fees" class="lab">
+  <div class="w">
+    <span class="eyebrow rv">Fee model</span>
+    <h2 class="rv">You earn on every match. <span class="gold">Not on who wins.</span></h2>
+    <p class="lead rv">The pot is the two stakes. The winner receives the pot minus your fee, a draw returns both stakes in full. Stakes, currencies and the fee are set per operator; the demo casino uses $1 to $25 stakes and a 5% fee.</p>
+    <div class="calc">
+      <div class="card rv">
+        <h3>Your numbers</h3>
+        <div class="ctl"><label for="cSt">Stake per player <output id="oSt">€10</output></label><input id="cSt" type="range" min="1" max="100" step="1" value="10"></div>
+        <div class="ctl"><label for="cFee">Your fee <output id="oFee">5.0%</output></label><input id="cFee" type="range" min="1" max="10" step="0.5" value="5"></div>
+        <div class="ctl"><label for="cM">Settled matches per day <output id="oM">1,000</output></label><input id="cM" type="range" min="100" max="20000" step="100" value="1000"></div>
+      </div>
+      <div class="card rv">
+        <h3>Per match and per period</h3>
+        <div class="kv" style="margin-top:20px">
+          <div><b id="kPot">€20.00</b><span>pot</span></div>
+          <div class="ok"><b id="kWin">€19.00</b><span>winner receives</span></div>
+          <div class="hl"><b id="kFee">€1.00</b><span>your fee per match</span></div>
+          <div class="hl"><b id="kDay">€1,000</b><span>fees per day</span></div>
+          <div class="hl" style="grid-column:1/-1"><b id="kMonth">€30,000</b><span>fees per 30 days</span></div>
+        </div>
+        <p class="note">An illustration with your own inputs, not a forecast. Draws return both stakes and earn no fee. The fee is rounded down to the cent.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="integration">
+  <div class="w">
+    <span class="eyebrow rv">Integration</span>
+    <h2 class="rv">You keep the player. <span class="gold">We run the game.</span></h2>
+    <p class="lead rv">Your backend opens a signed session and shows the launch URL in an iframe or a new tab. From there MIRROR talks to your wallet over four endpoints. The game never holds player funds.</p>
+    <div class="integ">
+      <div class="card side rv"><span class="for">Your side</span><h3>Wallet, player and licence</h3>
+        <ul><li>Wallet and balances <span>(balance, debit, credit, rollback)</span></li><li>Player accounts and your lobby</li><li>Your licence and the markets you serve</li><li>KYC and age checks</li><li>Geo restrictions</li><li>Deposit and loss limits</li><li>Responsible gambling tools</li></ul>
+      </div>
+      <div class="card side us rv"><span class="for">Our side</span><h3>Servers, matches and settlement</h3>
+        <ul><li>Game servers and matchmaking by rating</li><li>The match simulation and replays</li><li>Signed debit, credit and rollback calls, retried until your wallet confirms</li><li>A full audit record per match <span>(seed, every command, every transaction)</span></li><li>Risk reports on repeat pairs, shared networks and early forfeits</li><li>Per-operator settings: rating gap, pair limit, emotes, rematch</li></ul>
+      </div>
+    </div>
+    <div class="term rv"><div class="bar"><i></i><i></i><i></i><span>stake-match.http</span></div><pre class="code"><span class="c"># 1. your backend opens a session (signed with your secret)</span>
+<span class="k">POST</span> <span class="f">/mirror/api/op/v1/sessions</span>   X-Op-Id: your-casino   X-Op-Sig: 5f2c...
+{ <span class="s">"player_id"</span>: <span class="s">"u_123"</span>, <span class="s">"nickname"</span>: <span class="s">"Alice"</span>, <span class="s">"currency"</span>: <span class="s">"EUR"</span> }
+<span class="c"># answer: { "ok": true, "launch_url": "https://play.caughtgames.com/mirror/?s=..." }</span>
+
+<span class="c"># 2. both players accept: we debit both stakes on your wallet</span>
+<span class="k">POST</span> <span class="f">{wallet}/debit</span>   { <span class="s">"tx_id"</span>: <span class="s">"d_m81_0"</span>, <span class="s">"player_id"</span>: <span class="s">"u_123"</span>, <span class="s">"amount"</span>: <span class="n">1000</span>, <span class="s">"match_id"</span>: <span class="s">"m81"</span> }
+<span class="k">POST</span> <span class="f">{wallet}/debit</span>   { <span class="s">"tx_id"</span>: <span class="s">"d_m81_1"</span>, <span class="s">"player_id"</span>: <span class="s">"u_456"</span>, <span class="s">"amount"</span>: <span class="n">1000</span>, <span class="s">"match_id"</span>: <span class="s">"m81"</span> }
+
+<span class="c"># 3. the match ends: the winner gets the pot minus your 5% fee</span>
+<span class="k">POST</span> <span class="f">{wallet}/credit</span>  { <span class="s">"tx_id"</span>: <span class="s">"c_m81_0"</span>, <span class="s">"player_id"</span>: <span class="s">"u_123"</span>, <span class="s">"amount"</span>: <span class="n">1900</span>, <span class="s">"ref_tx_id"</span>: <span class="s">"d_m81_0"</span> }
+
+<span class="c"># draw: both stakes credited back · failed debit or restart: rollback</span></pre></div>
+    <div class="feats">
+      <div class="rv"><b>Signed both ways</b><span>HMAC-SHA256 on every request with a timestamp; requests older than five minutes are rejected.</span></div>
+      <div class="rv"><b>Idempotent money calls</b><span>Fixed transaction ids per match and side. Credits and rollbacks are retried until your wallet confirms.</span></div>
+      <div class="rv"><b>Embed in minutes</b><span>One iframe, portrait, from 320 px wide. No downloads for the player.</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="why" class="lab">
+  <div class="w">
+    <span class="eyebrow rv">Why our own games</span>
+    <h2 class="rv">You cannot stake on someone else's game. <span class="gold">So we built our own.</span></h2>
+    <p class="lead rv">The big esports and mobile battle games forbid wagering on their matches in their terms of service. Stakes built on top of them break those terms, and the publisher can shut them down at any time. 1v1 Battles are original Caught Games titles, designed from the first line of code for fair head-to-head play.</p>
+    <div class="why">
+      <div class="card rv"><div class="seal"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg></div><b>We own the IP</b><p>No publisher to ask, no terms that forbid wagering, no third-party API that can be switched off.</p></div>
+      <div class="card rv"><div class="seal"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><path d="M12 3v18M5 7h14M5 7l-3 7h6zM19 7l-3 7h6z"/></svg></div><b>Equal by design</b><p>No decks, no upgrades, no pay-to-win. Both players always have identical power; cosmetics never change a stat.</p></div>
+      <div class="card rv"><div class="seal"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e9c46a" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></div><b>Built to be checked</b><p>Every match can be replayed from its seed and its moves, so a dispute is settled by watching what happened.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="w">
+    <span class="eyebrow rv">FAQ</span>
+    <h2 class="rv">Questions operators ask.</h2>
+    <div class="faq">
+      <details><summary>Is this a game against the house?</summary><p>No. Players stake against each other. The operator never takes the other side of a match; it earns a fee from the pot of every match that has a winner.</p></details>
+      <details><summary>How do you stop collusion and chip dumping?</summary><p>Stake matches pair players within a capped rating gap, never pair two players from the same network, limit how often the same two players can meet per 24 hours and let players block each other. Your risk team gets a report of repeat pairs, shared networks and early forfeits, plus a full audit record for every match.</p></details>
+      <details><summary>Do players ever face a bot?</summary><p>Not in stake mode. Bots exist only for free practice and are never offered while a player waits for a stake match.</p></details>
+      <details><summary>What if the game server restarts mid-match?</summary><p>If the game server restarts during a stake match, the match does not count and both stakes are refunded automatically. Credits and rollbacks are retried until your wallet confirms them, so money never gets stuck.</p></details>
+      <details><summary>Where can real money be played?</summary><p>Only through licensed operators, in markets where player-versus-player skill games with stakes are allowed. The operator handles KYC, age checks, geo restrictions, limits and responsible gambling tools. Every demo on this site uses play money.</p></details>
+      <details><summary>Which settings can we change?</summary><p>Stakes, currencies and the fee per operator, plus the maximum rating gap, the daily limit per pair, emotes and rematches. Rematches are off by default, because fast rematches can speed up loss chasing.</p></details>
+      <details><summary>Can we get a 1v1 game in our own brand?</summary><p>Talk to us about a branded version of MIRROR or a custom 1v1 title on the same server, wallet flow and replay system.</p></details>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="w">
+    <span class="eyebrow rv">Book a demo</span>
+    <h2 class="rv">Put 1v1 Battles <span class="gold">in your lobby.</span></h2>
+    <p class="lead rv">Tell us about your casino or platform. We reply within one business day with a private demo, the API docs and a proposal.</p>
+    <div class="cta rv">
+      <a class="btn gold-b" href="index.html?interest=battles#contact">Request a demo <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg></a>
+      <a class="btn ghost" href="mailto:nick@caughtgames.com?subject=1v1%20Battles">nick@caughtgames.com</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="w">
+    <span>© 2026 Caught Games · <a href="mailto:nick@caughtgames.com" style="color:inherit">nick@caughtgames.com</a> · <a href="index.html" style="color:inherit">All games</a> · 1v1 Battles: MIRROR · SURGE</span>
+    <span><span class="age">18+</span>Supplied to licensed operators only. All demos on this site use play money; no real-money gambling is offered here.</span>
+  </div>
+</footer>
+
+<script>
+(()=>{
+const $=id=>document.getElementById(id);
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fmt=(n,d=0)=>n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+
+/* nav state + reading progress */
+const nav=$('nav'), prog=$('progress');
+const onScroll=()=>{ nav.classList.toggle('scrolled',scrollY>20);
+  const h=document.documentElement.scrollHeight-innerHeight; prog.style.width=(h>0?scrollY/h*100:0)+'%'; };
+addEventListener('scroll',onScroll,{passive:true}); onScroll();
+
+/* reveal on scroll (only for elements below the fold) */
+if('IntersectionObserver' in window&&!reduce){
+  const els=[...document.querySelectorAll('.rv')].filter(el=>el.getBoundingClientRect().top>innerHeight);
+  els.forEach(el=>el.classList.add('pre'));
+  const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.remove('pre'); io.unobserve(e.target) } }),{rootMargin:'0px 0px -8% 0px'});
+  els.forEach(el=>io.observe(el));
+}
+
+/* MIRROR in this page: only loads on click, so page views never open a game session */
+$('playHere').addEventListener('click',e=>{
+  const box=$('mirrorPhone'), f=document.createElement('iframe');
+  f.src='https://play.caughtgames.com/mirror/'; f.title='MIRROR playable demo'; f.allow='autoplay; clipboard-write; web-share';
+  box.closest('.shots').classList.add('playing'); box.replaceChildren(f);
+  const cap=box.nextElementSibling; if(cap) cap.textContent='Playable demo with play money';
+  e.currentTarget.parentNode.remove();
+});
+
+/* fee calculator */
+const st=$('cSt'), fee=$('cFee'), m=$('cM');
+const fill=el=>el.style.setProperty('--p',((el.value-el.min)/(el.max-el.min)*100)+'%');
+const eur=(c,d)=>'€'+fmt(c/100,d);
+function calc(){
+  [st,fee,m].forEach(fill);
+  const stake=+st.value*100, bps=Math.round(+fee.value*100), n=+m.value;
+  const pot=2*stake, rake=Math.floor(pot*bps/10000);
+  $('oSt').textContent='€'+fmt(+st.value); $('oFee').textContent=fmt(+fee.value,1)+'%'; $('oM').textContent=fmt(n);
+  $('kPot').textContent=eur(pot,2); $('kWin').textContent=eur(pot-rake,2); $('kFee').textContent=eur(rake,2);
+  $('kDay').textContent=eur(rake*n,0); $('kMonth').textContent=eur(rake*n*30,0);
+}
+[st,fee,m].forEach(el=>el.addEventListener('input',calc)); calc();
+})();
+</script>
+</body>
+</html>
