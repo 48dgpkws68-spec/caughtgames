@@ -1,4 +1,4 @@
-// Organische vormen uit code (Glorpz): een vorm is een afstandsfunctie (SDF) van samengesmolten ellipsoïden en
+// Organische vormen uit code: een vorm is een afstandsfunctie (SDF) van samengesmolten ellipsoïden en
 // afgeronde kegels, min uitgesneden holtes (een mond). meshSDF maakt daar één keer een gladde mesh van met
 // 'surface nets' op een raster (geen tabellen nodig), normalen uit de gradiënt van de SDF en per hoekpunt de kleur
 // van het dichtstbijzijnde onderdeel (tanden wit, tong roze, holte donker). Geen bibliotheek, alleen three.
@@ -462,7 +462,7 @@ export function makeShape(prims, opts = {}) {
 // matte: sleutels die mat moeten (mondholte): attribuut aMatte = 1
 // smooth: zoveel keer de kleur middelen op de naad tussen twee onderdelen (anders volgt de naad het raster: zigzag)
 // meshSDFSteps is een generator die af en toe pauzeert (yield), zodat het bouwen over beeldjes verdeeld kan worden
-// (runSteps of glorpz.js prepareGlorp); meshSDF bouwt in één keer. Het echte werk zit in losse kleine functies per
+// (bijvoorbeeld via runSteps); meshSDF bouwt in één keer. Het echte werk zit in losse kleine functies per
 // stap (één laag of 256 hoekpunten): die compileert de JIT één keer voor alle meshes.
 // opts.deco: attribuut aDeco = 1 (true: alle hoekpunten, of een Set met kleursleutels) voor een eigen afwerking
 export function meshSDF(shape, n, colors, tint = null, matte = null, smooth = 1, opts = null) {

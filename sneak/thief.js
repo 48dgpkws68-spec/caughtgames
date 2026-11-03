@@ -1,4 +1,4 @@
-// The SNEAK thief: a glossy vinyl toy built from one smooth SDF body (same surface-nets mesher as the Glorpz),
+// The SNEAK thief: a glossy vinyl toy built from one smooth SDF body (same surface-nets mesher as sdfmesh.js),
 // black eye mask, striped jumper, beanie and a loot sack. Eyes are separate so they can look around and pop.
 //   const t = createThief(envMap);  scene.add(t.root);  t.update(dt, time);  t.hop(from, to, ms) -> Promise
 //   t.mood('idle' | 'scared' | 'happy')   t.look(x, z)   t.root.position
