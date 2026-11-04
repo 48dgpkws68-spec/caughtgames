@@ -128,3 +128,11 @@
 - Let op: tweede rooktest gaf "index (dom): geen DOM-dump". Losse A/B-test: hangt ook op de oude code en op de commit van vannacht (die eerder in 28s klaar was), terwijl de load 13-15 was door andere routines. Dus omgeving, niet de code; index zonder WebGL en alle index-screenshots ok.
 - Idee voor later: winst/verlies-chips voor schermlezers; compacte how-to op 360px; check.sh DOM-dump ruimere timeout bij hoge load; codecheck PASS IT of LAST REEL volgende nacht.
 - Voor Nick: niets
+
+## 2026-11-04
+- Gevonden: rooktest volledig ok (13 pagina's + Vault + zonder WebGL), geen console-fouten, screenshots netjes. Op 360px viel in battles.html de eyebrow uiteen ("PLAYER" los op regel 2). Codecheck PASS IT: RTP-opbouw klopt (route onafhankelijk van crashpunt, cash alleen in handen, max win eerlijk), testhook toont crash pas na de ronde, geluid pauzeert in een verborgen tabblad. Wel: bij een leeg saldo las "join next round" de inzet vóór het bijvullen, waardoor de inzet op 1 sprong; LAST REEL deed hetzelfde en meldde dan "Not enough play money" en weigerde de eerste spin.
+- Gedaan: how-to-dialoog in de 8 speelgoedgames (shell.css) scrollt op schermen tot 640px breed of 700px hoog binnen de kaart en de startknop blijft onderaan in beeld (backlog). Getest op 360x640 (SQUISH JAR, LAST REEL, GOOSE 63, PASS IT) en desktop ongewijzigd.
+- Gedaan: PASS IT en LAST REEL vullen eerst het speelgeld bij en lezen dan de inzet; LAST REEL meldt het bijvullen aan schermlezers. Geen RTP-wijziging.
+- Gedaan: battles.html eyebrow houdt "player vs player" bij elkaar (harde spaties).
+- Idee voor later: bijvul-melding overal gelijk; how-to SONAR/SNEAK/PEEK! op 360x640; codecheck LAST REEL of SQUISH JAR volgende nacht.
+- Voor Nick: niets
