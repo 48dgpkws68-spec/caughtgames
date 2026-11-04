@@ -306,7 +306,8 @@ function r5UI(r5){
 async function spin(){
   if(phase!=='idle'||!W) return;
   A.unlock(); $('tip').style.opacity=0; hideBanner(); hideWinpop(); showToken++;
-  stake=readStake(); if(bal<stake){ if(bal<1){ bal=1000; ui(); display() } say('Not enough play money for that stake'); return }
+  if(bal<1){ bal=1000; ui(); display(); say('Out of play money. Balance topped up to 1,000') }
+  stake=readStake(); if(bal<stake){ say('Not enough play money for that stake'); return }
   bal=r2(bal-stake); phase='spinning'; doubled=false; lastWin=0;
   const us=[1,2,3,4,5].map(i=>F.u('reel:'+i)), stops=us.map((u,i)=>E.stopOf(u,i));
   cur={us,stops,r5:null,landed:0,fs:[]};

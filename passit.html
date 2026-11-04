@@ -271,7 +271,7 @@ $('howBtn').onclick=openHow; $('go').onclick=()=>{ $('how').hidden=true; try{ lo
 function tagsBet(){ seats.forEach((p,i)=>W.tag(i,p.you?'stake '+fmt(p.stake):'','')) }
 function toBet(){
   phase='bet'; phaseT=performance.now(); mult=1; joined=false; hs=-1; lastHs=-2; route=[];
-  if(wantJoin){ wantJoin=false; stake=readStake(); if(bal<1) bal=1000; if(bal>=stake){ bal-=stake; joined=true } }
+  if(wantJoin){ wantJoin=false; if(bal<1) bal=1000; stake=readStake(); if(bal>=stake){ bal-=stake; joined=true } }
   seats=makeSeats(); W.seats(seats); W.ready(); tagsBet(); playersUI(); fairUI(); multUI('');
   $('state').textContent=joined?'YOU HAVE A SEAT':'JOIN THE NEXT ROUND'; $('win').innerHTML=joined?'cash out while the bomb is in your hands':'tap JOIN to take a seat at the table';
   $('bigm').className='bigm'; $('youhave').classList.remove('on'); $('incoming').classList.remove('on'); hideBanner(); ui(true);

@@ -81,6 +81,8 @@ button{font-family:inherit}
 .how li::before{content:counter(s);width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font:18px var(--display);color:#fff;background:var(--accent);border:2.5px solid var(--ink)}
 .how li b{color:var(--fg)}
 .how .go{width:100%;margin-top:20px;font:24px var(--display);border:3px solid var(--ink);border-radius:18px;padding:13px;cursor:pointer;color:var(--ink);background:var(--accent2);box-shadow:0 6px 0 var(--ink)}
+/* kleine of lage schermen: de uitleg scrollt in de kaart en de startknop blijft onderaan in beeld */
+@media(max-width:640px),(max-height:700px){.how{place-items:start center;padding:12px}.how .box{max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain}.how .go{position:sticky;bottom:6px;box-shadow:0 6px 0 var(--ink),0 18px 0 16px var(--panel)}}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 body.embed .brand{display:none}
 .plabel{position:absolute;left:0;top:0;z-index:3;display:grid;justify-items:center;padding:5px 11px 6px;border-radius:13px;cursor:pointer;color:var(--fg);background:#fff;border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink);will-change:transform;transform-origin:50% 100%;font-family:var(--body)}
