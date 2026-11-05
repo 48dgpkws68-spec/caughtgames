@@ -152,7 +152,7 @@ function pullSel(){ if(sel){ const o=E.option(tower,sel.layer,sel.i,mult,first);
 async function pull(o){
   if(busy||phase==='over'||!W) return;
   A.unlock(); $('tip').style.opacity=0;
-  if(phase==='idle'){ if(bal<1) bal=1000; stake=readStake(); if(bal<stake) return; bal-=stake; phase='run'; $('state').textContent='PULLING · STAKE '+fmt(stake); fairUI() }
+  if(phase==='idle'){ if(bal<1){ bal=1000; say('Out of play money. Balance topped up to 1,000') } stake=readStake(); if(bal<stake) return; bal-=stake; phase='run'; $('state').textContent='PULLING · STAKE '+fmt(stake); fairUI() }
   busy=true; sel=null; W.select(null); W.hint([]); ui();
   pulls++; const u=F.u('pull:'+pulls), fall=u<o.p;
   log.push({n:pulls,layer:o.layer,i:o.i,u,p:o.p,fall,m:o.m});

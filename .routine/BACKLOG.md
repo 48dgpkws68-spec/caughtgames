@@ -4,5 +4,5 @@
 - Glass Ascent (niet gelinkt) heeft mogelijk dezelfde tabblad-sprong; alleen relevant als Nick Glass ooit terugzet.
 - SONAR-verifier ook de uitbetaling per tegel narekenen (multiplier-opbouw van een gespeelde duik).
 - Geschiedenis-chips: winst/verlies ook voor schermlezers onderscheiden (nu alleen kleur, behalve MINE/FELL).
-- Bijvullen bij leeg saldo in alle games gelijktrekken (melding "topped up" ontbreekt in PASS IT, SKYLINE, WOBBLE, FREEZE).
 - SONAR/SNEAK/PEEK! how-to (eigen CSS, niet shell.css) op 360x640 controleren op dezelfde onder-de-vouw-knop.
+- PEEK!/SONAR/SNEAK eigen geluidscode: zelfde document.hidden-vangst als lib/sfx.js controleren (tonen niet inplannen in een verborgen tabblad).

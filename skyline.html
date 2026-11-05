@@ -198,12 +198,12 @@ function act(){ A.unlock(); if(phase==='idle'||phase==='end') return start(); if
 async function start(){
   if(phase==='end'){ if(performance.now()-endAt<900) return; await toIdle() }
   if(phase!=='idle') return;
-  if(bal<1) bal=1000; stake=readStake(); if(bal<stake) return;
+  const topped=bal<1; if(topped) bal=1000; stake=readStake(); if(bal<stake) return;
   bal-=stake; jumps=0; gapI=-1; gapsPassed=0; log=[]; $('runlog').innerHTML='';
   seg=E.newSeg(0,1,F.u('seg:0')); log.push({m:'seg:0',u:seg.u,txt:'r0 = '+fx(seg.r)});
   segT=0; segX0=0; mult=1; phase='run'; winOpen=null;
   sGo(); hideBanner(); big('1.00×','RUN!'); $('state').textContent='RUNNING · STAKE '+fmt(stake); $('win').innerHTML='cash out from <b>×1.01</b>';
-  multUI(''); fairUI(); ui(); say('Running. Stake '+fmt(stake));
+  multUI(''); fairUI(); ui(); say((topped?'Out of play money. Balance topped up to 1,000. ':'')+'Running. Stake '+fmt(stake));
 }
 function cash(auto){
   if(phase!=='run'||!E.canAct(seg,mult)) return;

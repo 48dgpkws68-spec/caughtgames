@@ -136,3 +136,10 @@
 - Gedaan: battles.html eyebrow houdt "player vs player" bij elkaar (harde spaties).
 - Idee voor later: bijvul-melding overal gelijk; how-to SONAR/SNEAK/PEEK! op 360x640; codecheck LAST REEL of SQUISH JAR volgende nacht.
 - Voor Nick: niets
+
+## 2026-11-05
+- Gevonden: rooktest volledig ok (13 pagina's + Vault + zonder WebGL), geen console-fouten, screenshots netjes (ook 360px how-to's van SONAR, SNEAK, LAST REEL, SQUISH JAR). Codecheck LAST REEL: uitbetaling, double-k (0,965/E), max win en bonus-cap, seed-vrijgave en testhook kloppen. Wel: lib/sfx.js (8 speelgoedgames) bleef in een verborgen tabblad tonen inplannen op de stilstaande audioklok (de bonusmuziek tikt door), waardoor bij terugkeer alles in één klap afging.
+- Gedaan: lib/sfx.js speelt niets als het tabblad verborgen is. Waarom: geen geluidsklont als een operator terugschakelt. Headless bewezen met nep-AudioContext: oude lib 40 geluiden klaargezet tijdens 20 verborgen muziekstappen, nieuwe 0, zichtbaar geluid ongewijzigd. Geen RTP-wijziging.
+- Gedaan: bijvul-melding ("Out of play money. Balance topped up to 1,000") voor schermlezers nu ook in PASS IT, SKYLINE, WOBBLE, FREEZE en SQUISH JAR, zoals LAST REEL/GOOSE 63/SONAR 3D (backlog). SKYLINE zet hem vóór "Running", zodat hij niet wordt overschreven.
+- Idee voor later: zelfde verborgen-tabblad-vangst in PEEK!/SONAR/SNEAK eigen geluidscode; how-to's op 360x640; codecheck SQUISH JAR volgende nacht.
+- Voor Nick: niets

@@ -177,7 +177,7 @@ function act(){
   if(phase==='run'&&!me){ wantJoin=!wantJoin; $('state').textContent=wantJoin?'YOU JOIN THE NEXT ROUND':'WATCHING THIS ROUND'; }
 }
 function join(){
-  if(bal<1){ bal=1000 } stake=readStake(); if(bal<stake) return;
+  if(bal<1){ bal=1000; say('Out of play money. Balance topped up to 1,000') } stake=readStake(); if(bal<stake) return;
   bal-=stake; joined=true; me={id:'me',name:'You',color:'#ffffff',you:true,stake,state:'run',out:0};
   players.splice(Math.floor(players.length/2),0,me); W.lineUp(players); playersUI(); ui(); sTick();
   $('state').textContent='YOU ARE ON THE START LINE'; $('win').innerHTML='freeze before the owl turns round';

@@ -266,7 +266,7 @@ async function playRush(round){
 async function spin(){
   if(busy) return;
   A.unlock(); $('tip').style.opacity=0;
-  if(bal<1) bal=1000;
+  if(bal<1){ bal=1000; say('Out of play money. Balance topped up to 1,000') }
   stake=readStake(); if(bal<stake){ stake=Math.floor(bal*100)/100; $('bet').value=stake }
   bal-=stake; busy=true; phase='base'; run=0; hideBanner(); fairUI(); ui();
   $('state').textContent='DROPPING · STAKE '+fmt(stake); multUI(''); $('win').innerHTML='watch the jar';
