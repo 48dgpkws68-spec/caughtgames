@@ -257,7 +257,7 @@ async function toIdle(){
   $('fade').classList.remove('on');
 }
 $('cash').onclick=act; $('mbCash').onclick=act; $('jump').onclick=jump; $('mbJump').onclick=jump;
-addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden) return; if((e.key===' '||e.key==='Enter')&&/^(BUTTON|A|SUMMARY)$/.test(e.target.tagName)) return;
+addEventListener('keydown',e=>{ if(e.ctrlKey||e.metaKey||e.altKey) return; if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden) return; if((e.key===' '||e.key==='Enter')&&/^(BUTTON|A|SUMMARY)$/.test(e.target.tagName)) return;
   if(e.key===' '||e.key==='Enter'){ act(); e.preventDefault() } else if(e.key==='j'||e.key==='J'||e.key==='ArrowUp'){ jump(); e.preventDefault() } });
 addEventListener('click',e=>{ const b=e.detail>0&&e.target.closest&&e.target.closest('button'); if(b) b.blur() },true); // a mouse/touch click leaves no focus behind, so Space/Enter stay the game shortcuts; Tab focus keeps native button activation
 $('fairBtn').onclick=()=>{ $('fairBox').hidden=!$('fairBox').hidden };

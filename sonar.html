@@ -423,7 +423,7 @@ const tileSay=i=>{ const T=tiles[i]; return 'Row '+(((i/N)|0)+1)+', column '+(i%
 cv.addEventListener('focus',()=>{ kbOn=cv.matches(':focus-visible'); if(!kbOn) return; if(kb<0) kb=14; hover=kb; $('sr').textContent=tileSay(kb) });
 cv.addEventListener('pointerdown',()=>{ kbOn=false });
 cv.addEventListener('blur',()=>{ kbOn=false; hover=-1 });
-cv.addEventListener('keydown',e=>{ const d={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];
+cv.addEventListener('keydown',e=>{ if(e.ctrlKey||e.metaKey||e.altKey) return; const d={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];
   if(d){ e.preventDefault(); kbOn=true; if(kb<0) kb=14; const x=Math.max(0,Math.min(N-1,kb%N+d[0])), y=Math.max(0,Math.min(N-1,((kb/N)|0)+d[1])); kb=y*N+x; hover=kb; if(!tiles[kb].rev&&(phase==='run'||phase==='idle')) sTickHover(); $('sr').textContent=tileSay(kb); return }
   if(e.key==='Enter'&&kb>=0&&kbOn){ e.preventDefault(); if(phase==='bust'||phase==='done'){ $('act').click(); $('sr').textContent=$('toast').textContent; return } dive(kb) } });
 cv.addEventListener('click',e=>{ const i=pick(e); if(i<0) return; if(phase==='bust'||phase==='done'){ return } dive(i) });

@@ -318,9 +318,10 @@ $('verify').onclick=verify;
 $('cash').onclick=()=>spin(); $('mbCash').onclick=()=>spin();
 $('cTurbo').onclick=()=>{ turbo=!turbo; ui() };
 $('cAuto').onclick=()=>{ if(auto>0){ auto=0; ui(); return } auto=10; ui(); if(!busy) spin() };
-addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden) return;
-  if(e.key===' '||e.key==='Enter'){ if($('intro').classList.contains('on')){ $('intro').click(); e.preventDefault(); return } if(e.target.tagName!=='BUTTON'||e.target.id==='cash'){ spin(); e.preventDefault() } }
+addEventListener('keydown',e=>{ if(e.ctrlKey||e.metaKey||e.altKey) return; if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden) return;
+  if(e.key===' '||e.key==='Enter'){ if($('intro').classList.contains('on')){ $('intro').click(); e.preventDefault(); return } if(/^(BUTTON|A|SUMMARY)$/.test(e.target.tagName)) return; spin(); e.preventDefault() }
   else if(e.key==='t'||e.key==='T') $('cTurbo').click(); else if(e.key==='a'||e.key==='A') $('cAuto').click() });
+addEventListener('click',e=>{ const b=e.detail>0&&e.target.closest&&e.target.closest('button'); if(b) b.blur() },true); // a mouse/touch click leaves no focus behind, so Space/Enter stay the game shortcuts; Tab focus keeps native button activation
 $('fairBtn').onclick=()=>{ $('fairBox').hidden=!$('fairBox').hidden };
 const openHow=()=>{ $('how').hidden=false; setTimeout(()=>$('go').focus({preventScroll:true}),0) };
 $('howBtn').onclick=openHow; $('go').onclick=()=>{ $('how').hidden=true; try{ localStorage.setItem('squish-how','1') }catch(e){} A.unlock() };

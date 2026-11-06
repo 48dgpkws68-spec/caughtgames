@@ -189,7 +189,7 @@ function freezeMe(){
   playersUI(); ui();
 }
 $('act').onclick=act; $('mbAct').onclick=act;
-addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden) return; if((e.key===' '||e.key==='Enter')&&/^(BUTTON|A|SUMMARY)$/.test(e.target.tagName)) return; if(e.key===' '||e.key==='Enter'){ act(); e.preventDefault() } });
+addEventListener('keydown',e=>{ if(e.ctrlKey||e.metaKey||e.altKey) return; if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden) return; if((e.key===' '||e.key==='Enter')&&/^(BUTTON|A|SUMMARY)$/.test(e.target.tagName)) return; if(e.key===' '||e.key==='Enter'){ act(); e.preventDefault() } });
 addEventListener('click',e=>{ const b=e.detail>0&&e.target.closest&&e.target.closest('button'); if(b) b.blur() },true); // a mouse/touch click leaves no focus behind, so Space/Enter stay the game shortcuts; Tab focus keeps native button activation
 $('fairBtn').onclick=()=>{ $('fairBox').hidden=!$('fairBox').hidden };
 const openHow=()=>{ $('how').hidden=false; setTimeout(()=>$('go').focus({preventScroll:true}),0) };

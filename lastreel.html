@@ -449,7 +449,7 @@ $('cash').onclick=()=>{ if(phase==='offer') doLand(); else spin() };
 $('cDbl').onclick=doDouble; $('cLand').onclick=doLand;
 $('mbMain').onclick=()=>{ if(phase==='offer') doDouble(); else spin() };
 $('mbNo').onclick=doLand;
-addEventListener('keydown',e=>{ if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return }
+addEventListener('keydown',e=>{ if(e.ctrlKey||e.metaKey||e.altKey) return; if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return }
   if(e.key==='Escape'){ $('pays').hidden=true; $('fairBox').hidden=true; return }
   if(!$('how').hidden||!$('pays').hidden||$('fsCard').classList.contains('on')) return;
   if((e.key===' '||e.key==='Enter')&&/^(BUTTON|A|SUMMARY)$/.test(e.target.tagName)) return;
