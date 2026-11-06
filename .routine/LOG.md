@@ -143,3 +143,10 @@
 - Gedaan: bijvul-melding ("Out of play money. Balance topped up to 1,000") voor schermlezers nu ook in PASS IT, SKYLINE, WOBBLE, FREEZE en SQUISH JAR, zoals LAST REEL/GOOSE 63/SONAR 3D (backlog). SKYLINE zet hem vóór "Running", zodat hij niet wordt overschreven.
 - Idee voor later: zelfde verborgen-tabblad-vangst in PEEK!/SONAR/SNEAK eigen geluidscode; how-to's op 360x640; codecheck SQUISH JAR volgende nacht.
 - Voor Nick: niets
+
+## 2026-11-06
+- Gevonden: rooktest volledig ok (13 pagina's + Vault + zonder WebGL), geen console-fouten, screenshots netjes (ook 360px how-to's). Codecheck SQUISH JAR: uitbetaling, rush-ladder, cap, seed-vrijgave, verify, testhook (last pas na de ronde) en geluid in verborgen tabblad kloppen. Wel: SQUISH JAR was bij de focus-fix van 3 nov overgeslagen (Enter op een gefocuste link startte een spin en blokkeerde de navigatie, en na een muisklik op TURBO pakte Space de knop i.p.v. de spin). Daarnaast reageerden lettersneltoetsen ook met Ctrl/Cmd/Alt: Ctrl+A (alles selecteren) startte in SQUISH JAR tien autospins, Cmd+P (printen) opende in LAST REEL de uitbetalingen en in SONAR 3D een ping, Ctrl+J in SKYLINE een sprong.
+- Gedaan: SQUISH JAR gebruikt nu dezelfde focusregel als de andere games (BUTTON/A/SUMMARY doen hun eigen actie, muisklik laat geen focus achter). Headless bewezen: oude code Enter op link = spin + navigatie geblokkeerd, nieuwe code niets; Enter op de pagina start nog steeds.
+- Gedaan: spelsneltoetsen in 10 games (FREEZE, GOOSE 63, LAST REEL, PASS IT, SKYLINE, SNEAK, SQUISH JAR, WOBBLE, SONAR, SONAR 3D) negeren toetsen met Ctrl/Cmd/Alt, zodat browsersneltoetsen geen inzet of actie starten. Bewezen: oude SQUISH JAR Ctrl+A = auto 10, nieuwe 0; T en A zonder modifier werken nog. Geen RTP-wijziging.
+- Idee voor later: zelfde modifier-vangst in PEEK!/SONAR Enter/Space; toetsentest in check.sh; codecheck SONAR 3D volgende nacht.
+- Voor Nick: niets
