@@ -303,7 +303,7 @@ addEventListener('keydown',e=>{
   if(/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)){ if(e.key==='Enter') e.target.blur(); return }
   const d={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];
   if(d){ e.preventDefault(); kbOn=true; if(kb<0) kb=14; const x=Math.max(0,Math.min(N-1,kb%N+d[0])), y=Math.max(0,Math.min(N-1,((kb/N)|0)+d[1])); kb=y*N+x; const T=tiles[kb]; say('Row '+(y+1)+', column '+(x+1)+': '+(T.rev?(T.mine?'mine':'sonar '+T.n):'hidden'+(T.ping!==null?', pinged '+(T.ping?'warm':'cold'):'')+(T.proven===1&&phase==='run'?', proven mine':''))); return }
-  if(e.key==='Enter'&&!/^(BUTTON|A)$/.test(e.target.tagName)){ e.preventDefault(); if(phase==='bust'||phase==='done') $('cash').click(); else if(kb>=0) dive(kb); else{ kbOn=true; kb=14 } }
+  if(e.key==='Enter'&&!/^(BUTTON|A)$/.test(e.target.tagName)){ e.preventDefault(); if(phase==='bust'||phase==='done') $('cash').click(); else if(kb>=0&&kbOn) dive(kb); else{ kbOn=true; if(kb<0) kb=14 } }
   else if(e.key===' '&&!/^(BUTTON|A)$/.test(e.target.tagName)){ e.preventDefault(); if(phase==='run') cashOut(); else if(phase!=='idle') $('cash').click() }
   else if(e.key==='p'||e.key==='P') togglePing();
   else if(['1','2','3','4'].includes(e.key)) setMines(MINES[+e.key-1]);

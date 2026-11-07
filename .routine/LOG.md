@@ -150,3 +150,10 @@
 - Gedaan: spelsneltoetsen in 10 games (FREEZE, GOOSE 63, LAST REEL, PASS IT, SKYLINE, SNEAK, SQUISH JAR, WOBBLE, SONAR, SONAR 3D) negeren toetsen met Ctrl/Cmd/Alt, zodat browsersneltoetsen geen inzet of actie starten. Bewezen: oude SQUISH JAR Ctrl+A = auto 10, nieuwe 0; T en A zonder modifier werken nog. Geen RTP-wijziging.
 - Idee voor later: zelfde modifier-vangst in PEEK!/SONAR Enter/Space; toetsentest in check.sh; codecheck SONAR 3D volgende nacht.
 - Voor Nick: niets
+
+## 2026-11-07
+- Gevonden: rooktest volledig ok (13 pagina's + Vault + zonder WebGL), geen console-fouten, screenshots netjes (ook 360px). Codecheck SONAR 3D: fair-pad (layMines, pings, seed-rotatie, verifier-link), stake/ping-kosten, max win, flood en testhooks (geen mijnen zichtbaar tijdens een duik) kloppen. Wel: wie eerst met de pijltjes speelde en daarna met de muis, dook met Enter in de oude, onzichtbare toetsenbordtegel (inzet weg) terwijl SONAR 2D dan eerst de cursor toont.
+- Gedaan: SONAR 3D duikt op Enter alleen als de toetsenbordcursor zichtbaar is; anders toont Enter eerst de cursor, zoals SONAR. Headless (CDP) bewezen: oude code pijl + muisklik + Enter = duik en 10 speelgeld weg, nieuwe code idle en 1.000, tweede Enter duikt. Geen RTP-wijziging.
+- Gedaan: PEEK!/Vault (Space, Enter in inzetvelden) en SONAR (Space = cash-out) negeren toetsen met Ctrl/Cmd/Alt (backlog). Bewezen: oude PEEK! Ctrl+Space en Cmd+Space = 2 inzetten, nieuwe 0; gewone Space werkt nog.
+- Idee voor later: toetsentest in check.sh; cursor na muisklik op laatst gehoverde tegel; codecheck index of battles volgende nacht.
+- Voor Nick: niets

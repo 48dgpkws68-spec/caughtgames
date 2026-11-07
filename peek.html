@@ -473,9 +473,9 @@ $('quick').onclick=e=>{ const v=e.target.dataset.v; if(v) $('bet').value=v };
 $('half').onclick=()=>{$('bet').value=Math.max(1,Math.floor(+$('bet').value/2))};
 $('dbl').onclick=()=>{$('bet').value=Math.min(Math.floor(bal),Math.floor(+$('bet').value*2))||1};
 // stake of auto cash-out typen + Enter = inzetten; met een lopende inzet alleen bevestigen (nooit per ongeluk annuleren of uitcashen)
-['bet','auto'].forEach(id=>$(id).addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.repeat){ e.preventDefault(); if((!myBet||myBet.out)&&!queued) $('act').click(); else e.target.blur() } }));
+['bet','auto'].forEach(id=>$(id).addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.repeat&&!e.ctrlKey&&!e.metaKey&&!e.altKey){ e.preventDefault(); if((!myBet||myBet.out)&&!queued) $('act').click(); else e.target.blur() } }));
 $('auto').addEventListener('change',()=>{ const a=+$('auto').value; $('auto').value=!(a>0)?0:Math.min(MAXM,Math.max(1.01,Math.round(a*100)/100)) }); // 0 = uit, anders 1.01 tot 10.000
-document.addEventListener('keydown',e=>{ if(e.code==='Space'&&!e.repeat&&!/^(INPUT|TEXTAREA|SELECT|BUTTON|A)$/.test(e.target.tagName)){e.preventDefault();$('act').click()} });
+document.addEventListener('keydown',e=>{ if(e.code==='Space'&&!e.repeat&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!/^(INPUT|TEXTAREA|SELECT|BUTTON|A)$/.test(e.target.tagName)){e.preventDefault();$('act').click()} });
 
 $('verify').onclick=async()=>{
   if(!prev) return $('vmsg').textContent=T('first');
