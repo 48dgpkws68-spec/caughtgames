@@ -157,3 +157,10 @@
 - Gedaan: PEEK!/Vault (Space, Enter in inzetvelden) en SONAR (Space = cash-out) negeren toetsen met Ctrl/Cmd/Alt (backlog). Bewezen: oude PEEK! Ctrl+Space en Cmd+Space = 2 inzetten, nieuwe 0; gewone Space werkt nog.
 - Idee voor later: toetsentest in check.sh; cursor na muisklik op laatst gehoverde tegel; codecheck index of battles volgende nacht.
 - Voor Nick: niets
+
+## 2026-11-08
+- Gevonden: rooktest volledig ok (13 pagina's + Vault + zonder WebGL), geen console-fouten, screenshots netjes (ook 360px). Codecheck battles.html: rekenmodel (pot, fee in hele centen), lazy MIRROR-iframe en reveal kloppen, geen dashes, merkregel schoon. Wel: na "Play it in this page" verdween de gefocuste knop en viel de toetsenbordfocus terug naar het begin van de pagina. Backlogpunt geluid PEEK!/SONAR/SNEAK bleek al gedaan (alle drie suspend bij verborgen tabblad).
+- Gedaan: check.sh heeft een toetsentest per game (.routine/keys.html, 11 games): Ctrl+A, Ctrl+Space, Cmd+Enter, Alt+Enter, Cmd+P, Ctrl+J, Ctrl+1 en Space/Enter op een link of knop mogen saldo/ronde niet veranderen, en de gewone starttoets moet wél een ronde starten (controle dat de test echt kijkt). Waarom: de sneltoetsfixes van 3, 6 en 7 nov vallen bij een regressie nu vanzelf op. Negatieftest: kopie met de oude SQUISH JAR-code geeft "FOUT Ctrl+A" (10 autospins), GOOSE 63 zonder modifier-vangst "FOUT Ctrl+1"; huidige code alles ok.
+- Gedaan: battles.html zet na "Play it in this page" de focus op de MIRROR-iframe. Headless bewezen: oud BODY, nieuw IFRAME.
+- Idee voor later: Escape-test in keys.html; SONAR-verifier uitbetaling per tegel; codecheck index volgende nacht.
+- Voor Nick: niets
