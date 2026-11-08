@@ -536,6 +536,7 @@ $('playHere').addEventListener('click',e=>{
   box.closest('.shots').classList.add('playing'); box.replaceChildren(f);
   const cap=box.nextElementSibling; if(cap) cap.textContent='Playable demo with play money';
   e.currentTarget.parentNode.remove();
+  f.focus({preventScroll:true}); // de knop verdwijnt: toetsenbordfocus naar het spel i.p.v. terug naar het begin van de pagina
 });
 
 /* fee calculator */

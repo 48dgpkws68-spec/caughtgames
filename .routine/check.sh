@@ -87,6 +87,17 @@ errs=$(grep -E "CONSOLE.*(Uncaught)|Failed to load" "$OUT/index-nogl.log" 2>/dev
 if [ ! -s "$OUT/index-nogl-dom.html" ]; then echo "FOUT index (zonder WebGL): geen DOM-dump"; FAIL=1
 elif [ -n "$errs" ]; then echo "FOUT index (zonder WebGL):"; echo "$errs" | head -5; FAIL=1; elif ! grep -q 'id="fRes"[^>]*>2.08×<' "$OUT/index-nogl-dom.html"; then echo "FOUT index (zonder WebGL): verifier rekent niet (2.08× verwacht)"; FAIL=1
 else echo "ok   index (zonder WebGL)"; fi
+# Toetsentest (.routine/keys.html): Ctrl/Cmd/Alt-sneltoetsen en Space/Enter op een link of knop starten niets, gewone toets wel
+for p in peek sonar sneak goose freeze wobble skyline passit lastreel squish sonar3d; do
+  rm -rf "$PROF"; mkdir -p "$PROF"; rm -f "$OUT/$p-keys.html"
+  "$CHROME" --headless=new --user-data-dir="$PROF" --use-angle=swiftshader --enable-unsafe-swiftshader --window-size=1300,900 \
+    --virtual-time-budget=15000 --dump-dom "http://127.0.0.1:$PORT/.routine/keys.html?p=$p" > "$OUT/$p-keys.html" 2>/dev/null &
+  CPID=$!; for i in {1..90}; do kill -0 $CPID 2>/dev/null || break; sleep 1; done
+  if kill -0 $CPID 2>/dev/null; then pkill -P $CPID 2>/dev/null; kill $CPID 2>/dev/null; sleep 1; fi
+  res=$(python3 -c "import re,sys,html;t=open(sys.argv[1],encoding='utf-8',errors='replace').read();m=re.search(r'<pre id=\"res\">(.*?)</pre>',t,re.S);print(html.unescape(m.group(1)) if m else '')" "$OUT/$p-keys.html")
+  if ! echo "$res" | grep -q '^klaar'; then echo "FOUT $p (toetsen): test liep niet af"; FAIL=1
+  elif echo "$res" | grep -q '^FOUT'; then echo "FOUT $p (toetsen):"; echo "$res" | grep '^FOUT' | head -5; FAIL=1; else echo "ok   $p (toetsen)"; fi
+done
 kill $SRV; rm -rf "$PROF"
 echo "Screenshots: $OUT"
 exit $FAIL

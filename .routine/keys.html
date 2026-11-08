@@ -1,0 +1,36 @@
+<!doctype html><meta charset="utf-8"><title>keys</title>
+<!-- Toetsentest voor check.sh: browsersneltoetsen (Ctrl/Cmd/Alt) en Space/Enter op een gefocuste link of knop
+     mogen in een game niets starten; gewone Enter/Space (of de cursor-route) moet wél iets doen.
+     Synthetische keydown-events in de game-iframe (zelfde origin), uitslag in het res-blok voor --dump-dom. -->
+<style>html,body{margin:0;background:#000;color:#fff}iframe{border:0;width:1280px;height:800px}</style>
+<pre id="res">running</pre>
+<iframe id="f"></iframe>
+<script>
+const q=new URLSearchParams(location.search), p=q.get('p'), f=document.getElementById('f'), out=[];
+// positieve controle: welke toetsen op welk element een ronde starten (null = body)
+const POS={peek:[[null,' ']],sonar:[['#scope','ArrowLeft'],['#scope','Enter']],sonar3d:[[null,'Enter'],[null,'Enter']],
+  goose:[[null,'1']],sneak:[[null,'1']],wobble:[[null,'1']],squish:[[null,'Enter'],[null,'Enter']]};
+const pos=POS[p]||[[null,'Enter']];
+try{ ['sonar','sneak','goose','freeze','wobble','skyline','passit','lastreel','squish','sonar3d'].forEach(g=>localStorage.setItem(g+'-how','1')) }catch(e){}
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+function sig(w){ const d=w.document, h=w['__'+p], s=h&&h.state||{};
+  // gedeelde rondes (freeze/passit/peek) lopen vanzelf door: alleen eigen deelname en saldo tellen
+  const keep=['joined','busy','auto','sel'].concat(/^(freeze|passit|peek)$/.test(p)?[]:['phase']);
+  return JSON.stringify([d.getElementById('bal')&&d.getElementById('bal').textContent, d.getElementById('act')&&d.getElementById('act').textContent, keep.map(k=>s[k])]) }
+function press(w,el,key,mods={}){ const code=key===' '?'Space':/^[0-9]$/.test(key)?'Digit'+key:key.length===1?'Key'+key.toUpperCase():key;
+  for(const t of ['keydown','keyup']) el.dispatchEvent(new w.KeyboardEvent(t,{key,code,bubbles:true,cancelable:true,...mods})) }
+f.onload=async()=>{ const w=f.contentWindow, d=w.document;
+  await wait(2500);
+  const body=d.body, link=d.querySelector('a[href]'), btn=d.querySelector('button'), scope=d.getElementById('scope');
+  const neg=[['Ctrl+A',body,'a',{ctrlKey:true}],['Ctrl+Space',body,' ',{ctrlKey:true}],['Cmd+Enter',body,'Enter',{metaKey:true}],
+    ['Alt+Enter',body,'Enter',{altKey:true}],['Cmd+P',body,'p',{metaKey:true}],['Ctrl+J',body,'j',{ctrlKey:true}],['Ctrl+1',body,'1',{ctrlKey:true}]];
+  if(link) neg.push(['Enter op link',link,'Enter'],['Space op link',link,' ']);
+  if(btn) neg.push(['Enter op knop',btn,'Enter'],['Space op knop',btn,' ']);
+  if(scope) neg.push(['Ctrl+Enter op bord',scope,'Enter',{ctrlKey:true}]);
+  for(const [name,el,key,mods] of neg){ const a=sig(w); press(w,el,key,mods); await wait(400); const b=sig(w);
+    out.push((a===b?'ok':'FOUT')+' '+name+(a===b?'':' startte iets: '+a+' -> '+b)) }
+  const a=sig(w); for(const [sel,key] of pos){ press(w,sel?d.querySelector(sel):body,key); await wait(300) } await wait(600);
+  out.push((sig(w)!==a?'ok':'FOUT')+' controle '+pos.map(x=>x[1]===' '?'Space':x[1]).join('+')+(sig(w)!==a?' start een ronde':' deed niets (test kijkt niet goed)'));
+  document.getElementById('res').textContent=out.join('\n')+'\nklaar' };
+f.src='../'+p+'.html';
+</script>

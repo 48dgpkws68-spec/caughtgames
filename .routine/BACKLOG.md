@@ -5,6 +5,6 @@
 - SONAR-verifier ook de uitbetaling per tegel narekenen (multiplier-opbouw van een gespeelde duik).
 - Geschiedenis-chips: winst/verlies ook voor schermlezers onderscheiden (nu alleen kleur, behalve MINE/FELL).
 - SONAR/SNEAK/PEEK! how-to (eigen CSS, niet shell.css) op 360x640 controleren op dezelfde onder-de-vouw-knop.
-- PEEK!/SONAR/SNEAK eigen geluidscode: zelfde document.hidden-vangst als lib/sfx.js controleren (tonen niet inplannen in een verborgen tabblad).
-- check.sh: kleine toetsentest per game (Ctrl+A, Enter op link) zodat sneltoets-regressies vanzelf opvallen.
 - Na een muis/touch-klik zou een eerste pijltoets de cursor op de laatst gehoverde tegel kunnen zetten i.p.v. de oude toetsenbordpositie (SONAR 3D en SONAR).
+- Toetsentest uitbreiden: Escape sluit how-to/FAIR overal, en Tab-volgorde op 360px (knoppen niet onder de vouw).
+- battles.html: rekenmodel ook als korte tekstzin voor schermlezers (nu alleen losse outputs).
