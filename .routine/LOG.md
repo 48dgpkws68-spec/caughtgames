@@ -164,3 +164,11 @@
 - Gedaan: battles.html zet na "Play it in this page" de focus op de MIRROR-iframe. Headless bewezen: oud BODY, nieuw IFRAME.
 - Idee voor later: Escape-test in keys.html; SONAR-verifier uitbetaling per tegel; codecheck index volgende nacht.
 - Voor Nick: niets
+
+## 2026-11-09
+- Gevonden: rooktest vanuit de iCloud-map faalde op veel pagina's (geen screenshot, "SonarEngine is not defined", passit/world.js niet geladen) door iCloud/fileproviderd bij load tot 216; vanuit een kopie buiten iCloud alles ok (79/80). Toetsentest gaf vals alarm bij gedeelde rondes: FREEZE Ctrl+A "startte iets" omdat de knoptekst vanzelf van JOIN naar NEXT ROUND ging, en de controle faalde als Enter tijdens een lopende ronde viel. Codecheck index: de regel die "house result on €1 bets" bijwerkt stond achter een //-commentaar, waardoor die tegel altijd €0 toonde (ook live op de screenshot na 937.500 rondes).
+- Gedaan: index werkt de house-result-teller weer bij (run 3 toont €4,077). Waarom: een kapotte KPI-tegel in de hero schaadt geloofwaardigheid bij casino-eigenaren.
+- Gedaan: geschiedenis-chips in SKYLINE (won / caught at x, lost / fell, lost), LAST REEL (won/no win, free spins, with double) en SQUISH JAR (rush, won/paid) hebben een aria-label, zodat winst en verlies niet alleen aan kleur hangen (backlog). battles.html leest het rekenmodel als één zin voor via een aria-live-regel, 500 ms na het schuiven (backlog). Geen RTP-wijziging.
+- Gedaan: keys.html negeert bij gedeelde rondes (FREEZE/PASS IT/PEEK!) de knoptekst in de negatieve tests, wacht voor de controle op de inzetfase en telt "YOU JOIN THE NEXT ROUND" mee; check.sh toetsentest budget 40 s en waakhond 180 s. 4x herhaald: alles ok.
+- Idee voor later: check.sh standaard vanuit een kopie buiten iCloud; "won" in winst-chip-labels van de overige games; codecheck peek volgende nacht.
+- Voor Nick: niets
