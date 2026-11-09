@@ -276,7 +276,7 @@ function ui(){
   $('mbWin').textContent=offer?'×'+fk(cur.r5.k):bonus&&fs?fmt(fs.total):fmt(lastWin);
   W&&W.buttons({spin:offer?'LAND':'SPIN',spinOn:phase==='idle'||offer,dbl:canDbl});
 }
-function chip(m,dbl,bonus){ hist.unshift({m,dbl,bonus}); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span role="listitem" class="chip '+(h.m>0?'w':'l')+'">'+fx(h.m)+'×'+(h.bonus?' FS':'')+(h.dbl?' D':'')+'</span>').join('') }
+function chip(m,dbl,bonus){ hist.unshift({m,dbl,bonus}); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span role="listitem" class="chip '+(h.m>0?'w':'l')+'" aria-label="'+(h.m>0?'won '+fx(h.m)+'×':'no win')+(h.bonus?', free spins':'')+(h.dbl?', with double':'')+'">'+fx(h.m)+'×'+(h.bonus?' FS':'')+(h.dbl?' D':'')+'</span>').join('') }
 function banner(t,s,cls){ $('bnT').textContent=t; $('bnS').textContent=s; $('banner').className='banner '+cls+' on'; say(t+'. '+s) }
 const hideBanner=()=>{ $('banner').className='banner' };
 function winpop(t,s){ $('wpT').textContent=t; $('wpS').innerHTML=s||''; $('winpop').className='on' }

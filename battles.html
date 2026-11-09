@@ -246,6 +246,7 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
 .rv.pre{opacity:0;transform:translateY(40px)}
 .rv{transition:opacity 1s cubic-bezier(.2,.8,.2,1),transform 1s cubic-bezier(.2,.8,.2,1)}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}.rv.pre{opacity:1;transform:none}html{scroll-behavior:auto}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 </style>
 <script defer src="https://play.caughtgames.com/nv.js" data-website-id="4f92624d-4cbc-4758-8bb8-8515f2b5e871"></script>
 </head>
@@ -420,6 +421,7 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
           <div class="hl"><b id="kDay">€1,000</b><span>fees per day</span></div>
           <div class="hl" style="grid-column:1/-1"><b id="kMonth">€30,000</b><span>fees per 30 days</span></div>
         </div>
+        <p class="sr" id="kSay" aria-live="polite"></p>
         <p class="note">An illustration with your own inputs, not a forecast. Draws return both stakes and earn no fee. The fee is rounded down to the cent.</p>
       </div>
     </div>
@@ -550,7 +552,10 @@ function calc(){
   $('oSt').textContent='€'+fmt(+st.value); $('oFee').textContent=fmt(+fee.value,1)+'%'; $('oM').textContent=fmt(n);
   $('kPot').textContent=eur(pot,2); $('kWin').textContent=eur(pot-rake,2); $('kFee').textContent=eur(rake,2);
   $('kDay').textContent=eur(rake*n,0); $('kMonth').textContent=eur(rake*n*30,0);
+  // one sentence for screen readers, after the slider settles so dragging does not flood the reader
+  clearTimeout(sayT); sayT=setTimeout(()=>$('kSay').textContent='Pot '+eur(pot,2)+', winner receives '+eur(pot-rake,2)+', your fee '+eur(rake,2)+' per match, '+eur(rake*n,0)+' per day and '+eur(rake*n*30,0)+' per 30 days.',500);
 }
+let sayT;
 [st,fee,m].forEach(el=>el.addEventListener('input',calc)); calc();
 })();
 </script>

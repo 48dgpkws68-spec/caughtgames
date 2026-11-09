@@ -187,7 +187,7 @@ function ui(){
   $('bet').disabled=$('half').disabled=$('dbl').disabled=run||phase==='jump';
   $('segL').textContent=seg&&phase!=='idle'?'segment '+(seg.k+1)+' · '+jumps+' jump'+(jumps===1?'':'s'):'';
 }
-function chip(m,won,lbl){ hist.unshift({m,won,lbl}); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span role="listitem" class="chip '+(h.won?'w':'l')+'">'+(h.lbl||fx(h.m)+'×')+'</span>').join('') }
+function chip(m,won,lbl){ hist.unshift({m,won,lbl}); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span role="listitem" class="chip '+(h.won?'w':'l')+'" aria-label="'+(h.won?'won '+fx(h.m)+'×':h.lbl?'fell, lost':'caught at '+fx(h.m)+'×, lost')+'">'+(h.lbl||fx(h.m)+'×')+'</span>').join('') }
 function banner(t,s,cls){ $('bnT').textContent=t; $('bnS').textContent=s; $('banner').className='banner '+cls+' on'; say(t+'. '+s) }
 const hideBanner=()=>{ $('banner').className='banner' };
 function logRow(txt,res,cls){ const d=document.createElement('div'); d.className=cls; d.innerHTML='<span>'+txt+'</span><b>'+res+'</b>'; $('runlog').prepend(d) }

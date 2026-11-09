@@ -221,7 +221,7 @@ function ptable(){
   $('introLadder').innerHTML=ladderHTML(E.BONUS_POURS,-1);
 }
 function lit(t){ const el=$('pt'+t); if(!el) return; el.classList.add('lit'); setTimeout(()=>el.classList.remove('lit'),500) }
-function chip(m,rush){ hist.unshift({m,rush}); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span role="listitem" class="chip '+(h.m>1?'w':'l')+'"'+(h.rush&&h.m>1?' style="background:#ffd76a;box-shadow:inset 0 0 0 2px #9a62ff"':'')+'>'+(h.rush?'★ ':'')+fx(h.m)+'×</span>').join('') }
+function chip(m,rush){ hist.unshift({m,rush}); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span role="listitem" class="chip '+(h.m>1?'w':'l')+'"'+(h.rush&&h.m>1?' style="background:#ffd76a;box-shadow:inset 0 0 0 2px #9a62ff"':'')+' aria-label="'+(h.rush?'rush, ':'')+(h.m>1?'won ':'paid ')+fx(h.m)+'×">'+(h.rush?'★ ':'')+fx(h.m)+'×</span>').join('') }
 function banner(t,s,cls){ $('bnT').textContent=t; $('bnS').textContent=s; $('banner').className='banner '+cls+' on'; say(t+'. '+s) }
 const hideBanner=()=>{ $('banner').className='banner' };
 function fairUI(){ $('fairHash').textContent=' · '+F.hash.slice(0,10)+'…'; $('fairFull').textContent=(busy?'this spin':'next spin')+' · nonce '+F.nonce+' · seed hash: '+F.hash }
