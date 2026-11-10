@@ -460,7 +460,7 @@ $('snd').onclick=()=>{ muted=!muted; if(muted) musicStop(false); else if(phase==
 document.addEventListener('pointerdown',()=>audio(),{once:true});
 document.addEventListener('visibilitychange',()=>{ if(!actx) return; if(document.hidden) actx.suspend(); else actx.resume() }); // geen geluid uit een verborgen tabblad
 $('act').onclick=()=>{ audio();
-  if(phase==='run'&&myBet&&!myBet.out) return cashOut();
+  if(phase==='run'&&myBet&&!myBet.out) return mult<crashAt&&cashOut(); // crash 1.00×: een klik vóór het eerste frame telt niet als uitcashen
   if(queued){ bal+=queued; queued=null; setBal(); say(T('cancelled')); return updateBtn() }
   const a=Math.floor(+$('bet').value*100)/100;
   if(!(a>=1)) return say(T('min'));

@@ -141,7 +141,7 @@ function ui(){
   if(o){ $('selT').textContent='×'+fx(o.m)+' · '+pct(o.p)+' fall'; $('selS').textContent=describe(o)+(o.max?' · MAX WIN':''); $('lab').innerHTML='<b>×'+fx(o.m)+'</b><small>'+pct(o.p).toUpperCase()+' FALL</small><button id="labPull">PULL</button>'; $('lab').hidden=false }
   else { $('selT').textContent=sel?'This block stays put':'No block selected'; $('selS').textContent=sel?'the top two layers and the last block of a layer cannot be pulled':'tap a block in the tower'; $('lab').hidden=true }
 }
-function chip(m,won){ hist.unshift({m,won}); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span role="listitem" class="chip '+(h.won?'w':'l')+'">'+(h.won?fx(h.m)+'×':'TIMBER')+'</span>').join('') }
+function chip(m,won){ hist.unshift({m,won}); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span role="listitem" class="chip '+(h.won?'w':'l')+'" aria-label="'+(h.won?'won '+fx(h.m)+'×':'timber, lost')+'">'+(h.won?fx(h.m)+'×':'TIMBER')+'</span>').join('') }
 function banner(t,s,cls){ $('bnT').textContent=t; $('bnS').textContent=s; $('banner').className='banner '+cls+' on'; say(t+'. '+s) }
 const hideBanner=()=>{ $('banner').className='banner' };
 function fairUI(){ $('fairHash').textContent=' · '+F.hash.slice(0,10)+'…'; $('fairFull').textContent=(phase==='run'?'this tower':'next tower')+' · nonce '+F.nonce+' · seed hash: '+F.hash }

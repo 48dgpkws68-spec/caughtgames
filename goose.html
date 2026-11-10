@@ -161,7 +161,7 @@ function crackEgg(v,golden){
     $('eggBtn').onclick=go; setTimeout(go,reduce?300:3500);
   });
 }
-function chip(m,won,trap){ hist.unshift({m,won,trap}); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span role="listitem" class="chip '+(h.won?'w':'l')+'">'+(h.won?fx(h.m)+'×':h.trap)+'</span>').join('') }
+function chip(m,won,trap){ hist.unshift({m,won,trap}); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span role="listitem" class="chip '+(h.won?'w':'l')+'" aria-label="'+(h.won?'won '+fx(h.m)+'×':String(h.trap).toLowerCase()+', lost')+'">'+(h.won?fx(h.m)+'×':h.trap)+'</span>').join('') }
 function banner(t,s,cls){ $('bnT').textContent=t; $('bnS').textContent=s; $('banner').className='banner '+cls+' on'; say(t+'. '+s) }
 const hideBanner=()=>{ $('banner').className='banner' };
 let toastT=0; function toast(t){ const el=$('toast'); el.textContent=t; el.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(()=>el.classList.remove('on'),1100) }

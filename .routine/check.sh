@@ -6,7 +6,10 @@ OUT=".routine/shots/$(date +%Y-%m-%d)"; mkdir -p "$OUT"
 CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 PROF=$(mktemp -d)
 PORT=$(python3 -c "import socket;s=socket.socket();s.bind(('',0));print(s.getsockname()[1])")
-python3 -m http.server $PORT --bind 127.0.0.1 >/dev/null 2>&1 & SRV=$!
+# serveer vanuit een kopie buiten iCloud: dataless bestanden lieten de lokale server haperen (9 nov, FOUT-en zonder echte fout)
+SRC=$(mktemp -d)
+rsync -a --exclude .git --exclude .routine/shots ./ "$SRC/"
+python3 -m http.server $PORT --bind 127.0.0.1 --directory "$SRC" >/dev/null 2>&1 & SRV=$!
 sleep 1
 FAIL=0
 for p in index battles peek sonar sneak goose freeze wobble skyline passit lastreel squish sonar3d; do
@@ -98,6 +101,6 @@ for p in peek sonar sneak goose freeze wobble skyline passit lastreel squish son
   if ! echo "$res" | grep -q '^klaar'; then echo "FOUT $p (toetsen): test liep niet af"; FAIL=1
   elif echo "$res" | grep -q '^FOUT'; then echo "FOUT $p (toetsen):"; echo "$res" | grep '^FOUT' | head -5; FAIL=1; else echo "ok   $p (toetsen)"; fi
 done
-kill $SRV; rm -rf "$PROF"
+kill $SRV; rm -rf "$PROF" "$SRC"
 echo "Screenshots: $OUT"
 exit $FAIL
