@@ -172,3 +172,11 @@
 - Gedaan: keys.html negeert bij gedeelde rondes (FREEZE/PASS IT/PEEK!) de knoptekst in de negatieve tests, wacht voor de controle op de inzetfase en telt "YOU JOIN THE NEXT ROUND" mee; check.sh toetsentest budget 40 s en waakhond 180 s. 4x herhaald: alles ok.
 - Idee voor later: check.sh standaard vanuit een kopie buiten iCloud; "won" in winst-chip-labels van de overige games; codecheck peek volgende nacht.
 - Voor Nick: niets
+
+## 2026-11-10
+- Gevonden: rooktest volledig ok (13 pagina's + Vault + zonder WebGL + toetsentest), geen console-fouten, mobiele screenshots (360px) netjes. Codecheck PEEK!/Vault: provably fair (seed pas na de crash vrij, verifier-link), auto cash-out, max win, geschiedenis-kap en verborgen-tabblad-vangst kloppen. Wel: bij een crashpunt van precies 1.00× kon een klik tussen de rondestart (async) en het eerste frame nog uitcashen op 1.00× (inzet terug i.p.v. kwijt).
+- Gedaan: check.sh rsynct de site naar een tijdelijke map buiten iCloud en serveert van daaruit (screenshots blijven in .routine/shots). Waarom: dataless iCloud-bestanden gaven op 9 nov FOUT-en zonder echte fout (backlog). Twee volle runs ok (12 min elk).
+- Gedaan: PEEK!/Vault casht met de knop of Space alleen uit als de multiplier nog onder het crashpunt ligt. Auto cash-out en max win ongewijzigd, geen RTP-wijziging (dicht juist een lek boven de 97%).
+- Gedaan: winst/verlies-chips in GOOSE 63, SNEAK, WOBBLE en SONAR 3D hebben nu een aria-label ("won 2.30×" / "caught, lost", "timber, lost", "mine, lost", "<val>, lost"), zodat alle games gelijk zijn (backlog).
+- Idee voor later: PEEK!-chips aria-label; toetsentest crash 1.00×; codecheck sonar volgende nacht.
+- Voor Nick: niets
