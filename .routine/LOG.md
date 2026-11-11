@@ -180,3 +180,12 @@
 - Gedaan: winst/verlies-chips in GOOSE 63, SNEAK, WOBBLE en SONAR 3D hebben nu een aria-label ("won 2.30×" / "caught, lost", "timber, lost", "mine, lost", "<val>, lost"), zodat alle games gelijk zijn (backlog).
 - Idee voor later: PEEK!-chips aria-label; toetsentest crash 1.00×; codecheck sonar volgende nacht.
 - Voor Nick: niets
+
+## 2026-11-11
+- Gevonden: rooktest ok op 79 punten (13 pagina's + Vault + zonder WebGL + toetsentest + nieuwe verifiertest), mobiele screenshots netjes. Eén melding "index (dom): geen DOM-dump" in de eindrun bij load 10-18; los gedraaid 2x ok (40 s, geen fouten, geen undefined/NaN), dus omgeving zoals op 3 nov. Codecheck SONAR: fair-pad, pings, uitbetaling, max win en testhook kloppen. Wel: met prefers-reduced-motion bleef de achtergrond helemaal leeg (het canvas wordt één keer getekend en daarna door de eerste resize gewist), en in de how-to kon Tab de dialoog uit en gaf Escape de focus niet terug.
+- Gedaan: SONAR-verifier rekent een gespeelde duik tegel voor tegel na (backlog). SONAR en SONAR 3D zetten het duikpad (tegels in volgorde, p = ping) en de eindmultiplier in de verifier-link; index.html laadt sonar-engine.js en toont per duik de kans, de multiplier, gratis geopende tegels en of het eindbedrag klopt met het spel. Waarom: een operator of auditor kan nu ook de uitbetaling controleren, niet alleen het mijnenveld. Bewezen: 4.000 gesimuleerde duiken (891 cash-outs, 3.109 mijnen, met pings) 0 afwijkingen; verkeerde x en gewijzigde seed worden herkend. Geen RTP-wijziging (engine onaangeroerd).
+- Gedaan: check.sh heeft een verifiertest (.routine/replay.html): speelt 3 SONAR-duiken met het toetsenbord en eist "matches the game" in de verifier. Headless: 4 duiken ok (2 cash-outs, 2 mijnen).
+- Gedaan: SONAR tekent de achtergrond bij reduced motion opnieuw na een resize (oud: alpha 0, nieuw: 255); how-to houdt Tab in de dialoog en Escape zet de focus terug op HOW.
+- Let op: SONAR 3D kreeg dezelfde link-wijziging maar is niet end-to-end getest (headless speelt de duikanimatie niet af); de code is regel voor regel gelijk aan SONAR.
+- Idee voor later: reduced-motion achtergrond in de andere games; SONAR 3D verifier-link testen; index DOM-dump robuuster in check.sh; codecheck sneak volgende nacht.
+- Voor Nick: niets
