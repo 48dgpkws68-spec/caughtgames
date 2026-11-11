@@ -101,6 +101,15 @@ for p in peek sonar sneak goose freeze wobble skyline passit lastreel squish son
   if ! echo "$res" | grep -q '^klaar'; then echo "FOUT $p (toetsen): test liep niet af"; FAIL=1
   elif echo "$res" | grep -q '^FOUT'; then echo "FOUT $p (toetsen):"; echo "$res" | grep '^FOUT' | head -5; FAIL=1; else echo "ok   $p (toetsen)"; fi
 done
+# Verifiertest (.routine/replay.html): speelt 3 SONAR-duiken en laat de homepage-verifier de uitbetaling per tegel narekenen
+rm -rf "$PROF"; mkdir -p "$PROF"; rm -f "$OUT/sonar-replay.html"
+"$CHROME" --headless=new --user-data-dir="$PROF" --use-angle=swiftshader --enable-unsafe-swiftshader --window-size=1300,900 \
+  --virtual-time-budget=60000 --dump-dom "http://127.0.0.1:$PORT/.routine/replay.html?p=sonar&n=3" > "$OUT/sonar-replay.html" 2>/dev/null &
+CPID=$!; for i in {1..300}; do kill -0 $CPID 2>/dev/null || break; sleep 1; done
+if kill -0 $CPID 2>/dev/null; then pkill -P $CPID 2>/dev/null; kill $CPID 2>/dev/null; sleep 1; fi
+res=$(python3 -c "import re,sys,html;t=open(sys.argv[1],encoding='utf-8',errors='replace').read();m=re.search(r'<pre id=\"res\">(.*?)</pre>',t,re.S);print(html.unescape(m.group(1)) if m else '')" "$OUT/sonar-replay.html")
+if ! echo "$res" | grep -q '^klaar'; then echo "FOUT sonar (verifier): test liep niet af"; FAIL=1
+elif echo "$res" | grep -q '^FOUT'; then echo "FOUT sonar (verifier):"; echo "$res" | grep '^FOUT' | head -5; FAIL=1; else echo "ok   sonar (verifier)"; fi
 kill $SRV; rm -rf "$PROF" "$SRC"
 echo "Screenshots: $OUT"
 exit $FAIL

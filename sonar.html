@@ -202,7 +202,7 @@ body.embed .brand{display:none}
   </div>
 </div>
 <div class="glass" id="mbar"><b id="mbMult">1.00×</b><button id="mbCash">CASH OUT</button></div>
-<div class="glass fairbox" id="fairBox" hidden><b>Provably fair</b><p>Before each dive we publish SHA-256(server seed). Mine positions are a Fisher-Yates shuffle driven by HMAC-SHA256(seed, client:nonce:i); pings use HMAC(seed, client:nonce:ping:k). After the dive the seed is revealed so anyone can recompute the board.</p><p>Payouts: tile pays (1/p) × e<sup>−0.25·ln(p)²</sup>, p = exact chance the tile is safe given every number on the board. First tile: 0.975/p. No strategy can return more than 97.5%.</p><code id="fairFull"></code><p id="fairPrev">no dive played yet</p><a id="fairV" class="fairv" hidden target="_blank" rel="noopener">Open in the verifier</a></div>
+<div class="glass fairbox" id="fairBox" hidden><b>Provably fair</b><p>Before each dive we publish SHA-256(server seed). Mine positions are a Fisher-Yates shuffle driven by HMAC-SHA256(seed, client:nonce:i); pings use HMAC(seed, client:nonce:ping:k). After the dive the seed is revealed so anyone can recompute the board, and the verifier replays the payout of every tile you dived.</p><p>Payouts: tile pays (1/p) × e<sup>−0.25·ln(p)²</sup>, p = exact chance the tile is safe given every number on the board. First tile: 0.975/p. No strategy can return more than 97.5%.</p><code id="fairFull"></code><p id="fairPrev">no dive played yet</p><a id="fairV" class="fairv" hidden target="_blank" rel="noopener">Open in the verifier</a></div>
 <div class="how" id="how" hidden><div class="glass" role="dialog" aria-modal="true" aria-labelledby="howT">
   <h2 id="howT">How to read <span>SONAR</span></h2>
   <p style="margin:0;color:var(--muted);font-size:14px;line-height:1.55">Mines hide under a 6×6 patch of sea. You decide where to dive, and the sonar tells you exactly how dangerous the water around you is.</p>
@@ -252,8 +252,8 @@ const hex=b=>[...b].map(x=>x.toString(16).padStart(2,'0')).join(''), enc=s=>new 
 const CLIENT='sonar-demo-client'; let nonce=0, seed=hex(crypto.getRandomValues(new Uint8Array(32))), seedHash=hex(sha256js(enc(seed))), prev=null;
 const rnd=(msg)=>new DataView(hmacjs(enc(seed),enc(msg)).buffer).getUint32(0)/2**32;
 function layMines(m){ nonce++; const a=[...Array(C).keys()]; for(let i=C-1;i>0;i--){ const j=Math.floor(rnd(CLIENT+':'+nonce+':'+i)*(i+1)); [a[i],a[j]]=[a[j],a[i]] } return new Set(a.slice(0,m)) }
-function fairUI(){ $('fairHash').textContent=seedHash.slice(0,12)+'…'; $('fairFull').textContent=(phase==='run'?'this dive':'next dive')+' seed hash: '+seedHash; if(prev){ $('fairPrev').textContent='dive '+prev.nonce+' · seed '+prev.seed+' · mines at '+prev.mines.join(', ')+(prev.pings.length?' · pings '+prev.pings.map(p=>'tile '+parseInt(p)+' '+(p.endsWith('w')?'warm':'cold')).join(', '):''); const v=$('fairV'); v.href='index.html?game=sonar&seed='+prev.seed+'&client='+encodeURIComponent(CLIENT)+'&nonce='+prev.nonce+'&mines='+prev.mines.length+(prev.pings.length?'&pings='+prev.pings.join(','):'')+'#fair'; v.hidden=false } } // vorige duik 1-op-1 narekenen op de homepage
-function rotateSeed(m){ prev={seed,nonce,mines:[...m].sort((a,b)=>a-b),pings:[...pings].map(([t,w])=>t+(w?'w':'c'))}; /* pings in volgorde k=1,2,3 (Map bewaart invoegvolgorde) */ seed=hex(crypto.getRandomValues(new Uint8Array(32))); seedHash=hex(sha256js(enc(seed))); fairUI() }
+function fairUI(){ $('fairHash').textContent=seedHash.slice(0,12)+'…'; $('fairFull').textContent=(phase==='run'?'this dive':'next dive')+' seed hash: '+seedHash; if(prev){ $('fairPrev').textContent='dive '+prev.nonce+' · seed '+prev.seed+' · mines at '+prev.mines.join(', ')+(prev.pings.length?' · pings '+prev.pings.map(p=>'tile '+parseInt(p)+' '+(p.endsWith('w')?'warm':'cold')).join(', '):''); const v=$('fairV'); v.href='index.html?game=sonar&seed='+prev.seed+'&client='+encodeURIComponent(CLIENT)+'&nonce='+prev.nonce+'&mines='+prev.mines.length+(prev.pings.length?'&pings='+prev.pings.join(','):'')+'&path='+prev.trail.join(',')+'&x='+(+prev.x.toFixed(4))+'#fair'; v.hidden=false } } // vorige duik 1-op-1 narekenen op de homepage
+function rotateSeed(m){ prev={seed,nonce,mines:[...m].sort((a,b)=>a-b),pings:[...pings].map(([t,w])=>t+(w?'w':'c')),trail:[...trail],x:mult}; /* pings in volgorde k=1,2,3 (Map bewaart invoegvolgorde) */ seed=hex(crypto.getRandomValues(new Uint8Array(32))); seedHash=hex(sha256js(enc(seed))); fairUI() }
 
 /* ---------- audio ---------- */
 let ac=null, muted=false, amb=null, echo=null;
@@ -278,7 +278,7 @@ function stopAmb(){ if(!amb) return; const a=amb; amb=null; a.g.gain.linearRampT
 
 /* ---------- state ---------- */
 let bal=1000, mines=new Set(), M=5, phase='idle', stake=10, mult=1, first=true, revealed=new Map(), pings=new Map(), pingsUsed=0, pingArm=false;
-let moves=[], tiles=[], hover=-1, bustIdx=-1, review=null, hist=[], feeLog=0;
+let moves=[], trail=[], tiles=[], hover=-1, bustIdx=-1, review=null, hist=[], feeLog=0;
 function resetTiles(){ tiles=[...Array(C)].map(()=>({rev:0,n:0,t0:0,mine:false,boom:false,ping:null,pt:0,flash:0,free:false,proven:0,prt:0})) }
 resetTiles();
 
@@ -305,7 +305,7 @@ $('half').onclick=()=>{ $('bet').value=Math.max(1,Math.round(readStake()/2*100)/
 $('dbl').onclick=()=>{ $('bet').value=Math.min(bal,500,readStake()*2); readStake(); sTickSafe() };
 
 /* ---------- game flow ---------- */
-function newBoard(){ dbId++; resetTiles(); revealed=new Map(); pings=new Map(); pingsUsed=0; pingArm=false; moves=[]; bustIdx=-1; review=null; feeLog=0; mult=1; first=true; phase='idle'; mines=new Set();
+function newBoard(){ dbId++; resetTiles(); revealed=new Map(); pings=new Map(); pingsUsed=0; pingArm=false; moves=[]; trail=[]; bustIdx=-1; review=null; feeLog=0; mult=1; first=true; phase='idle'; mines=new Set();
   $('debrief').classList.remove('on'); $('hint').style.display=''; redTint=0; flash=0; parts.length=0; rips.length=0; $('state').textContent='READY TO DIVE'; $('state').style.color=''; multUI(''); actUI(); sweepBoost=1 }
 function start(){ if(bal<1){ bal=1000; setBal(); toast('Out of play money. Balance topped up to <b>1,000</b>.') } stake=readStake(); if(bal<stake||stake<=0){ toast('Not enough play money for this stake.'); return false } bal-=stake; setBal(); mines=layMines(M); phase='run'; fairUI(); $('state').textContent='DIVING · '+M+' MINES'; return true }
 function dive(i){
@@ -321,7 +321,7 @@ function dive(i){
   const riskP=safeTiles.filter(j=>P[j]>1e-12&&P[j]<1-1e-12).map(j=>1-P[j]), bestRisky=riskP.length?Math.max(...riskP):1;
   const nBest=riskP.filter(q=>Math.abs(q-bestRisky)<1e-6).length;
   const mv={i,p,nBest,P:Array.from(P),best:Math.max(...safeTiles.map(j=>1-P[j])),bestRisky,first,bust:false,pings:new Map(pings),rev:new Map(revealed),gain:g};
-  moves.push(mv);
+  moves.push(mv); trail.push(i);
   if(mines.has(i)){ mv.bust=true; bust(i); return }
   const n=E.sonarAt(mines,i); revealed.set(i,n); Object.assign(tiles[i],{rev:1,n,t0:now,free:p>=1-1e-9});
   if(p<1-1e-9) feeLog+=first?-Math.log(E.FIRST):E.H*Math.log(p)**2;
@@ -340,7 +340,7 @@ function deduce(){ if(phase!=='run') return; const P=E.mineProbs(revealed,M,ping
 let mineArm=-1, mineArmT=0;
 function flood(i){ const q=[i], seen=new Set([i]); let d=0;
   while(q.length){ const a=q.shift(); if(revealed.get(a)!==0) continue; for(const j of E.NB[a]){ if(seen.has(j)||revealed.has(j)) continue; seen.add(j); const n=E.sonarAt(mines,j); revealed.set(j,n); d++; Object.assign(tiles[j],{rev:1,n,t0:now+d*55,free:true}); const tl=tiles; setTimeout(()=>{ if(tl===tiles){ ripple(j,.45); sFree() } },d*55); q.push(j) } } return d }
-function doPing(i){ if(pings.has(i)){ pingArm=false; actUI(); toast('Already pinged · pick <b>another tile</b>'); return } if(tiles[i].proven){ pingArm=false; actUI(); toast('The numbers already prove this tile '+(tiles[i].proven===1?'is a <b>mine</b>':'is <b>safe</b>')+' · no ping needed'); return } const cost=Math.round(stake*PING_COST*100)/100; if(bal<cost){ pingArm=false; actUI(); return } bal-=cost; setBal(); pingsUsed++; pingArm=false;
+function doPing(i){ if(pings.has(i)){ pingArm=false; actUI(); toast('Already pinged · pick <b>another tile</b>'); return } if(tiles[i].proven){ pingArm=false; actUI(); toast('The numbers already prove this tile '+(tiles[i].proven===1?'is a <b>mine</b>':'is <b>safe</b>')+' · no ping needed'); return } const cost=Math.round(stake*PING_COST*100)/100; if(bal<cost){ pingArm=false; actUI(); return } bal-=cost; setBal(); pingsUsed++; trail.push('p'); pingArm=false;
   const truth=mines.has(i), honest=rnd(CLIENT+':'+nonce+':ping:'+pingsUsed)<.8, warm=honest?truth:!truth;
   pings.set(i,warm); Object.assign(tiles[i],{ping:warm,pt:now}); beam(i,warm); warm?sWarm():sCold();
   toast(warm?'<b style="color:var(--warm)">WARM</b> · echo bounced back':'<b style="color:var(--cold)">COLD</b> · clear water',2200); deduce(); actUI() }
@@ -541,7 +541,7 @@ function draw(t){ const dt=Math.min(50,t-now); now=t; const w=W; if(!w) return;
 
 /* ---------- background ---------- */
 const bg=$('bg'), bx=bg.getContext('2d'); let BW,BH; const motes=[...Array(60)].map(()=>({x:Math.random(),y:Math.random(),r:Math.random()*1.6+.3,s:Math.random()*.4+.1}));
-function size2(){ BW=bg.width=innerWidth; BH=bg.height=innerHeight }
+function size2(){ BW=bg.width=innerWidth; BH=bg.height=innerHeight; if(reduce) bgFrame(performance.now()) } // reduced motion tekent maar één keer: na een resize (wist het canvas) opnieuw
 function bgFrame(t){ const g=bx.createLinearGradient(0,0,0,BH); g.addColorStop(0,'#04202a'); g.addColorStop(.5,'#021118'); g.addColorStop(1,'#01070b'); bx.fillStyle=g; bx.fillRect(0,0,BW,BH);
   if(!reduce){ bx.globalCompositeOperation='lighter'; for(let k=0;k<5;k++){ const x=BW*(.15+k*.18)+Math.sin(t*.00012+k)*BW*.06; const rg=bx.createLinearGradient(x,0,x+BW*.12,BH); rg.addColorStop(0,'rgba(80,220,230,.07)'); rg.addColorStop(.7,'rgba(80,220,230,0)'); bx.fillStyle=rg; bx.beginPath(); bx.moveTo(x-BW*.03,0); bx.lineTo(x+BW*.05,0); bx.lineTo(x+BW*.2,BH); bx.lineTo(x+BW*.02,BH); bx.fill() } bx.globalCompositeOperation='source-over' }
   bx.fillStyle='rgba(190,255,250,.35)'; motes.forEach(m=>{ m.y-=m.s*.0004; if(m.y<0) m.y=1; bx.globalAlpha=.3+.3*Math.sin(t*.001+m.x*9); bx.beginPath(); bx.arc(m.x*BW+Math.sin(t*.0005+m.y*7)*10,m.y*BH,m.r,0,7); bx.fill() }); bx.globalAlpha=1;
@@ -555,7 +555,7 @@ $('snd').onclick=()=>{ muted=!muted; $('snd').textContent=muted?'SOUND OFF':'SOU
 $('howBtn').onclick=()=>{ $('how').hidden=false; $('act2').focus() };
 $('act2').onclick=()=>{ $('how').hidden=true; au(); sPing(.12); try{ localStorage.setItem('sonar-how','1') }catch(e){} };
 $('how').onclick=e=>{ if(e.target.id==='how') $('how').hidden=true };
-addEventListener('keydown',e=>{ if(e.ctrlKey||e.metaKey||e.altKey) return; if(e.key==='Escape'){ $('how').hidden=true; $('fairBox').hidden=true; if(pingArm){ pingArm=false; actUI() } } if(e.key===' '&&phase==='run'&&!first&&!e.repeat&&!/^(INPUT|BUTTON|SELECT|TEXTAREA|A|SUMMARY)$/.test(document.activeElement.tagName)){ e.preventDefault(); cashOut() } });
+addEventListener('keydown',e=>{ if(e.ctrlKey||e.metaKey||e.altKey) return; if(e.key==='Tab'&&!$('how').hidden){ e.preventDefault(); $('act2').focus(); return } if(e.key==='Escape'){ if(!$('how').hidden&&$('how').contains(document.activeElement)) $('howBtn').focus(); $('how').hidden=true; $('fairBox').hidden=true; if(pingArm){ pingArm=false; actUI() } } if(e.key===' '&&phase==='run'&&!first&&!e.repeat&&!/^(INPUT|BUTTON|SELECT|TEXTAREA|A|SUMMARY)$/.test(document.activeElement.tagName)){ e.preventDefault(); cashOut() } });
 let seen=false; try{ seen=localStorage.getItem('sonar-how')==='1' }catch(e){} if(!seen&&!embed){ $('how').hidden=false; setTimeout(()=>$('act2').focus({preventScroll:true}),0) }
 new ResizeObserver(size).observe(cv); addEventListener('resize',size2);
 document.fonts&&document.fonts.ready.then(()=>{ size() });

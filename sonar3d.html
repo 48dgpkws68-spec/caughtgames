@@ -129,7 +129,7 @@
   </div>
 </div>
 <div class="box" id="mbar"><b id="mbMult">1.00×</b><button id="mbCash" disabled>CASH OUT</button></div>
-<div class="box fairbox" id="fairBox" hidden><b>Provably fair</b><p>Before each dive we publish SHA-256(server seed). Mine positions are a Fisher-Yates shuffle over the 36 clams driven by HMAC-SHA256(seed, client:nonce:i), first 32 bits ÷ 2<sup>32</sup>. Ping k is honest when HMAC-SHA256(seed, client:nonce:ping:k) is below 0.8, otherwise it reads the other way. After the dive the seed is revealed so anyone can rebuild the reef.</p><p>Payouts: a clam pays (1/p) × e<sup>−0.25·ln(p)²</sup>, p = the exact chance it is safe given every number and ping on the board. First clam: 0.975/p. A clam proven safe pays ×1.00. Max win 5,000×. No strategy can return more than 97.5%. A ping costs 10% of the stake, up to 3 per dive.</p><code id="fairFull"></code><pre id="fairPrev">no dive played yet</pre><a id="fairV" class="fairv" hidden target="_blank" rel="noopener">Open in the verifier</a></div>
+<div class="box fairbox" id="fairBox" hidden><b>Provably fair</b><p>Before each dive we publish SHA-256(server seed). Mine positions are a Fisher-Yates shuffle over the 36 clams driven by HMAC-SHA256(seed, client:nonce:i), first 32 bits ÷ 2<sup>32</sup>. Ping k is honest when HMAC-SHA256(seed, client:nonce:ping:k) is below 0.8, otherwise it reads the other way. After the dive the seed is revealed so anyone can rebuild the reef, and the verifier replays the payout of every clam you dived.</p><p>Payouts: a clam pays (1/p) × e<sup>−0.25·ln(p)²</sup>, p = the exact chance it is safe given every number and ping on the board. First clam: 0.975/p. A clam proven safe pays ×1.00. Max win 5,000×. No strategy can return more than 97.5%. A ping costs 10% of the stake, up to 3 per dive.</p><code id="fairFull"></code><pre id="fairPrev">no dive played yet</pre><a id="fairV" class="fairv" hidden target="_blank" rel="noopener">Open in the verifier</a></div>
 <div class="how" id="how" hidden><div class="box" role="dialog" aria-modal="true" aria-labelledby="howT">
   <h2 id="howT">How to play <span>SONAR 3D</span></h2>
   <p style="margin:0;color:var(--muted);font-size:15px;line-height:1.55">Sea mines hide in a 6×6 bed of clams. Your little sub dives where you tap, and the sonar tells you exactly how dangerous the water around it is. Play money only.</p>
@@ -161,8 +161,8 @@ const rnd=(msg)=>new DataView(hmacjs(enc(seed),enc(msg)).buffer).getUint32(0)/2*
 function layMines(m){ nonce++; const a=[...Array(C).keys()]; for(let i=C-1;i>0;i--){ const j=Math.floor(rnd(CLIENT+':'+nonce+':'+i)*(i+1)); [a[i],a[j]]=[a[j],a[i]] } return new Set(a.slice(0,m)) }
 function fairUI(){ $('fairHash').textContent=' · '+seedHash.slice(0,10)+'…'; $('fairFull').textContent=(phase==='run'?'this dive':'next dive')+' · seed hash: '+seedHash;
   if(prev){ $('fairPrev').textContent='dive '+prev.nonce+' · client '+CLIENT+'\nseed '+prev.seed+'\nmines at '+prev.mines.join(', ')+(prev.pings.length?'\npings '+prev.pings.map(p=>'clam '+parseInt(p)+' '+(p.endsWith('w')?'warm':'cold')).join(', '):'')+'\n(clams numbered 0 to 35, row by row from the back left)';
-    const v=$('fairV'); v.href='index.html?game=sonar&seed='+prev.seed+'&client='+encodeURIComponent(CLIENT)+'&nonce='+prev.nonce+'&mines='+prev.mines.length+(prev.pings.length?'&pings='+prev.pings.join(','):'')+'#fair'; v.hidden=false } }
-function rotateSeed(m){ prev={seed,nonce,mines:[...m].sort((a,b)=>a-b),pings:[...pings].map(([t,w])=>t+(w?'w':'c'))}; seed=hex(crypto.getRandomValues(new Uint8Array(32))); seedHash=hex(sha256js(enc(seed))); fairUI() }
+    const v=$('fairV'); v.href='index.html?game=sonar&seed='+prev.seed+'&client='+encodeURIComponent(CLIENT)+'&nonce='+prev.nonce+'&mines='+prev.mines.length+(prev.pings.length?'&pings='+prev.pings.join(','):'')+'&path='+prev.trail.join(',')+'&x='+(+prev.x.toFixed(4))+'#fair'; v.hidden=false } }
+function rotateSeed(m){ prev={seed,nonce,mines:[...m].sort((a,b)=>a-b),pings:[...pings].map(([t,w])=>t+(w?'w':'c')),trail:[...trail],x:mult}; seed=hex(crypto.getRandomValues(new Uint8Array(32))); seedHash=hex(sha256js(enc(seed))); fairUI() }
 
 /* ---------- sound ---------- */
 const sPing=(v=.12)=>{ A.tone(1480,1420,.9,v,'sine'); A.tone(2960,2900,.4,v*.18,'sine') };
@@ -179,7 +179,7 @@ $('snd').onclick=()=>{ A.unlock(); $('snd').textContent=A.toggle()?'SOUND OFF':'
 
 /* ---------- state ---------- */
 let bal=1000, mines=new Set(), M=5, phase='idle', stake=10, mult=1, first=true, revealed=new Map(), pings=new Map(), pingsUsed=0, pingArm=false;
-let moves=[], tiles=[], bustIdx=-1, hist=[], feeLog=0, busy=false, mineArm=-1, mineArmT=0, kb=-1, kbOn=false;
+let moves=[], trail=[], tiles=[], bustIdx=-1, hist=[], feeLog=0, busy=false, mineArm=-1, mineArmT=0, kb=-1, kbOn=false;
 function resetTiles(){ tiles=[...Array(C)].map(()=>({rev:0,n:0,t0:0,mine:false,boom:false,ping:null,pt:0,free:false,proven:0,prt:0})) }
 resetTiles();
 
@@ -215,7 +215,7 @@ $('dbl').onclick=()=>{ $('bet').value=Math.min(bal,500,readStake()*2); readStake
 $('bet').addEventListener('change',()=>{ readStake(); ui() });
 
 /* ---------- game flow (same rules and maths as sonar.html) ---------- */
-function newBoard(){ resetTiles(); revealed=new Map(); pings=new Map(); pingsUsed=0; pingArm=false; moves=[]; bustIdx=-1; feeLog=0; mult=1; first=true; phase='idle'; mines=new Set(); mineArm=-1;
+function newBoard(){ resetTiles(); revealed=new Map(); pings=new Map(); pingsUsed=0; pingArm=false; moves=[]; trail=[]; bustIdx=-1; feeLog=0; mult=1; first=true; phase='idle'; mines=new Set(); mineArm=-1;
   $('debrief').classList.remove('on'); $('hint').style.display=''; $('state').textContent='READY TO DIVE'; multUI(''); $('win').innerHTML='tap any clam to start'; $('tip').style.opacity=1; ui() }
 function start(){ if(bal<1){ bal=1000; setBal(); toast('Out of play money · balance topped up to <b>1,000</b>') } stake=readStake(); if(bal<stake||stake<=0){ toast('Not enough play money for this stake'); return false } bal-=stake; setBal(); mines=layMines(M); phase='run'; fairUI(); $('state').textContent='DIVING · '+M+' MINES'; $('tip').style.opacity=0; return true }
 async function dive(i){
@@ -231,7 +231,7 @@ async function dive(i){
   const open=[]; for(let j=0;j<C;j++) if(!tiles[j].rev) open.push(j);
   const riskP=open.filter(j=>P[j]>1e-12&&P[j]<1-1e-12).map(j=>1-P[j]), bestRisky=riskP.length?Math.max(...riskP):1;
   const mv={i,p,best:Math.max(...open.map(j=>1-P[j])),bestRisky,first,bust:false,gain:g};
-  moves.push(mv);
+  moves.push(mv); trail.push(i);
   busy=true; ui(); sDive();
   await W.dive(i);
   busy=false;
@@ -255,7 +255,7 @@ async function doPing(i){
   if(pings.has(i)){ pingArm=false; ui(); toast('Already pinged · pick <b>another clam</b>'); return }
   if(tiles[i].proven){ pingArm=false; ui(); toast('The numbers already prove this clam '+(tiles[i].proven===1?'is a <b>mine</b>':'is <b>safe</b>')+' · no ping needed'); return }
   const cost=Math.round(stake*PING_COST*100)/100; if(bal<cost){ pingArm=false; ui(); return }
-  bal-=cost; setBal(); pingsUsed++; pingArm=false;
+  bal-=cost; setBal(); pingsUsed++; trail.push('p'); pingArm=false;
   const truth=mines.has(i), honest=rnd(CLIENT+':'+nonce+':ping:'+pingsUsed)<.8, warm=honest?truth:!truth;
   pings.set(i,warm); busy=true; ui(); sPing(.08);
   await W.ping(i,warm);

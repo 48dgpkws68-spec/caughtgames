@@ -674,7 +674,7 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
         <div id="fMinesW" hidden><label for="fMines">Mines on the board</label><select id="fMines"><option>3</option><option selected>5</option><option>8</option><option>12</option></select></div>
         <div><label id="fHmacL">HMAC-SHA256(server, client:nonce)</label><div class="hash" id="fHmac" style="color:var(--muted)">...</div></div>
         <div class="res"><span style="color:var(--dim)" id="fResL">CRASH POINT</span><b id="fRes">...</b></div>
-        <div id="fGridW" hidden><div class="fgrid" id="fGrid" role="img"></div><p class="fnote">Tiles are numbered 0 to 35, left to right, top to bottom. The board shows the same numbers SONAR listed after your dive.</p><div class="fping" id="fPing" aria-live="polite"></div></div>
+        <div id="fGridW" hidden><div class="fgrid" id="fGrid" role="img"></div><p class="fnote">Tiles are numbered 0 to 35, left to right, top to bottom. The board shows the same numbers SONAR listed after your dive.</p><div class="fping" id="fPing" aria-live="polite"></div><div class="fping" id="fPath" hidden></div></div>
       </div>
     </div>
   </div>
@@ -857,6 +857,7 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="sonar-engine.js"></script>
 <script>
 (()=>{
 const $=id=>document.getElementById(id);
@@ -1051,6 +1052,23 @@ let fGame='peek';
 // SONAR: Fisher-Yates over 36 tegels met HMAC(seed, client:nonce:i), identiek aan layMines() in sonar.html
 function sonarMines(seed,cl,n,m){ const r=i=>new DataView(hmacjs(enc(seed),enc(cl+':'+n+':'+i)).buffer).getUint32(0)/2**32, a=[...Array(36).keys()];
   for(let i=35;i>0;i--){ const j=Math.floor(r(i)*(i+1)); [a[i],a[j]]=[a[j],a[i]] } return a.slice(0,m).sort((x,y)=>x-y) }
+// SONAR: gespeelde duik tegel voor tegel narekenen met dezelfde engine als het spel (sonar-engine.js):
+// elke tegel betaalt stepGain(p), p = exacte kans dat hij veilig was gegeven alle getallen en pings op dat moment
+function sonarReplay(ms,key){ const E=window.SonarEngine, el=$('fPath'); el.hidden=true;
+  if(!E||!fPath.length||key!==fKey) return;
+  const mines=new Set(ms), m=ms.length, rev=new Map(), pg=new Map(), rows=[]; let mult=1, first=true, k=0, d=0, end='';
+  for(const s of fPath){
+    if(s==='p'){ const q=fPings[k++]; if(q) pg.set(q.t,q.w); continue }
+    if(rev.has(s)){ end='<p><span class="bad">✗ tile '+s+' was already open, this path does not fit the board</span></p>'; break }
+    const P=E.mineProbs(rev,m,pg), p=1-P[s]; d++;
+    if(mines.has(s)){ rows.push('<p><b>dive '+d+'</b> · tile '+s+' · '+(p*100).toFixed(1)+'% safe · <span class="bad">MINE</span></p>'); mult=0; break }
+    const g=E.stepGain(p,first); let free=0; rev.set(s,E.sonarAt(mines,s));
+    if(rev.get(s)===0){ const q=[s]; while(q.length){ const a=q.shift(); if(rev.get(a)!==0) continue; for(const j of E.NB[a]) if(!rev.has(j)){ rev.set(j,E.sonarAt(mines,j)); free++; q.push(j) } } }
+    mult*=g; rows.push('<p><b>dive '+d+'</b> · tile '+s+' · '+(first?'blind first dive, '+(p*100).toFixed(1)+'% safe':p>=1-1e-9?'proven safe':(p*100).toFixed(1)+'% safe')+' · ×'+g.toFixed(3)+(free?' · opens '+free+' free':'')+'</p>'); first=false;
+    if(mult>=E.MAX_WIN){ mult=E.MAX_WIN; break } }
+  if(!end){ const ok=fX!==null&&Math.abs(mult-fX)<=6e-5+mult*1e-9;
+    end='<p><b>'+(mult?'final multiplier ×'+mult.toFixed(4):'dive lost · ×0')+'</b>'+(fX===null?'':ok?' <span class="ok">✓ matches the game</span>':' <span class="bad">✗ the game showed ×'+fX.toFixed(4)+'</span>')+'</p>' }
+  el.innerHTML='<p>DIVE REPLAY · each tile pays (1/p) × risk fee, p = exact chance it was safe</p>'+rows.join('')+end; el.hidden=false }
 async function fair(){
   const seed=$('fSeed').value, cl=$('fClient').value, n=$('fNonce').value;
   $('fHash').textContent=hex(sha256js(enc(seed)));
@@ -1064,7 +1082,7 @@ async function fair(){
     $('fPing').innerHTML='<p>PINGS · honest when HMAC(server, client:nonce:ping:k) &lt; 0.80</p>'+[1,2,3].map(k=>{ const d=draw(k), h=d<.8, pg=fPings[k-1];
       let row='<b>ping '+k+'</b> · draw '+d.toFixed(3)+' · '+(h?'honest':'flipped');
       if(pg){ const want=ms.includes(pg.t)===h; row+=' · tile '+pg.t+' should read '+(want?'WARM':'COLD')+(pg.w===want?' <span class="ok">✓ matches</span>':' <span class="bad">✗ you saw '+(pg.w?'WARM':'COLD')+'</span>') }
-      return '<p>'+row+'</p>' }).join(''); return }
+      return '<p>'+row+'</p>' }).join(''); sonarReplay(ms,seed+'|'+cl+'|'+n+'|'+$('fMines').value); return }
   const h=hex(hmacjs(enc(seed),enc(cl+':'+n)));
   $('fHmac').textContent=h;
   const r=parseInt(h.slice(0,13),16)/2**52, c=Math.min(10000,Math.max(1,Math.floor(100*fRtp/(1-r))/100));
@@ -1077,10 +1095,13 @@ function setGame(g){ fGame=g; const so=g==='sonar'; $('fgPeek').setAttribute('ar
   $('fHmacL').textContent=so?'Shuffle draw HMAC-SHA256(server, client:nonce:35)':'HMAC-SHA256(server, client:nonce)'; $('fResL').textContent=so?'MINES AT':'CRASH POINT';
   const c=$('fClient'); if(so&&c.value==='lucky-player-42') c.value='sonar-demo-client'; else if(!so&&c.value==='sonar-demo-client') c.value='lucky-player-42'; fair() }
 $('fgPeek').onclick=()=>setGame('peek'); $('fgSonar').onclick=()=>setGame('sonar'); $('fMines').addEventListener('change',fair);
-let fRtp=0.97, fPings=[]; { const q=new URLSearchParams(location.search), qs=q.get('seed');
+let fRtp=0.97, fPings=[], fPath=[], fX=null, fKey=''; { const q=new URLSearchParams(location.search), qs=q.get('seed');
   if(qs&&/^[0-9a-f]{64}$/i.test(qs)){ $('fSeed').value=qs; if(q.get('client')) $('fClient').value=q.get('client').slice(0,80); const n=parseInt(q.get('nonce'),10); if(n>=0) $('fNonce').value=n; const r=parseFloat(q.get('rtp')); if(r>=.9&&r<=.995) fRtp=r }
   if(q.get('game')==='sonar'){ const m=q.get('mines'); if(['3','5','8','12'].includes(m)) $('fMines').value=m; fGame='sonar';
-    fPings=(q.get('pings')||'').split(',').slice(0,3).map(p=>/^([0-9]|[12][0-9]|3[0-5])[wc]$/.test(p)?{t:parseInt(p,10),w:p.endsWith('w')}:null).filter(Boolean) } }
+    fPings=(q.get('pings')||'').split(',').slice(0,3).map(p=>/^([0-9]|[12][0-9]|3[0-5])[wc]$/.test(p)?{t:parseInt(p,10),w:p.endsWith('w')}:null).filter(Boolean);
+    // path = tegels in duikvolgorde, 'p' = hier viel de volgende ping; x = eindmultiplier die het spel toonde
+    fPath=(q.get('path')||'').split(',').slice(0,40).map(s=>s==='p'?'p':/^([0-9]|[12][0-9]|3[0-5])$/.test(s)?+s:null).filter(s=>s!==null);
+    const x=parseFloat(q.get('x')); if(x>=0&&x<=5000) fX=x; fKey=$('fSeed').value+'|'+$('fClient').value+'|'+$('fNonce').value+'|'+$('fMines').value } }
 ['fSeed','fClient','fNonce'].forEach(id=>$(id).addEventListener('input',fair)); fGame==='sonar'?setGame('sonar'):fair();
 
 /* ---------- revenue Monte Carlo ---------- */

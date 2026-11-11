@@ -1,0 +1,40 @@
+<!doctype html><meta charset="utf-8"><title>replay</title>
+<!-- Verifiertest voor check.sh: speelt een paar SONAR-duiken met het toetsenbord (willekeurige tegels, soms een ping),
+     opent daarna de "Open in the verifier"-link en controleert dat de homepage de duik tegel voor tegel narekent
+     en op dezelfde eindmultiplier uitkomt als het spel. Uitslag in het res-blok voor --dump-dom. -->
+<style>html,body{margin:0;background:#000;color:#fff}iframe{border:0;width:1280px;height:800px}</style>
+<pre id="res">running</pre>
+<iframe id="f"></iframe><iframe id="v"></iframe>
+<script>
+const q=new URLSearchParams(location.search), p=q.get('p')||'sonar', G=+q.get('n')||6, f=document.getElementById('f'), v=document.getElementById('v'), out=[];
+try{ ['sonar','sonar3d'].forEach(g=>localStorage.setItem(g+'-how','1')) }catch(e){}
+const wait=ms=>new Promise(r=>setTimeout(r,ms)), rnd=n=>Math.floor(Math.random()*n);
+f.onload=()=>run().catch(e=>{ document.getElementById('res').textContent=out.join('\n')+'\nFOUT test brak af: '+e+'\nklaar' });
+async function run(){ const w=f.contentWindow, d=w.document, three=p==='sonar3d', board=()=>w[three?'__sonar3dBoard':'__sonarBoard'](), el=three?d.body:d.getElementById('scope');
+  const press=key=>{ for(const t of ['keydown','keyup']) el.dispatchEvent(new w.KeyboardEvent(t,{key,code:key===' '?'Space':key,bubbles:true,cancelable:true})) };
+  const until=async(fn,ms)=>{ for(let i=0;i<ms/100&&!fn();i++) await wait(100); return fn() };
+  await wait(three?4000:1500);
+  if(!three) el.focus();
+  press('ArrowLeft'); press('ArrowRight'); let kb=14; // eerste pijl zet de cursor op 14 en schuift, tweede schuift terug
+  const go=t=>{ while(kb%6>t%6){ press('ArrowLeft'); kb-- } while(kb%6<t%6){ press('ArrowRight'); kb++ } while(kb>t){ press('ArrowUp'); kb-=6 } while(kb<t){ press('ArrowDown'); kb+=6 } };
+  for(let g=0;g<G;g++){
+    if(board().phase!=='idle'){ press('Enter'); await until(()=>board().phase==='idle',8000) }
+    if(three) press(String(g%4+1)); else d.getElementById('seg').children[g%4].click();
+    const dives=g%2?1+rnd(6):1+(g>>1); let done=0; // even duiken kort (3 of 8 mijnen): meestal een cash-out, oneven lang: meestal een mijn
+    for(let k=0;k<dives&&(k===0||board().phase==='run');k++){
+      const b=board(), open=[...Array(36).keys()].filter(i=>!b.revealed.has(i)); if(!open.length) break;
+      if(k>0&&b.pings.size<3&&Math.random()<.35){ const t=open.filter(i=>!b.pings.has(i))[0]; if(t!==undefined){ if(three) press('p'); else d.getElementById('ping').click(); go(t); press('Enter'); await wait(three?2500:150); press('Escape') } }
+      const t=open[rnd(open.length)]; go(t);
+      for(let tryN=0;tryN<2;tryN++){ press('Enter'); if(await until(()=>/^(bust|done)$/.test(board().phase)||board().revealed.has(t),three?6000:400)) break } // tweede Enter: bewezen mijn vraagt bevestiging
+      done++ }
+    if(board().phase==='run'){ press(' '); await until(()=>board().phase!=='run',three?6000:600) }
+    await wait(200);
+    const a=d.getElementById('fairV'), href=a.getAttribute('href')||'', shown=d.getElementById('mult').textContent, ph=board().phase;
+    if(!/&path=[0-9p,]+&x=/.test(href)){ out.push('FOUT duik '+(g+1)+': verifier-link zonder path/x: '+href); continue }
+    await new Promise(r=>{ v.onload=r; v.src='../'+href.replace('#fair','&t='+g+'#fair') }); await wait(600);
+    const fp=v.contentDocument.getElementById('fPath'), tx=fp?fp.textContent:'', rows=(tx.match(/dive \d+ ·/g)||[]).length;
+    const ok=fp&&!fp.hidden&&tx.includes('matches the game')&&rows>=1&&(ph==='bust')===tx.includes('dive lost');
+    out.push((ok?'ok':'FOUT')+' duik '+(g+1)+' ('+ph+', spel '+shown+', '+rows+' tegels nagerekend)'+(ok?'':': '+href+' -> '+tx.slice(0,400))) }
+  document.getElementById('res').textContent=out.join('\n')+'\nklaar' }
+f.src='../'+p+'.html';
+</script>
