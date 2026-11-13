@@ -300,7 +300,7 @@ function actUI(){ const a=$('act');
   $('bet').disabled=$('half').disabled=$('dbl').disabled=phase==='run'; segUI(); winUI() }
 const say=s=>{ $('sr').textContent=s }; // screen-reader line, overrides the toast text when more needs saying
 let toastT=0; function toast(h,ms=1800){ const t=$('toast'); t.innerHTML=h; $('sr').textContent=t.textContent; t.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('on'),ms) }
-function readStake(){ let v=parseFloat($('bet').value); if(!isFinite(v)||v<1) v=1; v=Math.min(v,bal,500); v=Math.round(v*100)/100; $('bet').value=v; return v }
+function readStake(){ let v=parseFloat($('bet').value); if(!isFinite(v)||v<1) v=1; v=Math.min(v,bal,500); v=Math.round(v*100)/100; if(v>bal){ v=Math.max(0,Math.floor(bal*100)/100); while(v>bal&&v>0) v=Math.round((v-.01)*100)/100 } $('bet').value=v; return v } // never round the stake up past the balance
 $('half').onclick=()=>{ $('bet').value=Math.max(1,Math.round(readStake()/2*100)/100); sTickSafe() };
 $('dbl').onclick=()=>{ $('bet').value=Math.min(bal,500,readStake()*2); readStake(); sTickSafe() };
 

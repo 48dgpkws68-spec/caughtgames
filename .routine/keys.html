@@ -30,6 +30,11 @@ f.onload=async()=>{ const w=f.contentWindow, d=w.document;
   if(scope) neg.push(['Ctrl+Enter op bord',scope,'Enter',{ctrlKey:true}]);
   for(const [name,el,key,mods] of neg){ const a=sig(w); press(w,el,key,mods); await wait(400); const b=sig(w);
     out.push((a===b?'ok':'FOUT')+' '+name+(a===b?'':' startte iets: '+a+' -> '+b)) }
+  // Escape sluit de how-to en zet de focus terug op HOW (games die dat ondersteunen)
+  if(/^(sneak|sonar)$/.test(p)){ const how=d.getElementById('how'), hb=d.getElementById('howBtn'); hb.click(); await wait(200);
+    const open=!how.hidden; press(w,d.activeElement||body,'Tab'); const trapped=how.contains(d.activeElement); press(w,d.activeElement||body,'Escape'); await wait(200);
+    const good=open&&trapped&&how.hidden&&d.activeElement===hb;
+    out.push((good?'ok':'FOUT')+' Escape how-to'+(good?'':' open='+open+' tab binnen='+trapped+' dicht='+how.hidden+' focus='+(d.activeElement&&d.activeElement.id))) }
   // gedeelde ronde: wacht op de inzetfase; loopt een ronde lang door, dan telt 'YOU JOIN THE NEXT ROUND' (#state) als start
   const hk=w['__'+p]; for(let i=0;i<60&&hk&&hk.state&&hk.state.phase&&hk.state.phase!=='bet';i++) await wait(250);
   const a=sig(w,1); for(const [sel,key] of pos){ press(w,sel?d.querySelector(sel):body,key); await wait(300) } await wait(600);

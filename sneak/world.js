@@ -351,7 +351,9 @@ export async function createWorld(canvas, opts) {
   const clock = new THREE.Clock();
   const wait = (ms) => new Promise((r) => setTimeout(r, reduce ? Math.min(ms, 150) : ms));
   let running = true;
-  document.addEventListener('visibilitychange', () => { running = !document.hidden; if (running) { clock.getDelta(); requestAnimationFrame(loop); } });
+  let raf = 0;
+  // a hidden tab keeps the last requested frame pending: cancel it before starting again, or every tab switch adds one more render loop
+  document.addEventListener('visibilitychange', () => { running = !document.hidden; cancelAnimationFrame(raf); if (running) { clock.getDelta(); raf = requestAnimationFrame(loop); } });
   const tmpM = new THREE.Matrix4(), tmpQ = new THREE.Quaternion(), tmpS = new THREE.Vector3(1, 1, 1), tmpP = new THREE.Vector3();
   function loop() {
     if (!running) return;
@@ -397,9 +399,9 @@ export async function createWorld(canvas, opts) {
     }
     frameCam(dt);
     composer.render(dt);
-    requestAnimationFrame(loop);
+    raf = requestAnimationFrame(loop);
   }
-  requestAnimationFrame(loop);
+  raf = requestAnimationFrame(loop);
 
   function setHalo(kind) { if (kind < 0) { haloCol.set('#9b8cff'); haloI = 1.2; return; } haloCol.copy(KIND_COL[kind]); haloI = [1.2, 3, 5][kind]; }
   setHalo(-1);

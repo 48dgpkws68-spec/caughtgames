@@ -189,3 +189,14 @@
 - Let op: SONAR 3D kreeg dezelfde link-wijziging maar is niet end-to-end getest (headless speelt de duikanimatie niet af); de code is regel voor regel gelijk aan SONAR.
 - Idee voor later: reduced-motion achtergrond in de andere games; SONAR 3D verifier-link testen; index DOM-dump robuuster in check.sh; codecheck sneak volgende nacht.
 - Voor Nick: niets
+
+## 2026-11-13
+- Gevonden: de nachtronde van 12 nov is niet afgemaakt: 13 bestanden stonden gewijzigd maar niet gecommit en zonder logregel (laatste wijziging 12 nov 08:57). Nagelezen en samenhangend: inzet rondt nooit meer boven het saldo af (10 games), SNEAK how-to houdt Tab binnen de dialoog en Escape zet de focus terug op HOW, FAIR-knop met aria-expanded en Escape, hartslag start weer na SOUND ON, TOPPED UP-banner wist geen latere banner meer, Escape-test in keys.html. Rooktest met alleen die wijzigingen: 81 ok, geen fouten.
+- Gevonden (codecheck SNEAK, opnieuw omdat 12 nov niet gelogd was): RTP-pad, cap op 10.000x, seed-vrijgave en testhook kloppen. Wel twee verborgen-tabblad-fouten: (1) tijdens een lopende heist tikte de hartslag in een verborgen tabblad door op de stilstaande audioklok, zodat bij terugkeer alle slagen in één klap afgingen (zelfde fout als lib/sfx.js op 5 nov); (2) de 3D-loop in sneak/world.js en lib/stage.js (SNEAK + de 8 speelgoedgames) vroeg bij terugkeer een nieuw frame aan terwijl het oude nog klaarstond, waardoor elke tabwissel een extra renderloop toevoegt (trager en warmer per wissel).
+- Gedaan: SNEAK speelt geen tonen of ruis als het tabblad verborgen is. Headless gemeten op de nieuwe code: 6 oscillatoren in 3 s zichtbaar (hartslag werkt), 0 in 6 s verborgen.
+- Gedaan: sneak/world.js en lib/stage.js annuleren het openstaande frame voordat de loop opnieuw start. Headless gemeten op de nieuwe SNEAK: na 5x verbergen/tonen nog precies 1 loop per frame. Let op: de oude code is niet gemeten (testruns liepen vast bij load 20 tot 70 door andere routines); de verdubbeling volgt uit de code, niet uit een meting. GOOSE 63 met de nieuwe stage.js is alleen via de rooktest gedekt.
+- Gedaan: SNEAK how-to scrolt binnen de kaart als het scherm te laag is (max-height 100%), zodat START THE HEIST bereikbaar blijft (backlog, deel SNEAK).
+- Gedaan: werk van 12 nov meegecommit na controle. Geen RTP-wijziging in deze ronde.
+- Rooktest eindrun: 80 ok + 1 melding "index (desk): Failed to fetch sneak/world.js" bij load 40 tot 70; index los 2x gedraaid: 0 fouten. Omgeving, geen sitefout.
+- Idee voor later: tabwissel-test (aantal loops) in check.sh zodra de Mac rustiger is; how-to SONAR/PEEK! op lage schermen; codecheck goose volgende nacht.
+- Voor Nick: niets (wel: de Mac draaide vannacht op load 40 tot 70, routines lopen daardoor uit; rooktest duurde 45 min i.p.v. 12)

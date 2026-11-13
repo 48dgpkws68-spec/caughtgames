@@ -95,7 +95,7 @@ body{overflow-x:hidden}
 #fairPrev{font:500 11px 'JetBrains Mono',monospace;color:var(--fg);white-space:pre-wrap;word-break:break-all;max-height:220px;overflow:auto}
 .how[hidden]{display:none}
 .how{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:rgba(4,2,10,.7);backdrop-filter:blur(6px);padding:16px}
-.how .glass{max-width:500px;padding:26px 26px 22px;background:rgba(18,12,34,.92)}
+.how .glass{max-width:500px;max-height:100%;overflow-y:auto;padding:26px 26px 22px;background:rgba(18,12,34,.92)}
 .how h2{margin:0 0 6px;font:800 24px Unbounded,sans-serif}
 .how h2 span{color:var(--gold)}
 .how ol{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:12px;counter-reset:s}
@@ -147,7 +147,7 @@ body.embed .brand{display:none}
   <div class="top">
     <a class="glass brand" href="index.html" style="color:inherit;text-decoration:none"><span class="dot"></span><div>SNEAK<small>CAUGHT GAMES · PICK YOUR RISK EVERY STEP</small></div></a>
     <div class="glass hist" id="hist" role="list" aria-label="Previous rounds"></div>
-    <div class="pills"><button class="glass pill" id="howBtn">HOW<span class="lg"> TO PLAY</span></button><button class="glass pill" id="fairBtn">FAIR · <span id="fairHash">…</span></button><button class="glass pill" id="snd">SOUND ON</button></div>
+    <div class="pills"><button class="glass pill" id="howBtn">HOW<span class="lg"> TO PLAY</span></button><button class="glass pill" id="fairBtn" aria-expanded="false" aria-controls="fairBox">FAIR · <span id="fairHash">…</span></button><button class="glass pill" id="snd">SOUND ON</button></div>
   </div>
   <div class="main">
     <div class="stage" id="stage">
@@ -234,8 +234,9 @@ function rotateSeed(steps,cash){ prev={seed,nonce,steps,cash}; seed=hex(crypto.g
 /* ---------- audio (synth only, no files) ---------- */
 let ac=null, muted=false, amb=null, beat=null;
 function au(){ if(!ac){ try{ ac=new (window.AudioContext||window.webkitAudioContext)() }catch(e){ return } } if(ac.state==='suspended') ac.resume(); startAmb() }
-function tone(f1,f2,dur,v,type='sine',delay=0){ if(!ac||muted) return; const t=ac.currentTime+delay,o=ac.createOscillator(),g=ac.createGain(); o.type=type; o.frequency.setValueAtTime(f1,t); o.frequency.exponentialRampToValueAtTime(f2,t+dur); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(v,t+.01); g.gain.exponentialRampToValueAtTime(.0001,t+dur); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+dur+.05) }
-function noise(dur,f,v,type='lowpass',delay=0){ if(!ac||muted) return; const b=ac.createBuffer(1,Math.max(1,ac.sampleRate*dur),ac.sampleRate),d=b.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; const s=ac.createBufferSource(); s.buffer=b; const fl=ac.createBiquadFilter(); fl.type=type; fl.frequency.value=f; const g=ac.createGain(), t=ac.currentTime+delay; g.gain.setValueAtTime(v,t); g.gain.exponentialRampToValueAtTime(.0001,t+dur); s.connect(fl).connect(g).connect(ac.destination); s.start(t) }
+function tone(f1,f2,dur,v,type='sine',delay=0){ if(!ac||muted||document.hidden) return; // a hidden tab freezes ac.currentTime: the heartbeat would queue up and fire in one blast on return
+  const t=ac.currentTime+delay,o=ac.createOscillator(),g=ac.createGain(); o.type=type; o.frequency.setValueAtTime(f1,t); o.frequency.exponentialRampToValueAtTime(f2,t+dur); g.gain.setValueAtTime(.0001,t); g.gain.exponentialRampToValueAtTime(v,t+.01); g.gain.exponentialRampToValueAtTime(.0001,t+dur); o.connect(g).connect(ac.destination); o.start(t); o.stop(t+dur+.05) }
+function noise(dur,f,v,type='lowpass',delay=0){ if(!ac||muted||document.hidden) return; const b=ac.createBuffer(1,Math.max(1,ac.sampleRate*dur),ac.sampleRate),d=b.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; const s=ac.createBufferSource(); s.buffer=b; const fl=ac.createBiquadFilter(); fl.type=type; fl.frequency.value=f; const g=ac.createGain(), t=ac.currentTime+delay; g.gain.setValueAtTime(v,t); g.gain.exponentialRampToValueAtTime(.0001,t+dur); s.connect(fl).connect(g).connect(ac.destination); s.start(t) }
 const sHop=()=>{ tone(420,620,.12,.06,'triangle'); noise(.06,1800,.05,'bandpass',.5) };
 const sLand=()=>{ noise(.12,500,.18); tone(110,70,.15,.12,'sine') };
 const sScan=()=>{ for(let i=0;i<6;i++) tone(900+i*140,900+i*140,.05,.035,'square',i*.085) };
@@ -246,7 +247,7 @@ function startAmb(){ if(!ac||amb||muted) return; const o=ac.createOscillator(), 
 // heartbeat speeds up with the multiplier
 function heart(){ clearTimeout(beat); if(!ac||muted||phase!=='run'||first) return; tone(60,40,.12,.25,'sine'); tone(55,38,.12,.18,'sine',.16); const bpm=Math.min(150,70+Math.log(mult)*14); beat=setTimeout(heart,60000/bpm) }
 document.addEventListener('visibilitychange',()=>{ if(!ac) return; if(document.hidden) ac.suspend(); else ac.resume() });
-$('snd').onclick=()=>{ muted=!muted; $('snd').textContent=muted?'SOUND OFF':'SOUND ON'; if(muted&&amb){ amb.g.gain.value=0 } else { au(); if(amb) amb.g.gain.value=.05 } };
+$('snd').onclick=()=>{ muted=!muted; $('snd').textContent=muted?'SOUND OFF':'SOUND ON'; if(muted&&amb){ amb.g.gain.value=0 } else { au(); if(amb) amb.g.gain.value=.05; heart() } };
 
 /* ---------- state ---------- */
 let bal=1000, stake=10, phase='idle', busy=false, row=0, mult=1, first=true, layouts=null, steps=[], hist=[];
@@ -255,7 +256,7 @@ const KC=['k0','k1','k2'];
 const picks=E.KINDS.map((k,i)=>{ const b=document.createElement('button'); b.className='pick '+KC[i]; b.innerHTML='<span class="sw">'+(i+1)+'</span><span class="nm">'+k.name+'<small id="pr'+i+'"></small></span><span class="x" id="px'+i+'"></span>'; b.onclick=()=>pickKind(i); b.onmouseenter=()=>W&&W.hover(colOf(i)); b.onmouseleave=()=>W&&W.hover(-1); $('picks').appendChild(b); return b });
 const colOf=k=>layouts?layouts[row+1]?.indexOf(k)??-1:-1;
 const say=s=>{ $('sr').textContent=s };
-function readStake(){ let v=parseFloat($('bet').value); if(!isFinite(v)||v<1) v=1; v=Math.min(v,Math.max(1,bal),500); v=Math.round(v*100)/100; $('bet').value=v; return v }
+function readStake(){ let v=parseFloat($('bet').value); if(!isFinite(v)||v<1) v=1; v=Math.min(v,Math.max(1,bal),500); v=Math.round(v*100)/100; if(v>bal){ v=Math.max(1,Math.floor(bal*100)/100); while(v>bal&&v>1) v=Math.round((v-.01)*100)/100 } $('bet').value=v; return v } // never round the stake up past the balance: the step then silently did nothing
 $('half').onclick=()=>{ $('bet').value=Math.max(1,Math.round(readStake()/2*100)/100) };
 $('dbl').onclick=()=>{ $('bet').value=Math.min(bal,500,readStake()*2); readStake() };
 function multUI(cls){ const el=$('mult'); el.textContent=fx(mult)+'×'; el.className=cls||''; if(!cls&&!reduce){ el.classList.add('pop'); setTimeout(()=>el.classList.remove('pop'),180) } $('mbMult').textContent=fx(mult)+'×' }
@@ -274,12 +275,13 @@ function ui(){
   if(W&&!busy&&phase!=='over'&&row<ROWS){ W.showNext(row+1,[0,1,2].map(c=>{ const st=E.step(mult,layouts[row+1][c],first); return {mult:'×'+fx(st.m),risk:(st.p*100).toFixed(st.max?1:0)+'%'} })) }
 }
 function chip(m,won){ hist.unshift({m,won}); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span role="listitem" class="chip '+(h.won?'w':'l')+'" aria-label="'+(h.won?'won '+fx(h.m)+'×':'caught, lost')+'">'+(h.won?fx(h.m)+'×':'CAUGHT')+'</span>').join('') }
-function banner(t,s,cls){ $('bnT').textContent=t; $('bnS').textContent=s; const b=$('banner'); b.className='banner '+cls+' on'; say(t+'. '+s) }
+let bnTimer=0;
+function banner(t,s,cls){ clearTimeout(bnTimer); $('bnT').textContent=t; $('bnS').textContent=s; const b=$('banner'); b.className='banner '+cls+' on'; say(t+'. '+s) }
 const hideBanner=()=>{ $('banner').className='banner' };
 
 /* ---------- flow ---------- */
 function newRound(){ phase='idle'; row=0; mult=1; first=true; steps=[]; layouts=layoutsFor(); W&&W.setRows(layouts); $('state').textContent='READY · '+ROWS+' ROWS TO THE DIAMOND'; $('state').style.color=''; multUI(''); fairUI(); ui() }
-function start(){ if(bal<1){ bal=1000; banner('TOPPED UP','play money back to 1,000','good'); setTimeout(hideBanner,1400) } stake=readStake(); if(bal<stake) return false; bal-=stake; phase='run'; $('state').textContent='SNEAKING · STAKE '+fmt(stake); fairUI(); return true }
+function start(){ if(bal<1){ bal=1000; banner('TOPPED UP','play money back to 1,000','good'); bnTimer=setTimeout(hideBanner,1400) } stake=readStake(); if(bal<stake-1e-9) return false; bal=Math.max(0,bal-stake); phase='run'; $('state').textContent='SNEAKING · STAKE '+fmt(stake); fairUI(); return true }
 async function pickCol(c){
   if(busy||phase==='over'||row>=ROWS||!W) return;
   au(); $('tip').style.opacity=0;
@@ -313,13 +315,16 @@ async function cashOut(auto=false){
   await W.escape(isMax); chip(mult,true); rotateSeed(steps,mult); await wait(500); hideBanner(); busy=false; await W.reset(); newRound();
 }
 $('cash').onclick=()=>cashOut(); $('mbCash').onclick=()=>cashOut();
-addEventListener('keydown',e=>{ if(e.ctrlKey||e.metaKey||e.altKey) return; if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden) return; if((e.key===' '||e.key==='Enter')&&/^(BUTTON|A|SUMMARY)$/.test(e.target.tagName)) return;
+addEventListener('keydown',e=>{ if(e.ctrlKey||e.metaKey||e.altKey) return; if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden){ if(e.key==='Escape'){ closeHow(); e.preventDefault() } else if(e.key==='Tab'){ $('go').focus({preventScroll:true}); e.preventDefault() } return }
+  if(e.key==='Escape'&&!$('fairBox').hidden){ $('fairBox').hidden=true; $('fairBtn').setAttribute('aria-expanded','false'); $('fairBtn').focus({preventScroll:true}); return }
+  if((e.key===' '||e.key==='Enter')&&/^(BUTTON|A|SUMMARY)$/.test(e.target.tagName)) return;
   if(e.key==='1'||e.key==='2'||e.key==='3'){ pickKind(+e.key-1); e.preventDefault() }
   else if(e.key===' '||e.key==='Enter'){ cashOut(); e.preventDefault() } });
 addEventListener('click',e=>{ const b=e.detail>0&&e.target.closest&&e.target.closest('button'); if(b) b.blur() },true); // a mouse/touch click leaves no focus behind, so Space/Enter stay the game shortcuts; Tab focus keeps native button activation
-$('fairBtn').onclick=()=>{ $('fairBox').hidden=!$('fairBox').hidden };
+$('fairBtn').onclick=()=>{ $('fairBox').hidden=!$('fairBox').hidden; $('fairBtn').setAttribute('aria-expanded',String(!$('fairBox').hidden)) };
 const openHow=()=>{ $('how').hidden=false; setTimeout(()=>$('go').focus({preventScroll:true}),0) };
-$('howBtn').onclick=openHow; $('go').onclick=()=>{ $('how').hidden=true; try{ localStorage.setItem('sneak-how','1') }catch(e){} au() };
+const closeHow=()=>{ $('how').hidden=true; try{ localStorage.setItem('sneak-how','1') }catch(e){} $('howBtn').focus({preventScroll:true}) }; // Escape and START both close; focus goes back to HOW instead of the top of the page
+$('howBtn').onclick=openHow; $('go').onclick=()=>{ closeHow(); au() };
 
 /* ---------- 3D ---------- */
 let W=null;

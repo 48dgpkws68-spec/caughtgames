@@ -177,7 +177,7 @@ let holdEnd=false, hs=-1, lastHs=-2, holdIdx=-1, fizzAcc=0, wantJoin=false;
 const me=()=>joined?seats[0]:null;
 const uOf=msg=>F.u(msg);
 const say=s=>{ $('sr').textContent=s };
-function readStake(){ let v=parseFloat($('bet').value); if(!isFinite(v)||v<1) v=1; v=Math.min(v,Math.max(1,bal),500); v=Math.round(v*100)/100; $('bet').value=v; return v }
+function readStake(){ let v=parseFloat($('bet').value); if(!isFinite(v)||v<1) v=1; v=Math.min(v,Math.max(1,bal),500); v=Math.round(v*100)/100; if(v>bal){ v=Math.max(1,Math.floor(bal*100)/100); while(v>bal&&v>1) v=Math.round((v-.01)*100)/100 } $('bet').value=v; return v } // never round the stake up past the balance
 $('half').onclick=()=>{ $('bet').value=Math.max(1,Math.round(readStake()/2*100)/100); ui(true) };
 $('dbl').onclick=()=>{ $('bet').value=Math.min(bal,500,readStake()*2); readStake(); ui(true) };
 $('bet').oninput=()=>ui(true);

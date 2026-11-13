@@ -248,7 +248,7 @@ $('snd').onclick=()=>{ A.unlock(); $('snd').textContent=A.toggle()?'SOUND OFF':'
 /* ---------- state ---------- */
 let bal=1000, stake=10, phase='idle', cur=null, hist=[], doubled=false, decide=null, showToken=0, lastWin=0, thumbs=null, countdown=null, fs=null;
 const say=s=>{ $('sr').textContent=s };
-function readStake(){ let v=parseFloat($('bet').value); if(!isFinite(v)||v<1) v=1; v=Math.min(v,100,Math.max(1,bal)); v=r2(v); $('bet').value=v; return v }
+function readStake(){ let v=parseFloat($('bet').value); if(!isFinite(v)||v<1) v=1; v=Math.min(v,100,Math.max(1,bal)); v=r2(v); if(v>bal){ v=Math.max(1,Math.floor(bal*100)/100); while(v>bal&&v>1) v=Math.round((v-.01)*100)/100 } $('bet').value=v; return v } // never round the stake up past the balance
 const stakeNow=()=>phase==='idle'?readStake():stake;
 $('half').onclick=()=>{ $('bet').value=Math.max(1,r2(readStake()/2)); ui() };
 $('dbl').onclick=()=>{ $('bet').value=Math.min(bal,100,readStake()*2); readStake(); ui() };

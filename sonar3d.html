@@ -208,7 +208,7 @@ function ui(){
 const say=s=>{ $('sr').textContent=s };
 let toastT=0; function toast(h,ms=1800){ const t=$('toast'); t.innerHTML=h; say(t.textContent); t.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove('on'),ms) }
 function banner(t,s,cls){ $('bnT').textContent=t; $('bnS').textContent=s; $('banner').className='banner '+cls+' on'; clearTimeout(banner.t); banner.t=setTimeout(()=>{ $('banner').className='banner' },2200) }
-const readStakePeek=()=>{ let v=parseFloat($('bet').value); if(!isFinite(v)||v<1) v=1; return Math.round(Math.min(v,Math.max(1,bal),500)*100)/100 };
+const readStakePeek=()=>{ let v=parseFloat($('bet').value); if(!isFinite(v)||v<1) v=1; v=Math.round(Math.min(v,Math.max(1,bal),500)*100)/100; if(v>bal){ v=Math.max(1,Math.floor(bal*100)/100); while(v>bal&&v>1) v=Math.round((v-.01)*100)/100 } return v }; // never round the stake up past the balance
 function readStake(){ const v=readStakePeek(); $('bet').value=v; return v }
 $('half').onclick=()=>{ $('bet').value=Math.max(1,Math.round(readStake()/2*100)/100); ui() };
 $('dbl').onclick=()=>{ $('bet').value=Math.min(bal,500,readStake()*2); readStake(); ui() };
