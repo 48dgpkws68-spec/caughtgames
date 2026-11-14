@@ -58,7 +58,7 @@
     <div class="stage" id="stage">
       <canvas id="view" tabindex="0" aria-label="Game of the Goose board. Key 1 throws one die, key 2 throws two dice, space cashes out." aria-describedby="sr"></canvas>
       <div class="dicebadge" id="dice"></div>
-      <div class="eggov" id="egg"><div class="eggbox"><b id="eggT">GOLDEN EGG!</b><button id="eggBtn" aria-label="Crack the egg"><span class="shell"></span></button><i id="eggV"></i><small>tap the egg to crack it</small></div></div>
+      <div class="eggov" id="egg"><div class="eggbox"><b id="eggT">GOLDEN EGG!</b><button id="eggBtn" aria-label="Crack the egg"><span class="shell"></span></button><i id="eggV"></i><small>tap the egg or press space to crack it</small></div></div>
       <div class="toast" id="toast"></div>
       <div class="banner" id="banner"><b id="bnT"></b><span id="bnS"></span></div>
       <div class="tip" id="tip">HOVER A BUTTON TO SEE WHERE YOU CAN LAND</div>
@@ -146,7 +146,7 @@ function ui(){
   const [o1,o2]=opts();
   [[o1,'1'],[o2,'2']].forEach(([o,k])=>{
     const b=$('c'+k); b.disabled=busy||phase==='over'||o.blocked;
-    if(o.blocked){ $('x'+k).textContent='—'; $('r'+k).textContent='every result is a trap'; return }
+    if(o.blocked){ $('x'+k).textContent='·'; $('r'+k).textContent='every result is a trap'; return }
     $('x'+k).textContent='×'+fx(o.m);
     const eg=o.bonus>0?' · egg '+(o.bonus*100).toFixed(0)+'%':'';
     $('r'+k).textContent=(o.p>0?(o.p*100).toFixed(0)+'% trap':'no trap in reach')+eg;
@@ -156,8 +156,8 @@ function ui(){
 }
 function crackEgg(v,golden){
   return new Promise(res=>{
-    const ov=$('egg'); $('eggT').textContent=golden?'THE GOLDEN GOOSE LAID AN EGG':'GOLDEN EGG!'; $('eggV').textContent=''; ov.className='eggov on'; sHonk();
-    let done=false; const go=()=>{ if(done) return; done=true; ov.classList.add('cracked'); $('eggV').textContent='×'+v; sWin(); say('The egg is worth '+v+' times.'); setTimeout(()=>{ ov.className='eggov'; res() },1500) };
+    const ov=$('egg'); $('eggT').textContent=golden?'THE GOLDEN GOOSE LAID AN EGG':'GOLDEN EGG!'; $('eggV').textContent=''; ov.className='eggov on'; sHonk(); $('eggBtn').focus({preventScroll:true}); // Space or Enter cracks the egg too
+    let done=false; const go=()=>{ if(done) return; done=true; $('eggBtn').blur(); ov.classList.add('cracked'); $('eggV').textContent='×'+v; sWin(); say('The egg is worth '+v+' times.'); setTimeout(()=>{ ov.className='eggov'; res() },1500) };
     $('eggBtn').onclick=go; setTimeout(go,reduce?300:3500);
   });
 }
@@ -169,7 +169,7 @@ function fairUI(){ $('fairHash').textContent=' · '+F.hash.slice(0,10)+'…'; $(
 
 /* ---------- flow ---------- */
 function newRound(){ phase='idle'; pos=0; mult=1; charged=false; log=[]; throwN=0; $('state').textContent='READY ON THE START SQUARE'; multUI(''); $('win').innerHTML='pick one die or two to start'; fairUI(); ui() }
-function start(){ if(bal<1){ bal=1000; toast('Play money topped up') } stake=readStake(); if(bal<stake) return false; bal-=stake; phase='run'; $('state').textContent='ON THE BOARD · STAKE '+fmt(stake); fairUI(); return true }
+function start(){ if(bal<1){ bal=1000; toast('Play money topped up'); say('Out of play money. Balance topped up to 1,000') } stake=readStake(); if(bal<stake) return false; bal-=stake; phase='run'; $('state').textContent='ON THE BOARD · STAKE '+fmt(stake); fairUI(); return true }
 async function throwDice(d){
   if(busy||phase==='over'||!W) return;
   A.unlock(); $('tip').style.opacity=0;
@@ -213,12 +213,13 @@ function end(cash){ const rv=F.reveal(); $('fairPrev').textContent='game '+rv.no
 $('c1').onclick=()=>throwDice(1); $('c2').onclick=()=>throwDice(2);
 for(const k of [1,2]){ const b=$('c'+k); b.addEventListener('pointerenter',()=>{ hoverD=k; ui() }); b.addEventListener('pointerleave',()=>{ hoverD=0; ui() }); b.addEventListener('focus',()=>{ hoverD=k; ui() }); b.addEventListener('blur',()=>{ hoverD=0; ui() }) }
 $('cash').onclick=cashOut; $('mbCash').onclick=cashOut;
-addEventListener('keydown',e=>{ if(e.ctrlKey||e.metaKey||e.altKey) return; if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden) return; if((e.key===' '||e.key==='Enter')&&/^(BUTTON|A|SUMMARY)$/.test(e.target.tagName)) return;
+addEventListener('keydown',e=>{ if(e.ctrlKey||e.metaKey||e.altKey) return; if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden){ if(e.key==='Escape'){ closeHow(true); e.preventDefault() } else if(e.key==='Tab'){ $('go').focus({preventScroll:true}); e.preventDefault() } return } if(e.key==='Escape'&&!$('fairBox').hidden){ $('fairBox').hidden=true; $('fairBtn').setAttribute('aria-expanded','false'); $('fairBtn').focus({preventScroll:true}); return } if((e.key===' '||e.key==='Enter')&&/^(BUTTON|A|SUMMARY)$/.test(e.target.tagName)) return;
   if(e.key==='1'||e.key==='2'){ throwDice(+e.key); e.preventDefault() } else if(e.key===' '){ cashOut(); e.preventDefault() } });
 addEventListener('click',e=>{ const b=e.detail>0&&e.target.closest&&e.target.closest('button'); if(b) b.blur() },true); // a mouse/touch click leaves no focus behind, so Space/Enter stay the game shortcuts; Tab focus keeps native button activation
-$('fairBtn').onclick=()=>{ $('fairBox').hidden=!$('fairBox').hidden };
+$('fairBtn').setAttribute('aria-expanded','false'); $('fairBtn').onclick=()=>{ $('fairBox').hidden=!$('fairBox').hidden; $('fairBtn').setAttribute('aria-expanded',String(!$('fairBox').hidden)) };
 const openHow=()=>{ $('how').hidden=false; setTimeout(()=>$('go').focus({preventScroll:true}),0) };
-$('howBtn').onclick=openHow; $('go').onclick=()=>{ $('how').hidden=true; try{ localStorage.setItem('goose-how','1') }catch(e){} A.unlock() };
+$('howBtn').onclick=openHow; const closeHow=kb=>{ $('how').hidden=true; try{ localStorage.setItem('goose-how','1') }catch(e){} if(kb) $('howBtn').focus({preventScroll:true}) }; // keyboard close (Escape, Enter on the button) puts focus back on HOW; a mouse click leaves no focus behind
+$('go').onclick=e=>{ closeHow(e.detail===0); A.unlock() };
 
 /* ---------- 3D ---------- */
 let W=null;

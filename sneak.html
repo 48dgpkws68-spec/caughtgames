@@ -315,7 +315,7 @@ async function cashOut(auto=false){
   await W.escape(isMax); chip(mult,true); rotateSeed(steps,mult); await wait(500); hideBanner(); busy=false; await W.reset(); newRound();
 }
 $('cash').onclick=()=>cashOut(); $('mbCash').onclick=()=>cashOut();
-addEventListener('keydown',e=>{ if(e.ctrlKey||e.metaKey||e.altKey) return; if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden){ if(e.key==='Escape'){ closeHow(); e.preventDefault() } else if(e.key==='Tab'){ $('go').focus({preventScroll:true}); e.preventDefault() } return }
+addEventListener('keydown',e=>{ if(e.ctrlKey||e.metaKey||e.altKey) return; if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden){ if(e.key==='Escape'){ closeHow(true); e.preventDefault() } else if(e.key==='Tab'){ $('go').focus({preventScroll:true}); e.preventDefault() } return }
   if(e.key==='Escape'&&!$('fairBox').hidden){ $('fairBox').hidden=true; $('fairBtn').setAttribute('aria-expanded','false'); $('fairBtn').focus({preventScroll:true}); return }
   if((e.key===' '||e.key==='Enter')&&/^(BUTTON|A|SUMMARY)$/.test(e.target.tagName)) return;
   if(e.key==='1'||e.key==='2'||e.key==='3'){ pickKind(+e.key-1); e.preventDefault() }
@@ -323,8 +323,8 @@ addEventListener('keydown',e=>{ if(e.ctrlKey||e.metaKey||e.altKey) return; if(e.
 addEventListener('click',e=>{ const b=e.detail>0&&e.target.closest&&e.target.closest('button'); if(b) b.blur() },true); // a mouse/touch click leaves no focus behind, so Space/Enter stay the game shortcuts; Tab focus keeps native button activation
 $('fairBtn').onclick=()=>{ $('fairBox').hidden=!$('fairBox').hidden; $('fairBtn').setAttribute('aria-expanded',String(!$('fairBox').hidden)) };
 const openHow=()=>{ $('how').hidden=false; setTimeout(()=>$('go').focus({preventScroll:true}),0) };
-const closeHow=()=>{ $('how').hidden=true; try{ localStorage.setItem('sneak-how','1') }catch(e){} $('howBtn').focus({preventScroll:true}) }; // Escape and START both close; focus goes back to HOW instead of the top of the page
-$('howBtn').onclick=openHow; $('go').onclick=()=>{ closeHow(); au() };
+const closeHow=kb=>{ $('how').hidden=true; try{ localStorage.setItem('sneak-how','1') }catch(e){} if(kb) $('howBtn').focus({preventScroll:true}) }; // Escape and START both close; focus goes back to HOW instead of the top of the page
+$('howBtn').onclick=openHow; $('go').onclick=e=>{ closeHow(e.detail===0); au() };
 
 /* ---------- 3D ---------- */
 let W=null;
