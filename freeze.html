@@ -164,7 +164,7 @@ function ui(){
   document.body.classList.toggle('running',!!(phase==='run'&&me&&me.state==='run')||(phase==='bet'&&joined));
   $('bet').disabled=$('half').disabled=$('dbl').disabled=joined&&phase!=='end';
 }
-function chip(c){ hist.unshift(c); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(c=>'<span role="listitem" class="chip '+(c>=2?'w':'l')+'">'+fx(c)+'×</span>').join('') }
+function chip(c){ hist.unshift(c); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(c=>'<span role="listitem" class="chip '+(c>=2?'w':'l')+'" aria-label="owl turned at '+fx(c)+'×">'+fx(c)+'×</span>').join('') }
 function banner(t,s,cls){ $('bnT').textContent=t; $('bnS').textContent=s; $('banner').className='banner '+cls+' on'; say(t+'. '+s) }
 const hideBanner=()=>{ $('banner').className='banner' };
 
@@ -182,8 +182,9 @@ function join(){
   players.splice(Math.floor(players.length/2),0,me); W.lineUp(players); playersUI(); ui(); sTick();
   $('state').textContent='YOU ARE ON THE START LINE'; $('win').innerHTML='freeze before the owl turns round';
 }
-function freezeMe(){
-  if(!me||me.state!=='run'||phase!=='run') return;
+function freezeMe(at){
+  if(!me||me.state!=='run'||phase!=='run'||(!at&&mult>=crash&&crash<E.MAX_WIN)) return; // a click between the round start and the first frame never freezes at a 1.00x crash
+  if(at) mult=at; // auto freeze pays exactly its target (callers check target <= crash), also when a frame or a hidden tab jumped past it
   me.state='out'; me.out=mult; const win=stake*mult; bal+=win; W.freeze('me',mult); sFreeze(); sWin();
   $('state').textContent='FROZEN SAFE AT ×'+fx(mult); $('win').innerHTML='won <b>'+fmt(win)+'</b>'; multUI('won'); say('Frozen at '+fx(mult)+' times. Won '+fmt(win));
   playersUI(); ui();
@@ -211,7 +212,7 @@ function toRun(){
 }
 async function toCrash(){
   phase='end'; phaseT=performance.now(); mult=crash; W.setMult(mult);
-  for(const p of players) if(p.state==='run') p.state='caught';
+  for(const p of players) if(p.state==='run'){ if(!p.you&&p.target<crash){ p.state='out'; p.out=p.target } else p.state='caught' } // a frame or hidden tab that jumped past a bot's target still lets it freeze there
   sHoot(); $('bigm').className='bigm bust'; $('bigT').textContent=fx(crash)+'×'; $('bigS').textContent='THE OWL TURNED';
   if(me&&me.state==='caught'){ banner('CAUGHT!','the owl turned at ×'+fx(crash)+' · lost '+fmt(stake),'bad'); multUI('bust'); $('state').textContent='CAUGHT AT ×'+fx(crash); $('win').innerHTML='lost <b>'+fmt(stake)+'</b>' }
   else if(me&&me.state==='out'){ banner('SAFE!','frozen at ×'+fx(me.out)+' · owl turned at ×'+fx(crash),'good') }
@@ -228,10 +229,11 @@ function loop(now){
     if(left<=0&&W) toRun();
   } else if(phase==='run'){
     const el=now-phaseT; mult=E.multAt(el);
+    const auto=parseFloat($('autoX').value); if(me&&me.state==='run'&&auto>=1.01&&mult>=auto&&auto<=crash) freezeMe(Math.floor(auto*100)/100);
+    if(me&&me.state==='run'&&crash>=E.MAX_WIN&&mult>=E.MAX_WIN) freezeMe(E.MAX_WIN); // max win always pays
     if(mult>=crash){ toCrash() }
     else {
       W.setMult(mult); $('bigT').textContent=fx(mult)+'×'; multUI(''); if(me&&me.state==='run'){ $('win').innerHTML='freeze now for <b>'+fmt(stake*mult)+'</b>'; ui() }
-      const auto=parseFloat($('autoX').value); if(me&&me.state==='run'&&auto>=1.01&&mult>=auto) freezeMe();
       let changed=false; for(const p of players) if(!p.you&&p.state==='run'&&mult>=p.target){ p.state='out'; p.out=mult; W.freeze(p.id,mult); changed=true }
       if(changed){ playersUI(); sFreeze() }
       if(now>peekAt){ const lv=.35+Math.random()*.45; W.peek(lv); sPeek(); peekAt=now+rnd(2500,6000) }

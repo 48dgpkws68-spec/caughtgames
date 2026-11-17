@@ -324,7 +324,7 @@ const L={nl:{hey:'HÉ!',stop:'STOP!',bets:'ZET IN',caught:'BETRAPT!',bet:'INZETT
  first:'Speel eerst een ronde.',ok:c=>`Klopt: hash komt overeen en de seed geeft ${c}×.`,bad:'Komt niet overeen.',
  logoA:'GLUREN!',logoB:'KLUISKRAAK!',tagA:'Hoe langer je gluurt, hoe hoger je winst. Cash uit voordat ze omkijkt.',tagB:'Hoe langer je graait, hoe hoger je winst. Cash uit voordat de bewaker wakker wordt.',
  thA:'Gluren',inplay:'speelt',plN:'spelers',cashed:'uitgecasht',sealed:'SEED VASTGELEGD',snrk:'SNURK?!',oi:'HÉ, JIJ!',close:'BIJNA BETRAPT!',sndOn:'Geluid: aan',sndOff:'Geluid: uit',thB:'Kluiskraak',play:'Speelgeld',stake:'Inzet',auto:'Automatisch uitcashen bij (0 = uit)',pl:'Spelers deze ronde',sim:'Andere spelers zijn gesimuleerd voor de demo.',
- srBet:'Inzetten geopend. Druk op spatie om in te zetten.',srRun:'Ronde gestart.',srMile:m=>`${m}× bereikt.`,srEnd:x=>`Ronde voorbij bij ${x}×.`,
+ srBet:'Inzetten geopend. Druk op spatie om in te zetten.',srRun:'Ronde gestart.',srMile:m=>`${m}× bereikt.`,srEnd:x=>`Ronde voorbij bij ${x}×.`,chipL:x=>`gecrasht bij ${x}×`,
  nh:'Hash van de volgende server-seed (vooraf vastgelegd)',ps:'Vorige ronde: seed en uitkomst',none:'nog geen ronde gespeeld',ver:'Controleer vorige ronde',vopen:'Open in de verifier',cl:'client'},
  en:{hey:'HEY!',stop:'STOP!',bets:'PLACE BETS',caught:'BUSTED!',bet:'PLACE BET',cash:'CASH OUT',cancel:'CANCEL',next:'BET NEXT ROUND',
  lost:'lost',you:'You',caughtMsg:x=>`Caught at ${x}×. Stake lost.`,outMsg:(x,w)=>`Cashed out at ${x}×: +${w}`,cancelled:'Bet cancelled.',
@@ -332,7 +332,7 @@ const L={nl:{hey:'HÉ!',stop:'STOP!',bets:'ZET IN',caught:'BETRAPT!',bet:'INZETT
  first:'Play a round first.',ok:c=>`Verified: hash matches and the seed gives ${c}×.`,bad:'Does not match.',
  logoA:'PEEK!',logoB:'VAULT HEIST!',tagA:'The longer you peek, the bigger the win. Cash out before she turns around.',tagB:'The longer you grab, the bigger the win. Cash out before the guard wakes up.',
  thA:'Peek',inplay:'in play',plN:'players',cashed:'cashed out',sealed:'SEED COMMITTED',snrk:'SNRK?!',oi:'HEY, YOU!',close:'CLOSE CALL!',sndOn:'Sound: on',sndOff:'Sound: off',thB:'Vault Heist',play:'Play money',stake:'Stake',auto:'Auto cash-out at (0 = off)',pl:'Players this round',sim:'Other players are simulated for the demo.',
- srBet:'Betting is open. Press Space to bet.',srRun:'Round started.',srMile:m=>`${m}× reached.`,srEnd:x=>`Round over at ${x}×.`,
+ srBet:'Betting is open. Press Space to bet.',srRun:'Round started.',srMile:m=>`${m}× reached.`,srEnd:x=>`Round over at ${x}×.`,chipL:x=>`crash at ${x}×`,
  nh:'Hash of the next server seed (committed in advance)',ps:'Previous round: seed and result',none:'no round played yet',ver:'Verify previous round',vopen:'Open in the verifier',cl:'client'}};
 const EMBED=location.hash==='#embed', PLAY=location.hash.match(/^#play-(peek|vault)$/); let lang=location.hash==='#nl'?'nl':'en'; const LOC=lang==='nl'?'nl-NL':'en-US';
 const T=(k,...a)=>{const v=L[lang][k];return typeof v==='function'?v(...a):v};
@@ -412,7 +412,7 @@ function renderPlayers(){
   $('plc').textContent=phase==='bet'?`${n} ${T('plN')}`:`${out}/${n} ${T('cashed')}`;
 }
 function renderHist(){
-  $('hist').innerHTML=history.slice(-30).reverse().map(c=>`<span role="listitem" class="chip ${c<2?'lo':c<10?'mid':'hi'}">${c.toFixed(2)}×</span>`).join('');
+  $('hist').innerHTML=history.slice(-30).reverse().map(c=>`<span role="listitem" class="chip ${c<2?'lo':c<10?'mid':'hi'}" aria-label="${T('chipL',c.toFixed(2))}">${c.toFixed(2)}×</span>`).join('');
 }
 function setBal(){ $('bal').textContent=fmt(bal) }
 

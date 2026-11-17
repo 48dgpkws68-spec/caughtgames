@@ -209,3 +209,11 @@
 - Geen RTP-wijziging (engine onaangeroerd). Eindrun rooktest: 81 ok, 0 fouten.
 - Idee voor later: ei-test via echte-tijd-run; Tab-val in LAST REEL en SONAR 3D; codecheck freeze volgende nacht.
 - Voor Nick: niets
+
+## 2026-11-17
+- Gevonden: geen nachtrondes op 15 en 16 nov (Claude-app-login verlopen). Rooktest basislijn 81 ok, 0 fouten (ook 360px netjes). Codecheck FREEZE: rekenmodel (crashOf, multAt, 97%) en fair-paneel kloppen, maar drie uitbetalingsfouten die PEEK! al niet meer heeft: (1) een klik tussen de rondestart en het eerste frame bij crash 1.00× bevroor nog op 1.00× (inzet terug i.p.v. kwijt, 4% van de rondes heeft crash 1.00×); (2) auto freeze betaalde de framewaarde (na een tabsprong of traag frame méér dan het doel, bv. 2.22 bij doel 2) of werd juist gemist als het frame voorbij het crashpunt sprong, en auto = crashpunt werd "caught"; (3) wie tot het maximum van 10.000× bleef staan werd caught i.p.v. uitbetaald. PEEK!-chips hadden nog geen aria-label.
+- Gedaan: FREEZE: handmatig bevriezen alleen onder het crashpunt, auto freeze betaalt exact het doel zodra doel ≤ crashpunt (ook na een frame-gat), max win 10.000× betaalt altijd, bots met een doel onder het crashpunt bevriezen ook na een tabsprong. Waarom: uitkomst moet onafhankelijk zijn van framerate en tabblad, zoals in PEEK!. RTP-sim 2.000.000 rondes met deze regels: auto 1.01/1.5/2/5/10/100 = 96,99/96,97/96,95/96,88/96,77/96,84% (theorie 97%, binnen de ruis). Headless bewezen oud vs nieuw (scratch-kopie, rAF via setTimeout, zonder WebGL): klik bij crash 1.00× oud 1000 nieuw 990; auto 2 bij crash 2 oud caught nieuw +10; frames van 5 s, auto 2, crash 3 oud 2.22× nieuw 2.00×; crash 2.1 oud caught nieuw 2.00×; crash 10.000 oud caught nieuw 10.000×. Engine onaangeroerd.
+- Gedaan: FREEZE- en PEEK!-geschiedenischips hebben een aria-label ("owl turned at 2.00×", "crash at 2.00×" / NL "gecrasht bij") (backlog).
+- Eindrun rooktest: 81 ok, 0 fouten.
+- Idee voor later: dezelfde drie checks in SKYLINE en PASS IT; crash-1.00×-klik als vaste test in check.sh; codecheck wobble volgende nacht.
+- Voor Nick: niets
