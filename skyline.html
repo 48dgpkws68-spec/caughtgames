@@ -272,7 +272,11 @@ function loop(now){
   if(phase==='run'){
     segT+=dt;
     const m=E.multAt(seg.base,segT);
-    if(!E.alive(seg,m)){ caught() }
+    // auto cash pays exactly its target (never above it, rounded up to the cent), also when a frame jumped past it and
+    // the crash point lies in between; after a jump past the target it pays the multiplier the segment started on
+    const auto=parseFloat($('autoX').value), at=auto>=1.01?Math.max(mult,Math.ceil(auto*100-1e-6)/100):0;
+    if(at&&m>=at&&E.canAct(seg,at)){ mult=at; multUI(''); cash(true); ui() }
+    else if(!E.alive(seg,m)){ caught() }
     else {
       mult=m; multUI('');
       W.run(segX0+E.SPEED*segT/1000);
@@ -286,9 +290,7 @@ function loop(now){
         winOpen=null; W.ring(null);
       }
       if(E.canAct(seg,m)) $('win').innerHTML='cash out now for <b>'+fmt(stake*m)+'</b>';
-      const auto=parseFloat($('autoX').value);
-      if(auto>=1.01&&m>=auto&&E.canAct(seg,m)) cash(true);
-      else if(m>=E.MAX_WIN) finishWin(true);
+      if(m>=E.MAX_WIN) finishWin(true);
       ui();
     }
   } else if(phase==='end'&&performance.now()-endAt>900&&$('cash').disabled) ui();

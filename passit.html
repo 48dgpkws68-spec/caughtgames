@@ -173,7 +173,7 @@ $('snd').onclick=()=>{ A.unlock(); $('snd').textContent=A.toggle()?'SOUND OFF':'
 
 /* ---------- state ---------- */
 let bal=1000, phase='bet', phaseT=performance.now(), crash=1, mult=1, joined=false, stake=10, seats=[], route=[], hist=[], warp=1, endEl=0;
-let holdEnd=false, hs=-1, lastHs=-2, holdIdx=-1, fizzAcc=0, wantJoin=false;
+let lastEl=0, holdEnd=false, hs=-1, lastHs=-2, holdIdx=-1, fizzAcc=0, wantJoin=false;
 const me=()=>joined?seats[0]:null;
 const uOf=msg=>F.u(msg);
 const say=s=>{ $('sr').textContent=s };
@@ -278,7 +278,7 @@ function toBet(){
   $('bigm').className='bigm'; $('youhave').classList.remove('on'); $('incoming').classList.remove('on'); hideBanner(); ui(true);
 }
 function toRun(){
-  phase='run'; phaseT=performance.now(); endEl=0;
+  phase='run'; phaseT=performance.now(); endEl=0; lastEl=0;
   crash=E.crashOf(F.u('round'));
   route=E.route(uOf,joined,8000); W.setRoute(route); W.setTime(0,1); W.light();
   seats.forEach((p,i)=>W.tag(i,'',''));
@@ -313,10 +313,16 @@ async function toEnd(kind,el){
 }
 function tick(now){
   if(phase!=='run') return;
-  const el=(now-phaseT)*warp; mult=E.multAt(el);
+  const el=(now-phaseT)*warp;
+  if(route[route.length-1].t0<el+4000){ route=E.route(uOf,joined,el+9000,route); W.setRoute(route) }
+  // auto cash on a catch: decided from the route alone (never the crash), at the exact moment it fires, so a slow
+  // frame or a hidden tab neither overpays nor misses it: pays the target (rounded up to the cent) or, when you catch
+  // the bomb above it, the multiplier at the catch
+  const ac=autoAt(el);
+  if(ac&&!E.endAt(ac.m,crash)){ mult=ac.m; hs=0; cash(true) }
+  mult=E.multAt(el); lastEl=el;
   const end=E.endAt(mult,crash);
   if(end){ toEnd(end,el); return }
-  if(route[route.length-1].t0<el+4000){ route=E.route(uOf,joined,el+9000,route); W.setRoute(route) }
   W.setTime(el,mult);
   const hi=E.holderAt(route,el); hs=hi>=0?route[hi].seat:-1;
   // bots cash out while they hold it
@@ -333,8 +339,17 @@ function tick(now){
   if(cc){ const r=route[hi], left=Math.max(0,(r.t1-el)/(r.t1-r.t0)); const pct=(left*100).toFixed(1)+'%'; yh.style.setProperty('--left',pct); $('act').style.setProperty('--left',pct); $('yhS').textContent='CASH OUT ×'+fx(mult)+' · '+fmt(stake*mult) }
   $('incoming').classList.toggle('on',mine&&hs<0&&W.next===0);
   $('bigS').textContent=hs===0&&mine?'YOU HAVE IT!':hs===0&&joined?'YOU PASS IT ON':hs>=0?nameOf(hs).toUpperCase()+' HAS IT':'IN THE AIR';
-  // auto cash on a catch
-  const auto=parseFloat($('autoX').value); if(cc&&auto>=E.MIN_CASH&&mult>=auto) cash(true);
+}
+function autoAt(el){
+  const auto=parseFloat($('autoX').value);
+  if(!(joined&&seats[0].state==='in'&&auto>=E.MIN_CASH)) return null;
+  const a=Math.min(E.MAX_WIN,Math.ceil(auto*100-1e-6)/100), ta=E.msTo(a);
+  for(const r of route){
+    if(r.t0>el) break; if(r.seat!==0) continue;
+    let t=Math.max(r.t0,ta,lastEl); while(E.multAt(t)<a) t+=1;
+    if(t<r.t1&&t<=el) return {t,m:E.multAt(t)};
+  }
+  return null;
 }
 let last=performance.now();
 function loop(now){

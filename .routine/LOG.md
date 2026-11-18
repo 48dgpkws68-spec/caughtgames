@@ -217,3 +217,12 @@
 - Eindrun rooktest: 81 ok, 0 fouten.
 - Idee voor later: dezelfde drie checks in SKYLINE en PASS IT; crash-1.00×-klik als vaste test in check.sh; codecheck wobble volgende nacht.
 - Voor Nick: niets
+
+## 2026-11-18
+- Gevonden: rooktest basislijn 81 ok, 0 fouten, screenshots (ook 360px) netjes. Codecheck WOBBLE: engine (true odds, edge alleen in eerste trek, max win 10.000x met eerlijke valkans), stake-afronding, Escape/Tab, focus en testhook kloppen. Wel: het FAIR-paneel noemde de cap van 92% op de valkans en de max-win-regel niet, zodat een narekenaar bij zwakke torens of grote multipliers een andere kans uitrekent dan het spel toont. Backlog SKYLINE/PASS IT: SKYLINE klik bij crash 1.00x was al veilig (canAct eist 1.01), max win ok, maar auto cash betaalde de framewaarde (tot ~1% boven het doel) of miste het doel als de crash tussen twee frames lag. PASS IT: auto betaalde de framewaarde en werd na een verborgen tabblad gemist (ronde loopt op wandklok door, bij terugkeer meteen BOOM).
+- Gedaan: SKYLINE auto cash betaalt exact het doel (naar boven op de cent) zodra doel <= crashpunt, ook als een frame erover sprong; na een sprong boven het doel de startwaarde van het segment. PASS IT auto cash wordt alleen uit de route bepaald (nooit uit de crash): exact het doel als je de bom vasthoudt terwijl hij het doel passeert, anders de multiplier op het moment van vangen, ook na een tabsprong ingehaald. Waarom: uitkomst onafhankelijk van framerate en tabblad, zoals PEEK! en FREEZE. RTP-sim 3.000.000 rondes (rAF 5-100 ms, PASS IT ook met tabsprongen tot 23 s): SKYLINE auto 1.5/2/5 = 97,02/97,04/97,10%, PASS IT 97,05/96,94/96,85% (frames) en 97,00/97,10/97,21% (tabsprongen); theorie exact 97% (uitbetaling ligt vast vóór de crash, P(crash >= m) = 0,97/m). Headless (rAF via setTimeout, 3% kans op 6 s gat, auto 1.5): SKYLINE winst altijd exact 1.50x, PASS IT 1.50 of de vangwaarde (1.52, 1.56, 2.03...). Let op: de vergelijking met de oude code leverde onder virtuele tijd te weinig rondes op, dus oud niet gemeten; de fout volgt uit de code. Engines onaangeroerd.
+- Gedaan: WOBBLE FAIR-paneel noemt nu de cap van 92% en de max-win-regel (valkans 1 - huidig/10.000, x0,97 bij de eerste trek). Geen RTP-wijziging.
+- Eindrun rooktest: 81 ok, 0 fouten.
+- Idee voor later: auto-cash-test in check.sh; WOBBLE blokken kiezen met pijltjes; WOBBLE-verifier op index; codecheck skyline volgende nacht.
+- Voor Nick: niets
+
