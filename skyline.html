@@ -175,7 +175,7 @@ function ui(){
   $('bal').textContent=fmt(bal);
   const run=phase==='run', canCash=run&&seg&&E.canAct(seg,mult);
   const c=$('cash'), mc=$('mbCash');
-  if(phase==='idle'||phase==='end'){ const s=readStake(); c.className='go'; c.disabled=phase==='end'&&performance.now()-endAt<900; c.innerHTML='RUN<small>stake '+fmt(s)+'</small>'; mc.className='go'; mc.disabled=c.disabled; mc.textContent='RUN '+fmt(s,s%1?2:0) }
+  if(phase==='idle'||phase==='end'||phase==='fade'){ const s=readStake(); c.className='go'; c.disabled=phase==='end'&&performance.now()-endAt<900; c.innerHTML='RUN<small>stake '+fmt(s)+'</small>'; mc.className='go'; mc.disabled=c.disabled; mc.textContent='RUN '+fmt(s,s%1?2:0) }
   else { c.className=''; c.disabled=!canCash; c.innerHTML='CASH OUT<small>'+(canCash?fmt(stake*mult):phase==='jump'?'in the air…':'from ×1.01')+'</small>'; mc.className=''; mc.disabled=!canCash; mc.textContent=canCash?'CASH '+fmt(stake*mult):'CASH' }
   const open=run&&winOpen&&E.canAct(seg,mult), o=open?E.jumpOdds(mult):null;
   const j=$('jump'); j.disabled=!open; j.classList.toggle('open',!!open); $('mbJump').disabled=!open;
@@ -183,7 +183,7 @@ function ui(){
   $('jumpX').textContent=o?'×'+fx(o.to):'×3';
   $('jumpS').textContent=o?(o.max?'max win · '+(o.p*100).toFixed(2)+'% chance':'1 in 3 · '+fmt(stake*o.to)+' if you make it'):phase==='jump'?'mid-air…':run?'waits for the next gap':'opens at every gap';
   $('mbJump').textContent=o?'JUMP ×3':'JUMP';
-  document.body.classList.toggle('running',run||phase==='jump'); document.body.classList.toggle('idle',phase==='idle'||phase==='end');
+  document.body.classList.toggle('running',run||phase==='jump'); document.body.classList.toggle('idle',phase==='idle'||phase==='end'||phase==='fade');
   $('bet').disabled=$('half').disabled=$('dbl').disabled=run||phase==='jump';
   $('segL').textContent=seg&&phase!=='idle'?'segment '+(seg.k+1)+' · '+jumps+' jump'+(jumps===1?'':'s'):'';
 }
@@ -194,9 +194,10 @@ function logRow(txt,res,cls){ const d=document.createElement('div'); d.className
 function big(t,s,cls){ if(t!=null) $('bigT').textContent=t; if(s!=null) $('bigS').textContent=s; $('bigm').className='bigm '+(cls||'') }
 
 /* ---------- actions ---------- */
-function act(){ A.unlock(); if(phase==='idle'||phase==='end') return start(); if(phase==='run') return cash() }
+function act(){ A.unlock(); if(phase==='idle'||phase==='end'||phase==='fade') return start(); if(phase==='run') return cash() }
 async function start(){
   if(phase==='end'){ if(performance.now()-endAt<900) return; await toIdle() }
+  else if(phase==='fade') await idling; // a second press during the fade to idle waits for it instead of starting a run the fade then wipes
   if(phase!=='idle') return;
   const topped=bal<1; if(topped) bal=1000; stake=readStake(); if(bal<stake) return;
   bal-=stake; jumps=0; gapI=-1; gapsPassed=0; log=[]; $('runlog').innerHTML='';
@@ -249,12 +250,15 @@ async function caught(){
 function reveal(extra){ const rv=F.reveal(); $('fairPrev').textContent='run '+rv.nonce+' · client '+rv.client+'\nseed '+rv.seed+'\n'+log.map(l=>l.m+': u='+l.u.toFixed(6)+' · '+l.txt).join('\n')+(extra?'\n'+extra:''); fairUI() }
 let laterT=0;
 function later(){ clearTimeout(laterT); laterT=setTimeout(()=>{ if(phase==='end') toIdle() },3600) }
-async function toIdle(){
-  clearTimeout(laterT); if(phase!=='end') return;
-  phase='idle'; $('fade').classList.add('on'); await new Promise(r=>setTimeout(r,reduce?30:360));
-  W.reset(); hideBanner(); seg=null; mult=1; multUI(''); big('1.00×','READY TO RUN');
-  $('state').textContent='READY ON THE ROOF'; $('win').innerHTML='press RUN to start'; ui();
-  $('fade').classList.remove('on');
+let idling=null;
+function toIdle(){
+  clearTimeout(laterT); if(idling) return idling; if(phase!=='end') return Promise.resolve();
+  phase='fade'; $('fade').classList.add('on');
+  return idling=new Promise(r=>setTimeout(r,reduce?30:360)).then(()=>{
+    W.reset(); hideBanner(); seg=null; mult=1; phase='idle'; idling=null; multUI(''); big('1.00×','READY TO RUN');
+    $('state').textContent='READY ON THE ROOF'; $('win').innerHTML='press RUN to start'; ui();
+    $('fade').classList.remove('on');
+  });
 }
 $('cash').onclick=act; $('mbCash').onclick=act; $('jump').onclick=jump; $('mbJump').onclick=jump;
 addEventListener('keydown',e=>{ if(e.ctrlKey||e.metaKey||e.altKey) return; if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden){ if(e.key==='Escape'){ closeHow(true); e.preventDefault() } else if(e.key==='Tab'){ $('go').focus({preventScroll:true}); e.preventDefault() } return } if(e.key==='Escape'&&!$('fairBox').hidden){ $('fairBox').hidden=true; $('fairBtn').setAttribute('aria-expanded','false'); $('fairBtn').focus({preventScroll:true}); return } if((e.key===' '||e.key==='Enter')&&/^(BUTTON|A|SUMMARY)$/.test(e.target.tagName)) return;

@@ -2,7 +2,6 @@
 
 - og-afbeeldingen (art/og-*.jpg) opnieuw maken als een game er zichtbaar anders uit gaat zien.
 - Glass Ascent (niet gelinkt) heeft mogelijk dezelfde tabblad-sprong; alleen relevant als Nick Glass ooit terugzet.
-- SONAR/PEEK! how-to (eigen CSS, niet shell.css) op lage schermen (360x560, liggend) controleren op een onder-de-vouw-knop; SNEAK is gedaan (13 nov).
 - Na een muis/touch-klik zou een eerste pijltoets de cursor op de laatst gehoverde tegel kunnen zetten i.p.v. de oude toetsenbordpositie (SONAR 3D en SONAR).
 - Toetsentest: Tab-volgorde op 360px (knoppen niet onder de vouw); how-to Escape/Tab-val ook in LAST REEL en SONAR 3D (sluiten al op Escape, maar zonder Tab-val en focus terug); FAIR Escape-test.
 - index: honeypot-pad laat de verzendknop uitgeschakeld en "Sending..." staan (alleen bots, formulier zelf niet aanraken).
@@ -17,3 +16,5 @@
 - check.sh: auto-cash-test SKYLINE/PASS IT (rAF via setTimeout met af en toe 6 s gat, auto 1.5: elke winst exact 1.50 of de vangwaarde). Harness stond 18 nov in de scratchpad; virtuele tijd gaf grillig weinig rondes, dus echte tijd of meer budget nodig.
 - WOBBLE: blokken kiezen met het toetsenbord (nu alleen 1/2 voor veiligste/boldste); bv. pijlen door de pakbare blokken.
 - WOBBLE: verifier op index voor een gespeelde toren (zoals SONAR), nu staat de formule alleen in het FAIR-paneel.
+- Racetest in check.sh: tweede RUN/Space tijdens de fade naar idle (SKYLINE, 19 nov gefixt) mag nooit een run zonder segment starten; harness stond 19 nov in de scratchpad (hold-server houdt dump-dom open).
+- Andere games nalopen op async overgangen (await tussen fase-wissels) waar een tweede druk tussendoor glipt; PEEK! startRun is al bewaakt (starting-vlag).

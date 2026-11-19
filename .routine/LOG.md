@@ -226,3 +226,11 @@
 - Idee voor later: auto-cash-test in check.sh; WOBBLE blokken kiezen met pijltjes; WOBBLE-verifier op index; codecheck skyline volgende nacht.
 - Voor Nick: niets
 
+
+## 2026-11-19
+- Gevonden: rooktest basislijn 81 ok, 0 fouten, screenshots (ook 360px) netjes. Codecheck SKYLINE: engine, auto cash (18 nov), canAct en testhook kloppen. Wel een racefout: na een ronde wacht toIdle 360 ms op de fade, maar zette de fase al op idle; een tweede RUN/Space in dat venster (of een klik net als de automatische terugkeer na 3,6 s start) startte een run, waarna de fade die run wiste (seg = null). Gevolg: inzet afgeschreven, frame-loop crasht (TypeError), spel bevroren tot herladen. Headless gereproduceerd: phase run, seg null, mult 1, saldo 990,5. SONAR how-to in liggend formaat (740x360): kaart gecentreerd zonder scroll, titel en START DIVING buiten beeld en de backlink lag over de dialoog (backlog). PEEK! heeft geen how-to-dialoog; de shell-games scrollen al binnen de kaart.
+- Gedaan: SKYLINE heeft een tussenfase 'fade': een druk tijdens de fade wacht op dezelfde belofte en start daarna precies één run. Bewezen headless: 8 rondes met dubbele druk tijdens de fade, elke keer 1 run met lopende segT en 1 inzet. Geen RTP-wijziging (engine onaangeroerd).
+- Gedaan: SONAR how-to scrolt (overflow-y auto), begint op lage schermen (max-height 620px) bovenaan en ligt boven de backlink (z-index 40). Gemeten 740x360: scrollHeight 517, START DIVING na scrollen volledig in beeld; desktop ongewijzigd.
+- Eindrun rooktest: 81 ok, 0 fouten.
+- Idee voor later: racetest in check.sh; andere games op async fase-overgangen nalopen; codecheck passit volgende nacht.
+- Voor Nick: niets
