@@ -298,8 +298,8 @@ function debrief(){
 /* ---------- keyboard ---------- */
 addEventListener('keydown',e=>{
   if(e.ctrlKey||e.metaKey||e.altKey) return;
-  if(e.key==='Escape'){ $('how').hidden=true; $('fairBox').hidden=true; if(pingArm){ pingArm=false; ui() } return }
-  if(!$('how').hidden) return;
+  if(!$('how').hidden){ if(e.key==='Escape'){ closeHow(true); e.preventDefault() } else if(e.key==='Tab'){ $('go').focus({preventScroll:true}); e.preventDefault() } return }
+  if(e.key==='Escape'){ if(!$('fairBox').hidden){ $('fairBox').hidden=true; $('fairBtn').setAttribute('aria-expanded','false'); $('fairBtn').focus({preventScroll:true}) } if(pingArm){ pingArm=false; ui() } return }
   if(/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)){ if(e.key==='Enter') e.target.blur(); return }
   const d={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];
   if(d){ e.preventDefault(); kbOn=true; if(kb<0) kb=14; const x=Math.max(0,Math.min(N-1,kb%N+d[0])), y=Math.max(0,Math.min(N-1,((kb/N)|0)+d[1])); kb=y*N+x; const T=tiles[kb]; say('Row '+(y+1)+', column '+(x+1)+': '+(T.rev?(T.mine?'mine':'sonar '+T.n):'hidden'+(T.ping!==null?', pinged '+(T.ping?'warm':'cold'):'')+(T.proven===1&&phase==='run'?', proven mine':''))); return }
@@ -309,10 +309,11 @@ addEventListener('keydown',e=>{
   else if(['1','2','3','4'].includes(e.key)) setMines(MINES[+e.key-1]);
 });
 addEventListener('pointerdown',()=>{ kbOn=false });
-$('fairBtn').onclick=()=>{ $('fairBox').hidden=!$('fairBox').hidden };
+$('fairBtn').setAttribute('aria-expanded','false'); $('fairBtn').onclick=()=>{ $('fairBox').hidden=!$('fairBox').hidden; $('fairBtn').setAttribute('aria-expanded',String(!$('fairBox').hidden)) };
 const openHow=()=>{ $('how').hidden=false; setTimeout(()=>$('go').focus({preventScroll:true}),0) };
-$('howBtn').onclick=openHow; $('go').onclick=()=>{ $('how').hidden=true; try{ localStorage.setItem('sonar3d-how','1') }catch(e){} A.unlock(); sPing(.08) };
-$('how').onclick=e=>{ if(e.target.id==='how') $('how').hidden=true };
+const closeHow=kb=>{ $('how').hidden=true; try{ localStorage.setItem('sonar3d-how','1') }catch(e){} if(kb) $('howBtn').focus({preventScroll:true}) }; // keyboard close puts focus back on HOW; a mouse click leaves no focus behind
+$('howBtn').onclick=openHow; $('go').onclick=e=>{ closeHow(e.detail===0); A.unlock(); sPing(.08) };
+$('how').onclick=e=>{ if(e.target.id==='how') closeHow(false) };
 
 /* ---------- 3D (with a plain button board if WebGL is blocked) ---------- */
 let W=null, hover=-1, lastHov=0;

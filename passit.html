@@ -224,7 +224,7 @@ function ui(force){
     $('bet').disabled=$('half').disabled=$('dbl').disabled=joined&&phase!=='end';
   }
 }
-function chip(c){ hist.unshift(c); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(c=>'<span role="listitem" class="chip '+(c>=2?'w':'l')+'">'+fx(c)+'×</span>').join('') }
+function chip(c){ hist.unshift(c); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(c=>'<span role="listitem" class="chip '+(c>=2?'w':'l')+'" aria-label="'+(c>=E.MAX_WIN?'fuse burnt out at ':'bomb blew at ')+fx(c)+'×">'+fx(c)+'×</span>').join('') }
 function banner(t,s,cls){ $('bnT').textContent=t; $('bnS').textContent=s; $('banner').className='banner '+cls+' on'; say(t+'. '+s) }
 const hideBanner=()=>{ $('banner').className='banner' };
 

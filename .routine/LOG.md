@@ -234,3 +234,11 @@
 - Eindrun rooktest: 81 ok, 0 fouten.
 - Idee voor later: racetest in check.sh; andere games op async fase-overgangen nalopen; codecheck passit volgende nacht.
 - Voor Nick: niets
+
+## 2026-11-20
+- Gevonden: rooktest basislijn 81 ok, 0 fouten, screenshots (ook 360px) netjes. Codecheck PASS IT: engine (één crash per kamer, route onafhankelijk van c), handmatig cashen (tick eerst bijwerken), auto cash uit de route (18 nov), MIN_CASH bij crash 1.00x, stake-afronding, Escape/Tab en testhook (crash pas na de ronde) kloppen. Wel: PASS IT was de enige game met geschiedenischips zonder aria-label. LAST REEL sloot de how-to niet op Escape en liet Tab uit de how-to en de paytable; SONAR 3D sloot op Escape maar zonder Tab-val en zonder focus terug; FAIR in beide zonder aria-expanded.
+- Gedaan: LAST REEL en SONAR 3D: how-to (en LAST REEL paytable) houdt Tab binnen de dialoog, Escape sluit en zet de focus terug op HOW/PAYS (alleen bij toetsenbord, niet na een muisklik), FAIR heeft aria-expanded en Escape zet de focus terug op FAIR (backlog). Toetsentest dekt Escape/Tab nu in 10 games (beide nieuw ok).
+- Gedaan: PASS IT-chips hebben een aria-label ("bomb blew at 2.00×" / "fuse burnt out at 10,000×"), zodat alle games gelijk zijn.
+- Geen RTP-wijziging (engines onaangeroerd). Eindrun rooktest: 81 ok, 0 fouten.
+- Idee voor later: PAYS-dialoog in de toetsentest; bots inhalen na een tabsprong in PASS IT; codecheck lastreel volgende nacht.
+- Voor Nick: niets

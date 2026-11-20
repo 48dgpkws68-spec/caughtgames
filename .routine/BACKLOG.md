@@ -3,11 +3,11 @@
 - og-afbeeldingen (art/og-*.jpg) opnieuw maken als een game er zichtbaar anders uit gaat zien.
 - Glass Ascent (niet gelinkt) heeft mogelijk dezelfde tabblad-sprong; alleen relevant als Nick Glass ooit terugzet.
 - Na een muis/touch-klik zou een eerste pijltoets de cursor op de laatst gehoverde tegel kunnen zetten i.p.v. de oude toetsenbordpositie (SONAR 3D en SONAR).
-- Toetsentest: Tab-volgorde op 360px (knoppen niet onder de vouw); how-to Escape/Tab-val ook in LAST REEL en SONAR 3D (sluiten al op Escape, maar zonder Tab-val en focus terug); FAIR Escape-test.
+- Toetsentest: Tab-volgorde op 360px (knoppen niet onder de vouw); FAIR Escape-test; LAST REEL paytable (PAYS) Escape/Tab in de toetsentest.
 - index: honeypot-pad laat de verzendknop uitgeschakeld en "Sending..." staan (alleen bots, formulier zelf niet aanraken).
 - Toetsentest in check.sh: klik direct na rondestart bij crash 1.00× mag niet uitbetalen (FREEZE en PEEK! zijn gefixt; harness zoals 17 nov in LOG: rAF via setTimeout, zonder WebGL).
 - Reduced motion: andere games met een eenmalig getekende canvas-achtergrond nalopen op dezelfde lege achtergrond als SONAR had (resize wist het canvas).
-- SONAR 3D: verifier-link met path/x end-to-end testen (headless speelt de 3D-duikanimatie niet af); how-to daar ook Tab in de dialoog houden.
+- SONAR 3D: verifier-link met path/x end-to-end testen (headless speelt de 3D-duikanimatie niet af).
 - check.sh: index DOM-dump faalt soms onder hoge load ("geen DOM-dump", los 40 s en ok): tweede poging of ruimere waakhond.
 - check.sh: tabwissel-test (verbergen/tonen 5x, daarna nog 1 renderloop per frame) voor SNEAK en een speelgoedgame; 13 nov alleen los gemeten op de nieuwe SNEAK.
 - Renderloop in passit/skyline/freeze/sonar (eigen loops in de html) nalopen op dezelfde verdubbeling bij tabwissel.
@@ -18,3 +18,4 @@
 - WOBBLE: verifier op index voor een gespeelde toren (zoals SONAR), nu staat de formule alleen in het FAIR-paneel.
 - Racetest in check.sh: tweede RUN/Space tijdens de fade naar idle (SKYLINE, 19 nov gefixt) mag nooit een run zonder segment starten; harness stond 19 nov in de scratchpad (hold-server houdt dump-dom open).
 - Andere games nalopen op async overgangen (await tussen fase-wissels) waar een tweede druk tussendoor glipt; PEEK! startRun is al bewaakt (starting-vlag).
+- PASS IT: na een verborgen tabblad cashen de bots niet meer in de ingehaalde tijd (alleen beeld, geen uitbetaling van de speler); en bij terugkeer in de eindfase kan de explosie-animatie nog doorlopen in de nieuwe ronde (cosmetisch).

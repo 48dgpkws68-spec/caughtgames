@@ -450,16 +450,19 @@ $('cDbl').onclick=doDouble; $('cLand').onclick=doLand;
 $('mbMain').onclick=()=>{ if(phase==='offer') doDouble(); else spin() };
 $('mbNo').onclick=doLand;
 addEventListener('keydown',e=>{ if(e.ctrlKey||e.metaKey||e.altKey) return; if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return }
-  if(e.key==='Escape'){ $('pays').hidden=true; $('fairBox').hidden=true; return }
-  if(!$('how').hidden||!$('pays').hidden||$('fsCard').classList.contains('on')) return;
+  if(!$('how').hidden){ if(e.key==='Escape'){ closeHow(true); e.preventDefault() } else if(e.key==='Tab'){ $('go').focus({preventScroll:true}); e.preventDefault() } return }
+  if(!$('pays').hidden){ if(e.key==='Escape'){ closePays(true); e.preventDefault() } else if(e.key==='Tab'){ $('paysX').focus({preventScroll:true}); e.preventDefault() } return }
+  if(e.key==='Escape'){ if(!$('fairBox').hidden){ $('fairBox').hidden=true; $('fairBtn').setAttribute('aria-expanded','false'); $('fairBtn').focus({preventScroll:true}) } return }
+  if($('fsCard').classList.contains('on')) return;
   if((e.key===' '||e.key==='Enter')&&/^(BUTTON|A|SUMMARY)$/.test(e.target.tagName)) return;
   if(e.key===' '||e.key==='Enter'){ e.preventDefault(); if(phase==='offer') doLand(); else spin() }
   else if(e.key==='d'||e.key==='D') doDouble();
   else if(e.key==='p'||e.key==='P') openPays() });
 addEventListener('click',e=>{ const b=e.detail>0&&e.target.closest&&e.target.closest('button'); if(b) b.blur() },true); // a mouse/touch click leaves no focus behind, so Space/Enter stay the game shortcuts; Tab focus keeps native button activation
-$('fairBtn').onclick=()=>{ $('fairBox').hidden=!$('fairBox').hidden };
+$('fairBtn').setAttribute('aria-expanded','false'); $('fairBtn').onclick=()=>{ $('fairBox').hidden=!$('fairBox').hidden; $('fairBtn').setAttribute('aria-expanded',String(!$('fairBox').hidden)) };
 const openHow=()=>{ $('how').hidden=false; setTimeout(()=>$('go').focus({preventScroll:true}),0) };
-$('howBtn').onclick=openHow; $('go').onclick=()=>{ $('how').hidden=true; try{ localStorage.setItem('lastreel-how','1') }catch(e){} A.unlock() };
+const closeHow=kb=>{ $('how').hidden=true; try{ localStorage.setItem('lastreel-how','1') }catch(e){} if(kb) $('howBtn').focus({preventScroll:true}) }; // keyboard close puts focus back on HOW; a mouse click leaves no focus behind
+$('howBtn').onclick=openHow; $('go').onclick=e=>{ closeHow(e.detail===0); A.unlock() };
 
 /* ---------- paytable ---------- */
 function buildPays(){
@@ -474,7 +477,8 @@ function buildPays(){
   $('stab').innerHTML='<tr><th></th>'+[1,2,3,4,5].map(r=>'<th>REEL '+r+'</th>').join('')+'<th>FREE SPINS</th></tr>'+E.SYMBOLS.map((S,i)=>'<tr><td>'+icon(i)+'</td>'+E.STRIPS.map(st=>'<td>'+cnt(st,i)+'</td>').join('')+'<td>'+E.FS_STRIPS.map(st=>cnt(st,i)).join(' · ')+'</td></tr>').join('')+'<tr><td><b>stops</b></td>'+E.STRIPS.map(st=>'<td><b>'+st.length+'</b></td>').join('')+'<td><b>'+E.FS_STRIPS.map(st=>st.length).join(' · ')+'</b></td></tr>';
 }
 function openPays(){ buildPays(); $('pays').hidden=false; setTimeout(()=>$('paysX').focus({preventScroll:true}),0) }
-$('paysBtn').onclick=openPays; $('paysX').onclick=()=>{ $('pays').hidden=true };
+function closePays(kb){ $('pays').hidden=true; if(kb) $('paysBtn').focus({preventScroll:true}) }
+$('paysBtn').onclick=openPays; $('paysX').onclick=e=>closePays(e.detail===0);
 $('pays').addEventListener('click',e=>{ if(e.target.id==='pays') $('pays').hidden=true });
 
 /* ---------- 3D ---------- */
