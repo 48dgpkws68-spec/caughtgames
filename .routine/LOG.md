@@ -242,3 +242,11 @@
 - Geen RTP-wijziging (engines onaangeroerd). Eindrun rooktest: 81 ok, 0 fouten.
 - Idee voor later: PAYS-dialoog in de toetsentest; bots inhalen na een tabsprong in PASS IT; codecheck lastreel volgende nacht.
 - Voor Nick: niets
+
+## 2026-11-21
+- Gevonden: rooktest basislijn 81 ok, 0 fouten, screenshots (ook 360px) netjes. Codecheck LAST REEL: engine (both ways, 5 of a kind één keer, scatter, k = 0,965 / E), double-keuze (stop ligt vast vóór de keuze), max-win-cap in de free spins, stake-afronding, focus/Escape en testhook (alleen gelande rollen) kloppen. Wel: na een winst zet het spel een timer van 2,2 s die de banner verbergt; wie snel opnieuw draait kreeg de banner van de volgende spin (LAST REEL!, BIG WIN, FREE SPINS!) door die oude timer te vroeg weggehaald.
+- Gedaan: LAST REEL banner-token: de timer verbergt alleen nog de banner die hij zelf hoort te verbergen. Geen RTP-wijziging (engine onaangeroerd).
+- Gedaan: SONAR en SONAR 3D: de eerste pijltoets na muis- of touchgebruik zet de cursor op de laatst gehoverde tegel i.p.v. de oude toetsenbordpositie (backlog). Headless bewezen op SONAR: 3 hoverpunten, eerste pijl = de gehoverde tegel, tweede pijl = één kolom verder. SONAR 3D is regel voor regel gelijk maar niet end-to-end getest.
+- Eindrun rooktest: 81 ok, 0 fouten.
+- Idee voor later: banner-timers in andere games nalopen; SONAR 3D cursor e2e; codecheck squish volgende nacht.
+- Voor Nick: niets
