@@ -35,6 +35,16 @@ f.onload=async()=>{ const w=f.contentWindow, d=w.document;
     const open=!how.hidden; press(w,d.activeElement||body,'Tab'); const trapped=how.contains(d.activeElement); press(w,d.activeElement||body,'Escape'); await wait(200);
     const good=open&&trapped&&how.hidden&&d.activeElement===hb;
     out.push((good?'ok':'FOUT')+' Escape how-to'+(good?'':' open='+open+' tab binnen='+trapped+' dicht='+how.hidden+' focus='+(d.activeElement&&d.activeElement.id))) }
+  // FAIR: knop zet aria-expanded, Escape sluit het paneel en zet de focus terug op FAIR
+  const fb=d.getElementById('fairBtn'), fx=d.getElementById('fairBox');
+  if(fb&&fx){ fb.click(); await wait(150); const open=!fx.hidden&&fb.getAttribute('aria-expanded')==='true'; press(w,body,'Escape'); await wait(200);
+    const good=open&&fx.hidden&&fb.getAttribute('aria-expanded')==='false'&&d.activeElement===fb;
+    out.push((good?'ok':'FOUT')+' Escape FAIR'+(good?'':' open='+open+' dicht='+fx.hidden+' aria='+fb.getAttribute('aria-expanded')+' focus='+(d.activeElement&&d.activeElement.id))); fb.blur() }
+  // LAST REEL paytable (PAYS): zelfde als de how-to
+  const pb=d.getElementById('paysBtn'), pd=d.getElementById('pays');
+  if(pb&&pd){ pb.click(); await wait(200); const open=!pd.hidden; press(w,d.activeElement||body,'Tab'); const trapped=pd.contains(d.activeElement); press(w,d.activeElement||body,'Escape'); await wait(200);
+    const good=open&&trapped&&pd.hidden&&d.activeElement===pb;
+    out.push((good?'ok':'FOUT')+' Escape PAYS'+(good?'':' open='+open+' tab binnen='+trapped+' dicht='+pd.hidden+' focus='+(d.activeElement&&d.activeElement.id))); pb.blur() }
   // gedeelde ronde: wacht op de inzetfase; loopt een ronde lang door, dan telt 'YOU JOIN THE NEXT ROUND' (#state) als start
   const hk=w['__'+p]; for(let i=0;i<60&&hk&&hk.state&&hk.state.phase&&hk.state.phase!=='bet';i++) await wait(250);
   const a=sig(w,1); for(const [sel,key] of pos){ press(w,sel?d.querySelector(sel):body,key); await wait(300) } await wait(600);

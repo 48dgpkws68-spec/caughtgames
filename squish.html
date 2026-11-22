@@ -8,7 +8,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Caught Games">
 <meta property="og:title" content="SQUISH JAR · Merge the blobs, grow the gold">
-<meta property="og:description" content="A 3D physics merge slot. Twelve squishy blobs drop into a glass jar, equal blobs melt together and pay. Catch a rainbow blob for GOLD RUSH: free pours, a jar that stays full and a multiplier up to ×10.">
+<meta property="og:description" content="A 3D physics merge slot. Twelve squishy blobs drop into a glass jar, equal blobs melt together and pay. Catch a rainbow blob for GOLD RUSH: free pours, a jar that stays full and a multiplier that climbs to ×10, up to ×100 on a retrigger.">
 <meta property="og:url" content="https://caughtgames.com/squish.html">
 <meta property="og:image" content="https://caughtgames.com/art/og-squish.jpg">
 <meta property="og:image:width" content="1200">
@@ -233,7 +233,7 @@ function pop(text,scr,cls){ if(!scr) return; const d=document.createElement('div
 const centre=()=>{ const r=$('stage').getBoundingClientRect(); return {x:r.width/2,y:r.height*0.4} };
 
 /* ---------- GOLD RUSH ---------- */
-function hud(){ $('hudP').textContent='POUR '+Math.min(rushIdx+1,rushPours)+' / '+rushPours; $('hudM').textContent='×'+E.MULTS[Math.min(Math.max(Math.min(rushIdx,rushPours-1),0),E.MULTS.length-1)]; $('hudW').textContent=fmt(cur.stake*rushWin); const l=ladderHTML(rushPours,rushIdx); $('ladder').innerHTML=l }
+function hud(){ $('hudP').textContent='POUR '+Math.min(rushIdx+1,rushPours)+' / '+rushPours; $('hudM').textContent='×'+E.MULTS[Math.min(Math.max(Math.min(rushIdx,rushPours-1),0),E.MULTS.length-1)]; $('hudW').textContent=fmt(cur.stake*Math.min(rushWin,E.MAX_WIN-cur.round.baseWin)); const l=ladderHTML(rushPours,rushIdx); $('ladder').innerHTML=l }
 function intro(){
   $('introSub').textContent=E.BONUS_POURS+' FREE POURS · THE JAR STAYS FULL · THE MULTIPLIER CLIMBS';
   $('introLadder').innerHTML=ladderHTML(E.BONUS_POURS,-1);
@@ -256,8 +256,8 @@ async function playRush(round){
   }
   if(round.capped) pop('MAX WIN ×'+fmt(E.MAX_WIN,0),centre(),'huge');
   rushIdx=rushPours; hud();
-  const w=R.win;
-  if(w>1){ sWin(true); banner('GOLD RUSH!','rush paid ×'+fx(Math.min(w,E.MAX_WIN))+' · '+fmt(cur.stake*Math.min(w,E.MAX_WIN)),'good'); await wait(2400); hideBanner() }
+  const w=Math.min(R.win,E.MAX_WIN-round.baseWin);   // at the cap the rush pays only what is left above the base win
+  if(w>1){ sWin(true); banner('GOLD RUSH!','rush paid ×'+fx(w)+' · '+fmt(cur.stake*w),'good'); await wait(2400); hideBanner() }
   else { $('win').innerHTML='GOLD RUSH returned <b>'+fmt(cur.stake*w)+'</b>'; await wait(900) }
   $('hud').hidden=true; music.stop(); W.setRush(false); document.body.classList.remove('rush');
 }
