@@ -2,7 +2,7 @@
 
 - og-afbeeldingen (art/og-*.jpg) opnieuw maken als een game er zichtbaar anders uit gaat zien.
 - Glass Ascent (niet gelinkt) heeft mogelijk dezelfde tabblad-sprong; alleen relevant als Nick Glass ooit terugzet.
-- Toetsentest: Tab-volgorde op 360px (knoppen niet onder de vouw); FAIR Escape-test; LAST REEL paytable (PAYS) Escape/Tab in de toetsentest.
+- Toetsentest: Tab-volgorde op 360px (knoppen niet onder de vouw).
 - index: honeypot-pad laat de verzendknop uitgeschakeld en "Sending..." staan (alleen bots, formulier zelf niet aanraken).
 - Toetsentest in check.sh: klik direct na rondestart bij crash 1.00× mag niet uitbetalen (FREEZE en PEEK! zijn gefixt; harness zoals 17 nov in LOG: rAF via setTimeout, zonder WebGL).
 - Reduced motion: andere games met een eenmalig getekende canvas-achtergrond nalopen op dezelfde lege achtergrond als SONAR had (resize wist het canvas).
@@ -19,4 +19,5 @@
 - Andere games nalopen op async overgangen (await tussen fase-wissels) waar een tweede druk tussendoor glipt; PEEK! startRun is al bewaakt (starting-vlag).
 - PASS IT: na een verborgen tabblad cashen de bots niet meer in de ingehaalde tijd (alleen beeld, geen uitbetaling van de speler); en bij terugkeer in de eindfase kan de explosie-animatie nog doorlopen in de nieuwe ronde (cosmetisch).
 - SONAR 3D: eerste pijltoets na muisgebruik (21 nov) end-to-end testen; headless geeft de 3D-hover geen tegel.
-- Banner-timers in de andere games nalopen op dezelfde fout als LAST REEL had (oude setTimeout verbergt een nieuwere banner).
+- SQUISH JAR: max-win-pad (rush banner en HUD na de cap, 22 nov) end-to-end testen met een testhook die een capped ronde nabootst; echte capped rondes zijn te zeldzaam.
+- SONAR: Escape met how-to én FAIR tegelijk open zet de focus op FAIR i.p.v. HOW (randgeval, beide zijn dicht).

@@ -250,3 +250,12 @@
 - Eindrun rooktest: 81 ok, 0 fouten.
 - Idee voor later: banner-timers in andere games nalopen; SONAR 3D cursor e2e; codecheck squish volgende nacht.
 - Voor Nick: niets
+
+## 2026-11-22
+- Gevonden: rooktest basislijn 81 ok, 0 fouten, screenshots (ook 360px) netjes. Codecheck SQUISH JAR: engine (droptabellen tellen op tot 100.000, deterministische sim, chains, retrigger tot 15 pours, cap), stake-afronding, focus/Escape, verify en testhook (geen verborgen uitkomst) kloppen. Wel: (1) bij een capped GOLD RUSH-ronde toonden de rush-banner en de HUD de volle rush-winst i.p.v. wat er na de cap van ×10.000 werkelijk betaald wordt (uitbetaling zelf was goed); (2) og:description zei "multiplier up to ×10" terwijl de ladder met retriggers tot ×100 gaat. Banner-timers in alle games nagelopen (backlog): alleen opeenvolgende awaits of timers met clearTimeout/token, geen fout zoals LAST REEL had. SONAR (speerpunt) had als enige nog een FAIR-knop zonder aria-expanded en Escape zette de focus niet terug.
+- Gedaan: SQUISH JAR rush-banner en HUD tonen bij de cap het werkelijk betaalde deel (×10.000 min de basiswinst); og-tekst zegt nu "climbs to ×10, up to ×100 on a retrigger". Geen RTP-wijziging (engine onaangeroerd); capped pad niet end-to-end getest (te zeldzaam).
+- Gedaan: SONAR FAIR heeft aria-expanded en Escape zet de focus terug op FAIR, zoals de andere games.
+- Gedaan: toetsentest (keys.html) test nu ook FAIR (aria-expanded + Escape + focus) in 10 games en de LAST REEL paytable (PAYS: Tab binnen, Escape, focus) (backlog). Los gedraaid op sonar/lastreel/squish: alles ok.
+- Eindrun rooktest: 81 ok, 0 fouten.
+- Idee voor later: capped-ronde testhook voor SQUISH; Tab-volgorde op 360px; codecheck sonar3d volgende nacht.
+- Voor Nick: niets
