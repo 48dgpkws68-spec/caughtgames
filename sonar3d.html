@@ -179,7 +179,7 @@ $('snd').onclick=()=>{ A.unlock(); $('snd').textContent=A.toggle()?'SOUND OFF':'
 
 /* ---------- state ---------- */
 let bal=1000, mines=new Set(), M=5, phase='idle', stake=10, mult=1, first=true, revealed=new Map(), pings=new Map(), pingsUsed=0, pingArm=false;
-let moves=[], trail=[], tiles=[], bustIdx=-1, hist=[], feeLog=0, busy=false, mineArm=-1, mineArmT=0, kb=-1, kbOn=false;
+let endT=-1e9, moves=[], trail=[], tiles=[], bustIdx=-1, hist=[], feeLog=0, busy=false, mineArm=-1, mineArmT=0, kb=-1, kbOn=false;
 function resetTiles(){ tiles=[...Array(C)].map(()=>({rev:0,n:0,t0:0,mine:false,boom:false,ping:null,pt:0,free:false,proven:0,prt:0})) }
 resetTiles();
 
@@ -215,12 +215,13 @@ $('dbl').onclick=()=>{ $('bet').value=Math.min(bal,500,readStake()*2); readStake
 $('bet').addEventListener('change',()=>{ readStake(); ui() });
 
 /* ---------- game flow (same rules and maths as sonar.html) ---------- */
+// clam taps in the first 1.2 s after a round are ignored: the other mines are still surfacing (up to 1.6 s) and a stray double tap used to wipe them and the debrief. NEW DIVE and Enter work at once.
 function newBoard(){ resetTiles(); revealed=new Map(); pings=new Map(); pingsUsed=0; pingArm=false; moves=[]; trail=[]; bustIdx=-1; feeLog=0; mult=1; first=true; phase='idle'; mines=new Set(); mineArm=-1;
   $('debrief').classList.remove('on'); $('hint').style.display=''; $('state').textContent='READY TO DIVE'; multUI(''); $('win').innerHTML='tap any clam to start'; $('tip').style.opacity=1; ui() }
 function start(){ if(bal<1){ bal=1000; setBal(); toast('Out of play money · balance topped up to <b>1,000</b>') } stake=readStake(); if(bal<stake||stake<=0){ toast('Not enough play money for this stake'); return false } bal-=stake; setBal(); mines=layMines(M); phase='run'; fairUI(); $('state').textContent='DIVING · '+M+' MINES'; $('tip').style.opacity=0; return true }
 async function dive(i){
   if(busy||i<0||i>=C) return;
-  if(phase==='done'||phase==='bust'){ newBoard(); toast('Fresh reef · pick your <b>first clam</b>'); sPing(.08); return }
+  if(phase==='done'||phase==='bust'){ if(performance.now()-endT<1200) return; newBoard(); toast('Fresh reef · pick your <b>first clam</b>'); sPing(.08); return }
   if(tiles[i].rev) return;
   A.unlock();
   if(pingArm) return doPing(i);
@@ -272,7 +273,7 @@ function cashOut(why){ if(phase!=='run'||first||busy) return; A.unlock(); const 
   $('state').textContent=why||'CASHED OUT'; $('mult').className='won'; $('win').innerHTML='won <b>'+fmt(w)+'</b>';
   banner(why==='MAX WIN'?'MAX WIN!':why==='SEA CLEARED'?'REEF CLEARED!':'TREASURE!','×'+fmt(mult)+' · won '+fmt(w),'good');
   pushHist(mult); finish(); say((why?why.charAt(0)+why.slice(1).toLowerCase():'Cashed out')+' at '+fmt(mult)+'×. Won '+fmt(w)+'. Press Enter or New dive for a fresh reef.') }
-function finish(){ rotateSeed(mines); ui(); debrief() }
+function finish(){ endT=performance.now(); rotateSeed(mines); ui(); debrief() }
 function pushHist(x){ hist.unshift(x); if(hist.length>200) hist.length=100; $('hist').innerHTML=hist.slice(0,30).map(h=>'<span role="listitem" class="chip '+(h?'w':'l')+'" aria-label="'+(h?'won '+fmt(h)+'×':'mine, lost')+'">'+(h?fmt(h)+'×':'MINE')+'</span>').join('') }
 $('cash').onclick=()=>{ A.unlock(); if(phase==='run') cashOut(); else if(phase!=='idle'){ newBoard(); sPing(.08); toast('Fresh reef · pick your <b>first clam</b>') } };
 $('mbCash').onclick=()=>cashOut();

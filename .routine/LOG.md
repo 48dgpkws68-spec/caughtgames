@@ -259,3 +259,12 @@
 - Eindrun rooktest: 81 ok, 0 fouten.
 - Idee voor later: capped-ronde testhook voor SQUISH; Tab-volgorde op 360px; codecheck sonar3d volgende nacht.
 - Voor Nick: niets
+
+## 2026-11-23
+- Gevonden: rooktest basislijn 81 ok, 0 fouten, screenshots (ook 360px) netjes. Codecheck SONAR 3D: rekenmodel (zelfde engine als SONAR), fair-link, ping-kosten, max win, busy-bewaking en testhook kloppen. Wel: een tik op een schelp direct na een mijn of cash-out startte meteen een nieuw rif, waardoor de overige mijnen (komen tot 1,6 s na het einde boven) en de debrief weg waren voordat de speler ze zag. SONAR 2D: Escape met how-to én FAIR open sloot beide en zette de focus op FAIR (backlog).
+- Gedaan: SONAR 3D negeert tikken op schelpen in de eerste 1,2 s na een ronde; NEW DIVE en Enter werken meteen. Headless bewezen (WebGL-fallback): 6/6 rondes (bust en cash) blijven staan bij een directe tik, een tik na 1,3 s geeft een vers rif. Geen RTP-wijziging.
+- Gedaan: SONAR Escape sluit eerst alleen de how-to (focus HOW), een tweede Escape sluit FAIR (focus FAIR, aria-expanded false). Headless bewezen.
+- Gedaan: verifier-link SONAR 3D end-to-end getest (backlog): 10 rondes in node nagespeeld met dezelfde regels (3/5/8/12 mijnen, 4 met pings, 5 busts, flood-opens), link gebouwd zoals fairUI(), door index.html gehaald: 10/10 "matches the game". Index onaangeroerd.
+- Eindrun rooktest: 81 ok, 0 fouten.
+- Idee voor later: zelfde tik-na-einde-check in SNEAK/WOBBLE; verifier-test in check.sh; codecheck index volgende nacht.
+- Voor Nick: niets

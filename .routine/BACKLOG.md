@@ -6,7 +6,6 @@
 - index: honeypot-pad laat de verzendknop uitgeschakeld en "Sending..." staan (alleen bots, formulier zelf niet aanraken).
 - Toetsentest in check.sh: klik direct na rondestart bij crash 1.00× mag niet uitbetalen (FREEZE en PEEK! zijn gefixt; harness zoals 17 nov in LOG: rAF via setTimeout, zonder WebGL).
 - Reduced motion: andere games met een eenmalig getekende canvas-achtergrond nalopen op dezelfde lege achtergrond als SONAR had (resize wist het canvas).
-- SONAR 3D: verifier-link met path/x end-to-end testen (headless speelt de 3D-duikanimatie niet af).
 - check.sh: index DOM-dump faalt soms onder hoge load ("geen DOM-dump", los 40 s en ok): tweede poging of ruimere waakhond.
 - check.sh: tabwissel-test (verbergen/tonen 5x, daarna nog 1 renderloop per frame) voor SNEAK en een speelgoedgame; 13 nov alleen los gemeten op de nieuwe SNEAK.
 - Renderloop in passit/skyline/freeze/sonar (eigen loops in de html) nalopen op dezelfde verdubbeling bij tabwissel.
@@ -20,4 +19,5 @@
 - PASS IT: na een verborgen tabblad cashen de bots niet meer in de ingehaalde tijd (alleen beeld, geen uitbetaling van de speler); en bij terugkeer in de eindfase kan de explosie-animatie nog doorlopen in de nieuwe ronde (cosmetisch).
 - SONAR 3D: eerste pijltoets na muisgebruik (21 nov) end-to-end testen; headless geeft de 3D-hover geen tegel.
 - SQUISH JAR: max-win-pad (rush banner en HUD na de cap, 22 nov) end-to-end testen met een testhook die een capped ronde nabootst; echte capped rondes zijn te zeldzaam.
-- SONAR: Escape met how-to én FAIR tegelijk open zet de focus op FAIR i.p.v. HOW (randgeval, beide zijn dicht).
+- Andere tegelgames (SNEAK, WOBBLE) nalopen op een tik vlak na het rondeeinde die de onthulling wist (SONAR 3D 23 nov gefixt met 1,2 s wachttijd).
+- Verifier-test SONAR 3D (scratch: rondes in node nabouwen, links door index.html) als vaste test in check.sh; nu los gedraaid.
