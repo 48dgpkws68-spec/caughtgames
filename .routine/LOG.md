@@ -268,3 +268,11 @@
 - Eindrun rooktest: 81 ok, 0 fouten.
 - Idee voor later: zelfde tik-na-einde-check in SNEAK/WOBBLE; verifier-test in check.sh; codecheck index volgende nacht.
 - Voor Nick: niets
+
+## 2026-11-24
+- Gevonden: rooktest basislijn 81 ok, 0 fouten, screenshots (ook 360px) netjes. Codecheck INDEX: verifier (PEEK!/SONAR, HMAC, replay), omzetcalculator, typer en formulier kloppen. Wel in het rekenlab: (1) bij max multiplier 100× waren de bakgrenzen niet oplopend (…, 100, 1000, 101): een lege "1k+"-staaf en de theorielijn zakte daar onder de nul-as; (2) de theorielijn telde de gecapte massa (alles wat boven max zou crashen landt óp max) nergens mee, bij 100× zat de laatste staaf 0,97% vs theorie 0,87%; (3) de statische HTML toonde cash-out 2.00× / 48.5% terwijl de slider op 4.01× / 24.2% staat. Gesimuleerde feed kon "cashed out 1.20×" tonen bij een crash onder 1.20×.
+- Gedaan: rekenlab-bakken lopen altijd op; bij max ≤ 1000× krijgt de cap een eigen staaf, theorie = P(c≥a) − P(c≥b) met P = RTP/v tot de cap en 0 erboven; label "1k+" alleen voor bakken vanaf 1000. Headless bewezen (canvas los gerenderd bij 100× en 10.000×): theorielijn volgt alle staven, geen dip meer. Waarom: het rekenlab is het bewijsstuk voor casino's, de lijn moet kloppen bij elke instelling.
+- Gedaan: statische startwaarden rekenlab gelijk aan de JS (4.01× / 24.2%); feed laat alleen winnen als het crashpunt ≥ 1.20× is.
+- Geen RTP-wijziging (geen engine aangeraakt). Eindrun rooktest: 81 ok, 0 fouten.
+- Idee voor later: x-aslabels rekenlab als bereik; histogram-check in check.sh (theorie ≥ 0 bij elke max); codecheck battles volgende nacht.
+- Voor Nick: niets

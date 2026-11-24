@@ -21,3 +21,5 @@
 - SQUISH JAR: max-win-pad (rush banner en HUD na de cap, 22 nov) end-to-end testen met een testhook die een capped ronde nabootst; echte capped rondes zijn te zeldzaam.
 - Andere tegelgames (SNEAK, WOBBLE) nalopen op een tik vlak na het rondeeinde die de onthulling wist (SONAR 3D 23 nov gefixt met 1,2 s wachttijd).
 - Verifier-test SONAR 3D (scratch: rondes in node nabouwen, links door index.html) als vaste test in check.sh; nu los gedraaid.
+- index rekenlab: x-aslabels staan midden onder de staaf maar zijn de linkerrand van de bak (staaf "3" = crash 3 tot 5); labels op de bakgrenzen zetten of als bereik tonen.
+- index: statische startwaarden van rekenlab/teller in de HTML bij elke wijziging van de standaard (rCash=30) meenemen (24 nov gelijkgetrokken: 4.01× / 24.2%).
