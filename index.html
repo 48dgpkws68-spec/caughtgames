@@ -638,10 +638,10 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
       <div class="card spot rv">
         <h3>Configure the title</h3>
         <div class="ctl"><label for="rRtp">Return to player <output id="oRtp">97.0%</output></label><input id="rRtp" type="range" min="95" max="99" step="0.1" value="97"></div>
-        <div class="ctl"><label for="rCash">Player cashes out at <output id="oCash">2.00×</output></label><input id="rCash" type="range" min="0" max="100" step="1" value="30"></div>
+        <div class="ctl"><label for="rCash">Player cashes out at <output id="oCash">4.01×</output></label><input id="rCash" type="range" min="0" max="100" step="1" value="30"></div>
         <div class="ctl"><label for="rMax">Max multiplier <output id="oMax">10,000×</output></label><input id="rMax" type="range" min="0" max="3" step="1" value="3"></div>
         <div class="kv">
-          <div><b id="kHit">48.5%</b><span>chance this cash-out pays</span></div>
+          <div><b id="kHit">24.2%</b><span>chance this cash-out pays</span></div>
           <div><b id="kRet">97.00%</b><span>simulated return to player</span></div>
           <div><b id="kInst">3.96%</b><span>rounds that bust at 1.00×</span></div>
           <div><b id="kEdge">3.00%</b><span>house edge per bet</span></div>
@@ -973,7 +973,7 @@ if('IntersectionObserver' in window&&!reduce){
   const names=['Kees_88','Fenna','Jayden','Mo','Tessa.v','Bram','Luuk','Sanne','Rik','Ilse','Daan','Yara','Lars','Noor','Milan','Sophie','Ahmed','Julia'];
   const games=['PEEK!','VAULT HEIST','SONAR','SNEAK','GOOSE 63','FREEZE','WOBBLE','SKYLINE','PASS IT','LAST REEL','SQUISH JAR'];
   let h='';
-  for(let i=0;i<26;i++){ const c=crash(.97,10000), bet=[1,2,5,10,20,50][i%6], win=Math.random()<.2;
+  for(let i=0;i<26;i++){ const c=crash(.97,10000), bet=[1,2,5,10,20,50][i%6], win=c>=1.2&&Math.random()<.2; // nooit uitbetalen boven het crashpunt
     const m=win?Math.max(1.2,Math.min(c,2+Math.random()*40)):c;
     const g=games[i%games.length], lost=g==='SONAR'?'hit a <i>MINE</i>':g==='SNEAK'?'tripped the <i>ALARM</i>':g==='GOOSE 63'?'fell in the <i>WELL</i>':g==='FREEZE'?'got <i>CAUGHT</i> by the owl':g==='WOBBLE'?'toppled the <i>TOWER</i>':g==='SKYLINE'?'got <i>SPOTTED</i> by the chopper':g==='PASS IT'?'held the <i>BOMB</i>':g==='LAST REEL'?'missed the <i>LAST REEL</i>':g==='SQUISH JAR'?'got <i>NO SQUISH</i>':g==='VAULT HEIST'?'got <i>BUSTED</i>':'got <i>CAUGHT</i>';
     h+= win||m>=1.5 ? `<span>${names[i%names.length]} cashed out <b>${fmt(m,2)}×</b> on ${g} · €${fmt(bet*m,2)}</span>` : `<span>${names[i%names.length]} ${lost} at ${fmt(m,2)}× on ${g}</span>`;
@@ -990,26 +990,28 @@ const hc=$('hist'), hx=hc.getContext('2d');
 function lab(){
   const rtp=+$('rRtp').value/100, cash=cashVal(), max=MAXES[+$('rMax').value];
   $('oRtp').textContent=(rtp*100).toFixed(1)+'%'; $('oCash').textContent=fmt(cash,2)+'×'; $('oMax').textContent=fmt(max)+'×';
-  const N=200000, edges=[1,1.01,1.25,1.5,2,3,5,10,25,50,100,1000,max+1]; const bins=new Array(edges.length-1).fill(0);
+  // bij max <= 1000 krijgt de cap een eigen staaf [max, max+1): daar landt alles wat boven max zou crashen
+  const base=[1,1.01,1.25,1.5,2,3,5,10,25,50,100,1000], N=200000, edges=max>1000?[...base,max+1]:[...base.filter(e=>e<max),max,max+1]; const bins=new Array(edges.length-1).fill(0);
   let paid=0, inst=0;
   for(let i=0;i<N;i++){ const c=crash(rtp,max); if(c>=cash) paid+=cash; if(c<1.01) inst++;
     for(let b=0;b<bins.length;b++) if(c<edges[b+1]){bins[b]++;break} }
   $('kHit').textContent=(Math.min(1,rtp/cash)*100).toFixed(1)+'%'; $('kRet').textContent=(paid/N*100).toFixed(2)+'%';
   $('kInst').textContent=(inst/N*100).toFixed(2)+'%'; $('kEdge').textContent=((1-rtp)*100).toFixed(2)+'%';
-  drawHist(bins,edges,N,rtp,cash);
+  drawHist(bins,edges,N,rtp,cash,max);
 }
-function drawHist(bins,edges,N,rtp,cash){
+function drawHist(bins,edges,N,rtp,cash,max){
   const W=hc.width,H=hc.height,L=90,R=W-20,T=30,B=H-80; hx.clearRect(0,0,W,H);
   const mx=Math.max(...bins)/N, bw=(R-L)/bins.length;
   hx.font='500 22px JetBrains Mono, monospace'; hx.fillStyle='#6e6785'; hx.strokeStyle='rgba(255,255,255,.06)'; hx.lineWidth=1;
   for(let i=0;i<=4;i++){ const y=B-(B-T)*i/4; hx.beginPath(); hx.moveTo(L,y); hx.lineTo(R,y); hx.stroke(); hx.fillText((mx*i/4*100).toFixed(0)+'%',10,y+7) }
   bins.forEach((v,i)=>{ const h=(B-T)*(v/N)/mx, x=L+i*bw+6, g=hx.createLinearGradient(0,B-h,0,B); g.addColorStop(0,'#f8e3a3'); g.addColorStop(1,'#b8862b');
     hx.fillStyle=edges[i]>=cash?g:'rgba(233,196,106,.25)'; hx.beginPath(); hx.roundRect(x,B-h,bw-12,h,[8,8,0,0]); hx.fill() });
-  // theory: share per bucket = RTP/a - RTP/b
+  // theory: share per bucket = P(c>=a) - P(c>=b), P(c>=v) = RTP/v up to the cap, 0 above it
+  const P=v=>v<=1?1:v>max?0:Math.min(1,rtp/v);
   hx.strokeStyle='#ff2d6f'; hx.lineWidth=4; hx.beginPath();
-  bins.forEach((_,i)=>{ const a=edges[i], b=edges[i+1], p=(a<=1?1:rtp/a)-(rtp/b>1?1:rtp/b), y=B-(B-T)*p/mx, x=L+i*bw+bw/2; i?hx.lineTo(x,y):hx.moveTo(x,y) }); hx.stroke();
+  bins.forEach((_,i)=>{ const p=P(edges[i])-P(edges[i+1]), y=B-(B-T)*p/mx, x=L+i*bw+bw/2; i?hx.lineTo(x,y):hx.moveTo(x,y) }); hx.stroke();
   hx.fillStyle='#a39cb5'; hx.textAlign='center';
-  bins.forEach((_,i)=>hx.fillText(i===bins.length-1?'1k+':edges[i]<10?edges[i]+'':fmt(edges[i]),L+i*bw+bw/2,B+34));
+  bins.forEach((_,i)=>hx.fillText(edges[i]>=1000?'1k+':edges[i]<10?edges[i]+'':fmt(edges[i]),L+i*bw+bw/2,B+34));
   hx.textAlign='left';
   // cash-out marker
   let ci=bins.findIndex((_,i)=>cash<edges[i+1]); const cx=L+ci*bw+bw*((cash-edges[ci])/(edges[ci+1]-edges[ci]));
