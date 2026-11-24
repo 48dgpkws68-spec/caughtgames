@@ -2,3 +2,4 @@
 .claude/
 .routine/shots/
 art/raw-sig/
+*.bak-*

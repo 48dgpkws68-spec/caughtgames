@@ -1,0 +1,25 @@
+# Caught Games
+
+> B2B studio that designs, builds and licenses crash, instant-win and slot games to licensed online casino operators, with play-money demos of every game on this site.
+
+Caught Games makes casino games with published math. Catalogue: crash games PEEK! (with the neutral skin Vault Heist), SKYLINE, FREEZE and PASS IT; instant games SNEAK, GOOSE 63 and WOBBLE; mines games SONAR and SONAR 3D, where every tile shows how many mines touch it; slots LAST REEL and SQUISH JAR. Default RTP is 97% for the crash and step games (configurable per market, typically 95 to 99%), LAST REEL runs at 96.50% and SONAR has a hard cap of 97.5% for any strategy. Max win is 10,000x (SONAR and SONAR 3D: 5,000x) and is always paid. Every round is provably fair: the server seed hash is published before the round and outcomes come from HMAC-SHA256. 1v1 Battles is a separate product line of real-time skill duels (MIRROR and SURGE) where players play against each other and the operator earns a fee per match.
+
+All demos use play money; no real-money gambling is offered on this site. Games are supplied to licensed operators only. Live use needs server-side RNG and certification by an accredited lab (GLI or BMM) in each market. Branded reskins and custom games are built on request; a playable prototype typically takes two to four weeks. Licensing models: catalogue licence, exclusive licence or full IP transfer for custom builds. Contact: nick@caughtgames.com (reply within one business day). Based in the Netherlands.
+
+## Main pages
+
+- [Home](https://caughtgames.com/): studio overview, math lab, provably fair system, game sheets with RTP and volatility, partnership models, FAQ and the demo request form
+- [PEEK! and Vault Heist](https://caughtgames.com/peek.html): crash game demo, crash point odds, revenue model and what makes a crash game right for a casino
+- [SONAR](https://caughtgames.com/sonar.html): skill-read mines game with sonar numbers, priced per tile from the exact odds
+- [SONAR 3D](https://caughtgames.com/sonar3d.html): the same mines math on a 3D coral reef
+- [SNEAK](https://caughtgames.com/sneak.html): 3D heist step game where the player picks the risk on every step
+- [GOOSE 63](https://caughtgames.com/goose.html): the Game of the Goose as a 3D instant game with a dice choice per throw
+- [FREEZE](https://caughtgames.com/freeze.html): multiplayer crash game where every player is a runner on one field
+- [WOBBLE](https://caughtgames.com/wobble.html): block tower instant game, every block pays its true odds
+- [SKYLINE](https://caughtgames.com/skyline.html): rooftop crash game with optional jumps that triple the multiplier
+- [PASS IT](https://caughtgames.com/passit.html): party crash game, cash out only while holding the bomb
+- [LAST REEL](https://caughtgames.com/lastreel.html): 5x3 slot with a last-reel double and free spins
+- [SQUISH JAR](https://caughtgames.com/squish.html): physics merge slot with the GOLD RUSH bonus
+- [1v1 Battles](https://caughtgames.com/battles.html): real-time skill duels for casinos, fee model and integration
+- [Contact](https://caughtgames.com/contact.html): email and demo booking
+- [Privacy policy](https://caughtgames.com/privacy.html): what the site collects and why
