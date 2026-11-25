@@ -641,9 +641,9 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
     <div class="labgrid">
       <div class="card spot rv">
         <h3>Configure the title</h3>
-        <div class="ctl"><label for="rRtp">Return to player <output id="oRtp">97.0%</output></label><input id="rRtp" type="range" min="95" max="99" step="0.1" value="97"></div>
-        <div class="ctl"><label for="rCash">Player cashes out at <output id="oCash">4.01×</output></label><input id="rCash" type="range" min="0" max="100" step="1" value="30"></div>
-        <div class="ctl"><label for="rMax">Max multiplier <output id="oMax">10,000×</output></label><input id="rMax" type="range" min="0" max="3" step="1" value="3"></div>
+        <div class="ctl"><label for="rRtp">Return to player <output id="oRtp">97.0%</output></label><input id="rRtp" type="range" min="95" max="99" step="0.1" value="97" aria-valuetext="97.0%"></div>
+        <div class="ctl"><label for="rCash">Player cashes out at <output id="oCash">4.01×</output></label><input id="rCash" type="range" min="0" max="100" step="1" value="30" aria-valuetext="4.01 times"></div>
+        <div class="ctl"><label for="rMax">Max multiplier <output id="oMax">10,000×</output></label><input id="rMax" type="range" min="0" max="3" step="1" value="3" aria-valuetext="10,000 times"></div>
         <div class="kv">
           <div><b id="kHit">24.2%</b><span>chance this cash-out pays</span></div>
           <div><b id="kRet">97.00%</b><span>simulated return to player</span></div>
@@ -990,6 +990,9 @@ const MAXES=[100,1000,5000,10000];
 function cashVal(){ const v=+$('rCash').value; return Math.max(1.01,Math.round(Math.exp(Math.log(1.01)+(Math.log(100)-Math.log(1.01))*v/100)*100)/100) }
 function setFill(el){ el.style.setProperty('--p',((el.value-el.min)/(el.max-el.min)*100)+'%') }
 document.querySelectorAll('input[type=range]').forEach(el=>{ setFill(el); el.addEventListener('input',()=>setFill(el)) });
+// screen readers: each slider announces what its <output> shows (4.01×, 10,000×, €2.00) instead of the raw slider position (30, 3, 2)
+document.querySelectorAll('.ctl').forEach(c=>{ const o=c.querySelector('output'), el=c.querySelector('input[type=range]'); if(!o||!el) return;
+  const sync=()=>el.setAttribute('aria-valuetext',o.textContent.replace('×',' times')); sync(); new MutationObserver(sync).observe(o,{childList:true,characterData:true,subtree:true}) });
 const hc=$('hist'), hx=hc.getContext('2d');
 function lab(){
   const rtp=+$('rRtp').value/100, cash=cashVal(), max=MAXES[+$('rMax').value];
@@ -1015,7 +1018,10 @@ function drawHist(bins,edges,N,rtp,cash,max){
   hx.strokeStyle='#ff2d6f'; hx.lineWidth=4; hx.beginPath();
   bins.forEach((_,i)=>{ const p=P(edges[i])-P(edges[i+1]), y=B-(B-T)*p/mx, x=L+i*bw+bw/2; i?hx.lineTo(x,y):hx.moveTo(x,y) }); hx.stroke();
   hx.fillStyle='#a39cb5'; hx.textAlign='center';
-  bins.forEach((_,i)=>hx.fillText(edges[i]>=1000?'1k+':edges[i]<10?edges[i]+'':fmt(edges[i]),L+i*bw+bw/2,B+34));
+  // labels on the bucket boundaries (bar i covers edges[i] up to edges[i+1]); the last edge only when it is a real value, not the cap's max+1
+  const xl=v=>v>=1000?(v/1000)+'k':v<10?v+'':fmt(v), last=max>1000?bins.length:bins.length-1;
+  hx.strokeStyle='rgba(255,255,255,.18)'; hx.lineWidth=2;
+  for(let i=0;i<=last;i++){ const x=L+i*bw, v=i===bins.length?max:edges[i]; hx.beginPath(); hx.moveTo(x,B); hx.lineTo(x,B+10); hx.stroke(); hx.fillText(xl(v),Math.min(x,R-30),B+40) }
   hx.textAlign='left';
   // cash-out marker
   let ci=bins.findIndex((_,i)=>cash<edges[i+1]); const cx=L+ci*bw+bw*((cash-edges[ci])/(edges[ci+1]-edges[ci]));

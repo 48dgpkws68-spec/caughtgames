@@ -409,9 +409,9 @@ footer .w{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px;ali
     <div class="calc">
       <div class="card rv">
         <h3>Your numbers</h3>
-        <div class="ctl"><label for="cSt">Stake per player <output id="oSt">€10</output></label><input id="cSt" type="range" min="1" max="100" step="1" value="10"></div>
-        <div class="ctl"><label for="cFee">Your fee <output id="oFee">5.0%</output></label><input id="cFee" type="range" min="1" max="10" step="0.5" value="5"></div>
-        <div class="ctl"><label for="cM">Settled matches per day <output id="oM">1,000</output></label><input id="cM" type="range" min="100" max="20000" step="100" value="1000"></div>
+        <div class="ctl"><label for="cSt">Stake per player <output id="oSt">€10</output></label><input id="cSt" type="range" min="1" max="100" step="1" value="10" aria-valuetext="€10 per player"></div>
+        <div class="ctl"><label for="cFee">Your fee <output id="oFee">5.0%</output></label><input id="cFee" type="range" min="1" max="10" step="0.5" value="5" aria-valuetext="5.0 percent"></div>
+        <div class="ctl"><label for="cM">Settled matches per day <output id="oM">1,000</output></label><input id="cM" type="range" min="100" max="20000" step="100" value="1000" aria-valuetext="1,000 matches per day"></div>
       </div>
       <div class="card rv">
         <h3>Per match and per period</h3>
@@ -551,6 +551,8 @@ function calc(){
   const stake=+st.value*100, bps=Math.round(+fee.value*100), n=+m.value;
   const pot=2*stake, rake=Math.floor(pot*bps/10000);
   $('oSt').textContent='€'+fmt(+st.value); $('oFee').textContent=fmt(+fee.value,1)+'%'; $('oM').textContent=fmt(n);
+  // screen readers announce the slider in words, not as a bare number (10 / 5 / 1000)
+  st.setAttribute('aria-valuetext','€'+fmt(+st.value)+' per player'); fee.setAttribute('aria-valuetext',fmt(+fee.value,1)+' percent'); m.setAttribute('aria-valuetext',fmt(n)+' matches per day');
   $('kPot').textContent=eur(pot,2); $('kWin').textContent=eur(pot-rake,2); $('kFee').textContent=eur(rake,2);
   $('kDay').textContent=eur(rake*n,0); $('kMonth').textContent=eur(rake*n*30,0);
   // one sentence for screen readers, after the slider settles so dragging does not flood the reader
