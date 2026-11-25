@@ -276,3 +276,11 @@
 - Geen RTP-wijziging (geen engine aangeraakt). Eindrun rooktest: 81 ok, 0 fouten.
 - Idee voor later: x-aslabels rekenlab als bereik; histogram-check in check.sh (theorie ≥ 0 bij elke max); codecheck battles volgende nacht.
 - Voor Nick: niets
+
+## 2026-11-25
+- Gevonden: rooktest basislijn alle pagina's ok, 0 fouten, screenshots (ook 360px, battles over de hele lengte) netjes. Codecheck BATTLES: feiten nagelopen tegen de MIRROR-code (12 kaarten met dezelfde namen, hand van 4, 2:00 + 1:00 sudden death met dubbele supply en meltdown in de laatste 20 s, fee afgerond naar beneden, HMAC 5 minuten, rating-gap/pair-limit/blokkades/zelfde netwerk) en de SURGE-README (scoreformule, heat, overdrive, 8x10, 5 kleuren): alles klopt. MIRROR laadt nog pas na een klik, geen merknamen. Wel: de sliders van de fee-calculator (battles) en van het rekenlab/omzetcalculator (index) lieten schermlezers het kale sliderpunt horen ("30" voor cash-out 4.01×, "3" voor max 10.000×).
+- Gedaan: rekenlab-aslabels staan nu op de bakgrenzen met een streepje (staaf tussen "3" en "5" = crash 3 tot 5), "1k"/"5k"/"10k" i.p.v. "1k+", de cap-staaf heeft zijn max als label (backlog). Headless bekeken bij max 100× en 5.000×.
+- Gedaan: alle sliders op index (7) en battles (3) hebben aria-valuetext gelijk aan wat de pagina toont (index generiek via de <output>, "4.01 times", "€2.00"; battles "€10 per player", "5.0 percent", "1,000 matches per day"). Headless bewezen: waarden volgen na een wijziging.
+- Geen RTP-wijziging (geen engine aangeraakt). Eindrun rooktest: alles ok, 0 fouten.
+- Idee voor later: rekenlab-labels leesbaar op mobiel; aria-valuetext in de games; codecheck peek volgende nacht.
+- Voor Nick: niets
