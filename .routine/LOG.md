@@ -284,3 +284,11 @@
 - Geen RTP-wijziging (geen engine aangeraakt). Eindrun rooktest: alles ok, 0 fouten.
 - Idee voor later: rekenlab-labels leesbaar op mobiel; aria-valuetext in de games; codecheck peek volgende nacht.
 - Voor Nick: niets
+
+## 2026-11-26
+- Gevonden: rooktest basislijn 81 ok, 0 fouten, screenshots (ook 360px) netjes. Codecheck PEEK!: seed/hash/verifier, crashformule, startRun-bewaking, tabsprong (nooit voorbij de crash), max win, refill en crash-1.00×-klik kloppen. Wel: (1) auto cash-out werd per frame rechtstreeks uit het invoerveld gelezen: wie tijdens een lopende ronde bij 3× "25" intypte werd bij de "2" meteen op 2.00× uitgecasht; (2) saldo werd niet op centen afgerond (inzet 3,33 een paar keer: saldo toont 990.01 maar is 990.0099…, inzet 990.01 gaf "Not enough play money"); (3) Enter in het inzetveld na een verloren ronde deed niets (alleen blur) terwijl de knop BET NEXT ROUND toont; (4) ½ bij een leeg inzetveld gaf een leeg veld.
+- Gedaan: PEEK!/Vault auto cash-out telt pas na bevestigen (Enter, Tab, klik ernaast); een waarde die tijdens de ronde wordt bevestigd en al gepasseerd is geldt vanaf de volgende ronde. Headless bewezen (frame-loop via setTimeout): typen van "2" bij 2,3×+ casht niet uit, bevestigen ook niet, daarna 4 rondes automatisch exact 2.00× (+6.66 op inzet 3.33).
+- Gedaan: PEEK! saldo, winst en knoplabel in hele centen (afronden, niet afkappen: geen RTP-effect); Enter in het inzetveld zet na een verloren ronde in voor de volgende ronde (bewezen: "Bet of 3.33 goes into the next round."); ½ valt terug op 1.
+- Geen RTP-wijziging (crashformule en uitbetaalmoment onaangeroerd). Eindrun rooktest: 81 ok, 0 fouten.
+- Idee voor later: zelfde auto-veld-check in FREEZE; centen-afronding in de andere games nalopen; codecheck sonar volgende nacht.
+- Voor Nick: niets

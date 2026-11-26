@@ -24,3 +24,6 @@
 - index: statische startwaarden van rekenlab/teller in de HTML bij elke wijziging van de standaard (rCash=30) meenemen (24 nov gelijkgetrokken: 4.01× / 24.2%).
 - index rekenlab op mobiel: canvas (1200 breed) schaalt naar ~330px, aslabels worden dan ~6px; grotere fontmaat of minder labels onder 600px.
 - Andere pagina's met sliders (peek/sonar/games) nalopen op aria-valuetext (index en battles 25 nov gedaan).
+- FREEZE (en andere games met een auto-cash-veld dat per frame gelezen wordt) nalopen op uitcashen tijdens het typen (PEEK! 26 nov gefixt met een bevestigde waarde).
+- Saldo in hele centen in de andere games nalopen (PEEK! 26 nov gedaan).
+- PEEK!: eigen ingezette bet al tijdens de inzetfase in de spelerslijst tonen (nu pas bij de start van de ronde).
