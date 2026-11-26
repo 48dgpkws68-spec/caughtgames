@@ -453,6 +453,7 @@ function renderPlayers(){
 function renderHist(){
   $('hist').innerHTML=history.slice(-30).reverse().map(c=>`<span role="listitem" class="chip ${c<2?'lo':c<10?'mid':'hi'}" aria-label="${T('chipL',c.toFixed(2))}">${c.toFixed(2)}×</span>`).join('');
 }
+const cents=n=>Math.round(n*100)/100; // saldo altijd in hele centen: wat je ziet is wat je kunt inzetten
 function setBal(){ $('bal').textContent=fmt(bal) }
 
 async function startRun(){
@@ -463,7 +464,7 @@ async function startRun(){
   cur={seed,hash:h,nonce,crash:crashAt,rtp:RTP};
   await prepSeed();
   if(queued){ myBet={amt:queued,out:null}; queued=null }
-  phase='run'; phaseStart=performance.now(); mult=1; mileIdx=0; mile=null; musicStart(); fakeAt=phaseStart+2500+Math.random()*5000; fakeUntil=0;
+  phase='run'; phaseStart=performance.now(); mult=1; autoRound=autoAt; mileIdx=0; mile=null; musicStart(); fakeAt=phaseStart+2500+Math.random()*5000; fakeUntil=0;
   updateBtn(); renderPlayers(); sr(T('srRun'));
 }
 function crash(){
@@ -481,7 +482,7 @@ function newBetPhase(){
 function cashOut(){
   if(phase!=='run'||!myBet||myBet.out) return;
   myBet.out=Math.floor(mult*100)/100;
-  const win=myBet.amt*myBet.out; bal+=win; setBal(); sfx('cash'); burst(W/2,120,70,true); burst(W/2,120,40,false); flash=.35; flashCol='255,220,90';
+  const win=cents(myBet.amt*myBet.out); bal=cents(bal+win); setBal(); sfx('cash'); burst(W/2,120,70,true); burst(W/2,120,40,false); flash=.35; flashCol='255,220,90';
   say(T('outMsg',myBet.out.toFixed(2),fmt(win)));
   renderPlayers(); updateBtn();
 }
@@ -490,7 +491,7 @@ function sr(t){ $('sr').textContent=t } // schermlezer: fase en mijlpalen
 function updateBtn(){
   const b=$('act');
   b.className='big';
-  if(phase==='run'&&myBet&&!myBet.out){ b.classList.add('cash'); b.textContent=T('cash')+' '+fmt(myBet.amt*Math.floor(mult*100)/100); return }
+  if(phase==='run'&&myBet&&!myBet.out){ b.classList.add('cash'); b.textContent=T('cash')+' '+fmt(cents(myBet.amt*Math.floor(mult*100)/100)); return }
   if(phase==='bet'&&queued){ b.textContent=T('cancel'); return }
   if(phase==='bet'){ b.textContent=T('bet'); return }
   b.textContent=queued?T('cancel'):T('next');
@@ -500,21 +501,27 @@ document.addEventListener('pointerdown',()=>audio(),{once:true});
 document.addEventListener('visibilitychange',()=>{ if(!actx) return; if(document.hidden) actx.suspend(); else actx.resume() }); // geen geluid uit een verborgen tabblad
 $('act').onclick=()=>{ audio();
   if(phase==='run'&&myBet&&!myBet.out) return mult<crashAt&&cashOut(); // crash 1.00×: een klik vóór het eerste frame telt niet als uitcashen
-  if(queued){ bal+=queued; queued=null; setBal(); say(T('cancelled')); return updateBtn() }
+  if(queued){ bal=cents(bal+queued); queued=null; setBal(); say(T('cancelled')); return updateBtn() }
   const a=Math.floor(+$('bet').value*100)/100;
   if(!(a>=1)) return say(T('min'));
   if(a>bal) return say(T('broke'));
-  bal-=a; queued=a; setBal();
+  bal=cents(bal-a); queued=a; setBal();
   say(phase==='bet'?T('ready',fmt(a)):T('queued',fmt(a)));
   updateBtn();
 };
 $('quick').onclick=e=>{ const v=e.target.dataset.v; if(v) $('bet').value=v };
-$('half').onclick=()=>{$('bet').value=Math.max(1,Math.floor(+$('bet').value/2))};
+$('half').onclick=()=>{$('bet').value=Math.max(1,Math.floor(+$('bet').value/2))||1};
 $('dbl').onclick=()=>{$('bet').value=Math.min(Math.floor(bal),Math.floor(+$('bet').value*2))||1};
 // stake of auto cash-out typen + Enter = inzetten; met een lopende inzet alleen bevestigen (nooit per ongeluk annuleren of uitcashen)
-['bet','auto'].forEach(id=>$(id).addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.repeat&&!e.ctrlKey&&!e.metaKey&&!e.altKey){ e.preventDefault(); if((!myBet||myBet.out)&&!queued) $('act').click(); else e.target.blur() } }));
-$('auto').addEventListener('change',()=>{ const a=+$('auto').value; $('auto').value=!(a>0)?0:Math.min(MAXM,Math.max(1.01,Math.round(a*100)/100)) }); // 0 = uit, anders 1.01 tot 10.000
+['bet','auto'].forEach(id=>$(id).addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.repeat&&!e.ctrlKey&&!e.metaKey&&!e.altKey){ e.preventDefault(); if(id==='auto') e.target.dispatchEvent(new Event('change')); if(!(phase==='run'&&myBet&&!myBet.out)&&!queued) $('act').click(); else e.target.blur() } }));
+$('auto').addEventListener('change',()=>{ const a=+$('auto').value; $('auto').value=!(a>0)?0:Math.min(MAXM,Math.max(1.01,Math.round(a*100)/100)); armAuto() }); // 0 = uit, anders 1.01 tot 10.000
 document.addEventListener('keydown',e=>{ if(e.code==='Space'&&!e.repeat&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!/^(INPUT|TEXTAREA|SELECT|BUTTON|A)$/.test(e.target.tagName)){e.preventDefault();$('act').click()} });
+
+// Auto cash-out telt pas na bevestigen (Enter, Tab of klik ernaast), niet per toetsaanslag: wie tijdens een ronde "25" typt mag niet bij de "2" al op 2.00× uitgecasht worden.
+// Een waarde die tijdens de ronde wordt bevestigd en al gepasseerd is, geldt vanaf de volgende ronde.
+let autoAt=0, autoRound=0;
+function armAuto(){ const a=+$('auto').value; autoAt=a>=1.01?Math.min(MAXM,a):0; autoRound=(phase==='run'&&autoAt&&mult>=autoAt)?0:autoAt }
+armAuto();
 
 $('verify').onclick=async()=>{
   if(!prev) return $('vmsg').textContent=T('first');
@@ -1158,7 +1165,7 @@ function frame(){ const now=performance.now();
   if(phase==='run'){
     mult=Math.min(MAXM,Math.max(1,Math.floor(Math.exp(GROWTH*Math.max(0,now-phaseStart))*100)/100));
     if(mult>crashAt) mult=crashAt; // na een verborgen tabblad nooit voorbij de crash springen
-    const a=+$('auto').value;
+    const a=autoRound;
     if(myBet&&!myBet.out&&a>=1.01&&mult>=a&&a<=crashAt){ mult=a; cashOut() }
     bots.forEach(b=>{ if(!b.done&&mult>=b.out&&b.out<=crashAt){ b.done=true; renderPlayers() } });
     if(myBet&&!myBet.out) updateBtn();
