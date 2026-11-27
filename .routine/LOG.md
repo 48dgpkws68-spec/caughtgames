@@ -292,3 +292,12 @@
 - Geen RTP-wijziging (crashformule en uitbetaalmoment onaangeroerd). Eindrun rooktest: 81 ok, 0 fouten.
 - Idee voor later: zelfde auto-veld-check in FREEZE; centen-afronding in de andere games nalopen; codecheck sonar volgende nacht.
 - Voor Nick: niets
+
+## 2026-11-27
+- Gevonden: rooktest basislijn 81 ok, 0 fouten, screenshots (ook 360px) netjes. Codecheck SONAR: engine (exacte kansen, stapwinst, eerste tegel 0,975/p), seed/hash/verifier-link, pings (kosten, HMAC, 80%), proven-mine-bevestiging, flood, max win, debrief-timer en testhook (alleen publieke info) kloppen. Wel: (1) een dubbelklik op CASH OUT startte met de tweede klik meteen een nieuw bord (knop is dan al DIVE): winst, mijnen en debrief weg; een ingehouden Enter deed hetzelfde na een mijn en kon op het nieuwe bord direct opnieuw inzetten; (2) na een ronde een ander aantal mijnen kiezen liet "new board · 5 mines" op de knop staan; (3) de pingknop toonde buiten een duik de prijs van de vorige inzet; (4) saldo niet op hele centen (zelfde als PEEK! gisteren), pingknop kon aan staan terwijl het saldo net te laag was.
+- Gedaan: SONAR negeert een klik op DIVE in de eerste 0,5 s na het einde van een duik en negeert herhaalde Enter (toets ingehouden). Headless bewezen: dubbelklik op CASH OUT laat "won 3.77" en de debrief staan, een klik na 0,6 s geeft een nieuw bord.
+- Gedaan: mijnkeuze na een ronde werkt het knoplabel bij (bewezen: "new board · 8 mines"); pingknop toont buiten een duik "10%" en tijdens de duik de echte prijs in centen (0.33 bij inzet 3.33).
+- Gedaan: SONAR-saldo in hele centen (afronden van het saldo, niet van de uitbetaling: geen RTP-effect), pingknop gebruikt dezelfde afgeronde prijs als de afschrijving.
+- Geen RTP-wijziging (sonar-engine.js onaangeroerd). Eindrun rooktest: 81 ok, 0 fouten.
+- Idee voor later: zelfde dubbelklik-check in SONAR 3D en de andere games; replay met pijltjestoetsen; codecheck sneak volgende nacht.
+- Voor Nick: niets

@@ -25,5 +25,8 @@
 - index rekenlab op mobiel: canvas (1200 breed) schaalt naar ~330px, aslabels worden dan ~6px; grotere fontmaat of minder labels onder 600px.
 - Andere pagina's met sliders (peek/sonar/games) nalopen op aria-valuetext (index en battles 25 nov gedaan).
 - FREEZE (en andere games met een auto-cash-veld dat per frame gelezen wordt) nalopen op uitcashen tijdens het typen (PEEK! 26 nov gefixt met een bevestigde waarde).
-- Saldo in hele centen in de andere games nalopen (PEEK! 26 nov gedaan).
+- Saldo in hele centen in de andere games nalopen (PEEK! 26 nov en SONAR 27 nov gedaan).
 - PEEK!: eigen ingezette bet al tijdens de inzetfase in de spelerslijst tonen (nu pas bij de start van de ronde).
+- SONAR 3D en andere games: dubbelklik op CASH OUT / ingehouden Enter mag het resultaat niet wegvegen (SONAR 27 nov gefixt met 0,5 s wachttijd en e.repeat).
+- SONAR: pijltjes links/rechts op het bord door de replay laten stappen na een duik (nu alleen de knoppen ◀ ▶).
+- check.sh: SONAR-screenshot zonder how-to-dialoog (nu bedekt de dialoog het bord en de knoppen op alle formaten).

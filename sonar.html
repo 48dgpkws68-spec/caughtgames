@@ -287,19 +287,19 @@ function resetTiles(){ tiles=[...Array(C)].map(()=>({rev:0,n:0,t0:0,mine:false,b
 resetTiles();
 
 /* ---------- UI builders ---------- */
-const seg=$('seg'); MINES.forEach(m=>{ const b=document.createElement('button'); b.dataset.m=m; b.innerHTML=m+'<small>'+(m===3?'CALM':m===5?'DEEP':m===8?'ABYSS':'TRENCH')+'</small>'; b.onclick=()=>{ if(phase==='run') return; M=m; segUI(); sTickSafe() }; seg.appendChild(b) });
+const seg=$('seg'); MINES.forEach(m=>{ const b=document.createElement('button'); b.dataset.m=m; b.innerHTML=m+'<small>'+(m===3?'CALM':m===5?'DEEP':m===8?'ABYSS':'TRENCH')+'</small>'; b.onclick=()=>{ if(phase==='run') return; M=m; actUI(); sTickSafe() }; seg.appendChild(b) });
 const sTickSafe=()=>{ au(); sTick() };
 function segUI(){ [...seg.children].forEach(b=>{ b.classList.toggle('on',+b.dataset.m===M); b.disabled=phase==='run' }); $('mInfo').textContent=(C-M)+' safe · '+M+' mines'; depthUI() }
 function depthUI(){ const d=$('depth'); const safe=C-M; if(d.children.length!==safe){ d.innerHTML=''; for(let i=0;i<safe;i++) d.appendChild(document.createElement('i')) } const arr=[...d.children]; let k=0; arr.forEach(x=>x.className=''); tiles.forEach(T=>{ if(T.rev&&!T.mine&&arr[k]) arr[k++].className=T.free?'free':'on' }) }
-const setBal=()=>{ $('bal').textContent=fmt(bal) };
+const setBal=()=>{ bal=Math.round(bal*100)/100; $('bal').textContent=fmt(bal) }; // hele centen: geen 990.0099 na inzetten als 3.33
 function multUI(cls){ const el=$('mult'); el.textContent=fmt(Math.min(mult,E.MAX_WIN))+'×'; el.className=cls||''; if(!cls&&!reduce){ el.classList.add('pop'); setTimeout(()=>el.classList.remove('pop'),180) } }
 function winUI(){ $('win').innerHTML=phase==='run'?'cash out <b>'+fmt(stake*mult)+'</b>':phase==='idle'?'tap any tile to start':$('win').innerHTML }
 function actUI(){ const a=$('act');
   document.body.classList.toggle('running',phase==='run'); $('mbMult').textContent=fmt(mult)+'×'; $('mbCash').disabled=first; $('mbCash').textContent=first?'CASH OUT':'CASH '+fmt(stake*mult);
   if(phase==='run'){ a.className='cash'; a.disabled=first; a.innerHTML='CASH OUT<small>'+fmt(stake*mult)+'</small>' }
   else { a.className=''; a.disabled=false; a.innerHTML='DIVE<small>'+(phase==='idle'?'first tile places the stake':'new board · '+M+' mines')+'</small>' }
-  const p=$('ping'); p.disabled=phase!=='run'||pingsUsed>=PING_MAX||bal<stake*PING_COST-1e-9; p.classList.toggle('arm',pingArm);
-  $('pingTx').textContent=pingArm?'TAP A TILE TO PING':'PING A TILE · '+fmt(stake*PING_COST);
+  const p=$('ping'); p.disabled=phase!=='run'||pingsUsed>=PING_MAX||bal<Math.round(stake*PING_COST*100)/100; p.classList.toggle('arm',pingArm);
+  $('pingTx').textContent=pingArm?'TAP A TILE TO PING':'PING A TILE · '+(phase==='run'?fmt(Math.round(stake*PING_COST*100)/100):'10%');
   $('pingDots').innerHTML=[...Array(PING_MAX)].map((_,i)=>'<i class="'+(i<pingsUsed?'u':'')+'"></i>').join('');
   $('bet').disabled=$('half').disabled=$('dbl').disabled=phase==='run'; segUI(); winUI() }
 const say=s=>{ $('sr').textContent=s }; // screen-reader line, overrides the toast text when more needs saying
@@ -356,9 +356,10 @@ function cashOut(why){ if(phase!=='run'||first) return; au(); const w=Math.round
   const tl=tiles; mines.forEach(j=>setTimeout(()=>Object.assign(tl[j],{rev:1,mine:true,t0:performance.now()}),200+Math.random()*700));
   $('state').textContent=why||'CASHED OUT'; $('state').style.color='var(--gold)'; $('mult').className='won'; $('win').innerHTML='won <b style="color:var(--gold2)">'+fmt(w)+'</b>';
   pushHist(mult); finish(); say((why?why.charAt(0)+why.slice(1).toLowerCase():'Cashed out')+' at '+fmt(mult)+'×. Won '+fmt(w)+'. Press Enter or Dive for a new board.') }
-function finish(){ rotateSeed(mines); actUI(); debrief() }
+let endT=0; // moment waarop de duik eindigde: een dubbelklik op CASH OUT mag het resultaat niet meteen wegvegen
+function finish(){ endT=performance.now(); rotateSeed(mines); actUI(); debrief() }
 function pushHist(x){ hist.unshift(x); if(hist.length>200) hist.length=100; const el=document.createElement('span'); el.className='chip'; el.setAttribute('role','listitem'); el.textContent=x?fmt(x)+'×':'MINE'; el.style.color=x?(x>=5?'var(--gold2)':'var(--sea2)'):'var(--hot)'; $('hist').prepend(el); while($('hist').children.length>14) $('hist').lastChild.remove() }
-$('act').onclick=()=>{ au(); if(phase==='run'){ cashOut() } else { newBoard(); sPing(.1); toast('New board · pick your <b>first tile</b>') } };
+$('act').onclick=()=>{ au(); if(phase==='run'){ cashOut() } else { if(performance.now()-endT<500) return; newBoard(); sPing(.1); toast('New board · pick your <b>first tile</b>') } };
 $('mbCash').onclick=()=>cashOut();
 $('ping').onclick=()=>{ if(phase!=='run') return; pingArm=!pingArm; actUI(); sTickSafe(); if(pingArm) toast('Tap a hidden tile to <b>ping</b> it') };
 
@@ -429,7 +430,7 @@ cv.addEventListener('pointerdown',()=>{ kbOn=false });
 cv.addEventListener('blur',()=>{ kbOn=false; hover=-1 });
 cv.addEventListener('keydown',e=>{ if(e.ctrlKey||e.metaKey||e.altKey) return; const d={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];
   if(d){ e.preventDefault(); const fromMouse=!kbOn&&hover>=0&&hover!==kb; kbOn=true; if(fromMouse) kb=hover; else{ if(kb<0) kb=14; const x=Math.max(0,Math.min(N-1,kb%N+d[0])), y=Math.max(0,Math.min(N-1,((kb/N)|0)+d[1])); kb=y*N+x } hover=kb; if(!tiles[kb].rev&&(phase==='run'||phase==='idle')) sTickHover(); $('sr').textContent=tileSay(kb); return }
-  if(e.key==='Enter'&&kb>=0&&kbOn){ e.preventDefault(); if(phase==='bust'||phase==='done'){ $('act').click(); $('sr').textContent=$('toast').textContent; return } dive(kb) } });
+  if(e.key==='Enter'&&kb>=0&&kbOn){ e.preventDefault(); if(e.repeat) return; if(phase==='bust'||phase==='done'){ $('act').click(); $('sr').textContent=$('toast').textContent; return } dive(kb) } });
 cv.addEventListener('click',e=>{ const i=pick(e); if(i<0) return; if(phase==='bust'||phase==='done'){ return } dive(i) });
 
 /* fx state */
