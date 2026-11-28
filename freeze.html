@@ -208,8 +208,10 @@ function toBet(){
   $('state').textContent=joined?'YOU ARE ON THE START LINE':'JOIN THE NEXT ROUND'; $('win').innerHTML=joined?'freeze before the owl turns round':'tap JOIN to put a runner on the field';
   $('bigm').className='bigm'; ui();
 }
+// auto target counts once it is confirmed (Enter, Tab, click elsewhere), never while it is still being typed: typing 25 at 3x used to cash out on the 2
+var autoHold=false; var autoV=parseFloat($('autoX').value)||0; $('autoX').addEventListener('change',()=>{ const a=parseFloat($('autoX').value); autoV=a>=1.01?a:0; autoHold=phase==='run'&&autoV>0&&mult>=autoV });
 function toRun(){
-  phase='run'; phaseT=performance.now(); crash=E.crashOf(F.u('round')); peekAt=performance.now()+rnd(1800,4200);
+  autoHold=false; phase='run'; phaseT=performance.now(); crash=E.crashOf(F.u('round')); peekAt=performance.now()+rnd(1800,4200);
   W.run(true); sGo(); fairUI(); ui(); $('bigS').textContent='RUN!';
   if(me) $('state').textContent='RUNNING · STAKE '+fmt(stake);
 }
@@ -232,7 +234,7 @@ function loop(now){
     if(left<=0&&W) toRun();
   } else if(phase==='run'){
     const el=now-phaseT; mult=E.multAt(el);
-    const auto=parseFloat($('autoX').value); if(me&&me.state==='run'&&auto>=1.01&&mult>=auto&&auto<=crash) freezeMe(Math.floor(auto*100)/100);
+    const auto=autoHold?0:autoV; if(me&&me.state==='run'&&auto>=1.01&&mult>=auto&&auto<=crash) freezeMe(Math.floor(auto*100)/100);
     if(me&&me.state==='run'&&crash>=E.MAX_WIN&&mult>=E.MAX_WIN) freezeMe(E.MAX_WIN); // max win always pays
     if(mult>=crash){ toCrash() }
     else {

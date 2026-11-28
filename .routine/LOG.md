@@ -301,3 +301,12 @@
 - Geen RTP-wijziging (sonar-engine.js onaangeroerd). Eindrun rooktest: 81 ok, 0 fouten.
 - Idee voor later: zelfde dubbelklik-check in SONAR 3D en de andere games; replay met pijltjestoetsen; codecheck sneak volgende nacht.
 - Voor Nick: niets
+
+## 2026-11-28
+- Gevonden: rooktest basislijn 81 ok, 0 fouten, screenshots (ook 360px) netjes. Codecheck SNEAK: engine (stapwinst, diamond dash op de cap), seed/hash/layout/draws, start/top-up, inzet-afronding, dubbelklik op CASH OUT, tik vlak na het rondeeinde (busy tot na de reset, onthulling blijft staan) en testhook (geen verborgen uitkomst) kloppen. Wel: (1) een ingehouden 1/2/3 liep vanzelf door en zette na een gepakte ronde meteen een nieuwe heist in; (2) saldo niet op hele centen. Backlog auto-veld: FREEZE, SKYLINE en PASS IT lazen het auto-veld per frame, dus wie tijdens een ronde bij 3× "25" intypte werd op de "2" al uitgecasht (zelfde fout als PEEK! op 26 nov).
+- Gedaan: SNEAK negeert herhaalde toetsen (ingehouden 1/2/3, Space, Enter). Headless bewezen: ingehouden 1 op een vers bord doet niets (saldo 1000), een verse 1 zet in (990).
+- Gedaan: SNEAK-saldo in hele centen (afronden van het saldo, niet van de uitbetaling: geen RTP-effect). Niet end-to-end getest (3D-run liep vast in headless), wijziging is twee regels.
+- Gedaan: FREEZE, SKYLINE en PASS IT: auto-doel telt pas na bevestigen (Enter, Tab, klik ernaast). In FREEZE geldt een doel dat bij bevestigen al gepasseerd is vanaf de volgende ronde. Headless bewezen op FREEZE (zonder WebGL, frame-loop via setTimeout): "1.2" typen bij 1,5× bevriest niet, bevestigen ook niet, daarna 2 rondes exact op 1.20 en 1 ronde gepakt bij crash 1.17. SKYLINE en PASS IT zijn dezelfde wijziging maar niet end-to-end getest.
+- Geen RTP-wijziging (geen engine aangeraakt, uitbetaalregels van auto ongewijzigd). Eindrun rooktest: 81 ok, 0 fouten.
+- Idee voor later: auto-cash SKYLINE/PASS IT e2e; e.repeat in de andere games; codecheck goose volgende nacht.
+- Voor Nick: niets

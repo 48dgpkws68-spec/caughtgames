@@ -284,7 +284,7 @@ const hideBanner=()=>{ $('banner').className='banner' };
 
 /* ---------- flow ---------- */
 function newRound(){ phase='idle'; row=0; mult=1; first=true; steps=[]; layouts=layoutsFor(); W&&W.setRows(layouts); $('state').textContent='READY · '+ROWS+' ROWS TO THE DIAMOND'; $('state').style.color=''; multUI(''); fairUI(); ui() }
-function start(){ if(bal<1){ bal=1000; banner('TOPPED UP','play money back to 1,000','good'); bnTimer=setTimeout(hideBanner,1400) } stake=readStake(); if(bal<stake-1e-9) return false; bal=Math.max(0,bal-stake); phase='run'; $('state').textContent='SNEAKING · STAKE '+fmt(stake); fairUI(); return true }
+function start(){ if(bal<1){ bal=1000; banner('TOPPED UP','play money back to 1,000','good'); bnTimer=setTimeout(hideBanner,1400) } stake=readStake(); if(bal<stake-1e-9) return false; bal=Math.max(0,Math.round((bal-stake)*100)/100); phase='run'; $('state').textContent='SNEAKING · STAKE '+fmt(stake); fairUI(); return true }
 async function pickCol(c){
   if(busy||phase==='over'||row>=ROWS||!W) return;
   au(); $('tip').style.opacity=0;
@@ -312,7 +312,7 @@ async function pickCol(c){
 function pickKind(k){ const c=colOf(k); if(c>=0) pickCol(c) }
 async function cashOut(auto=false){
   if(phase!=='run'||first||(busy&&!auto)) return;
-  busy=true; phase='over'; clearTimeout(beat); const win=stake*mult, isMax=mult>=E.MAX_WIN||row>=ROWS; bal+=win; ui();
+  busy=true; phase='over'; clearTimeout(beat); const win=stake*mult, isMax=mult>=E.MAX_WIN||row>=ROWS; bal=Math.round((bal+win)*100)/100; ui(); // balance in whole cents (rounded, not cut: no RTP effect)
   sCash(); banner(isMax&&mult>=E.MAX_WIN?'MAX WIN':isMax?'DIAMOND!':'ESCAPED','×'+fx(mult)+' · won '+fmt(win),'good');
   $('state').textContent='ESCAPED WITH THE LOOT'; $('state').style.color='var(--gold)'; $('win').innerHTML='won <b>'+fmt(win)+'</b>'; multUI('won');
   await W.escape(isMax); chip(mult,true); rotateSeed(steps,mult); await wait(500); hideBanner(); busy=false; await W.reset(); newRound();
@@ -321,8 +321,8 @@ $('cash').onclick=()=>cashOut(); $('mbCash').onclick=()=>cashOut();
 addEventListener('keydown',e=>{ if(e.ctrlKey||e.metaKey||e.altKey) return; if(e.target.tagName==='INPUT'){ if(e.key==='Enter') e.target.blur(); return } if(!$('how').hidden){ if(e.key==='Escape'){ closeHow(true); e.preventDefault() } else if(e.key==='Tab'){ $('go').focus({preventScroll:true}); e.preventDefault() } return }
   if(e.key==='Escape'&&!$('fairBox').hidden){ $('fairBox').hidden=true; $('fairBtn').setAttribute('aria-expanded','false'); $('fairBtn').focus({preventScroll:true}); return }
   if((e.key===' '||e.key==='Enter')&&/^(BUTTON|A|SUMMARY)$/.test(e.target.tagName)) return;
-  if(e.key==='1'||e.key==='2'||e.key==='3'){ pickKind(+e.key-1); e.preventDefault() }
-  else if(e.key===' '||e.key==='Enter'){ cashOut(); e.preventDefault() } });
+  if(e.key==='1'||e.key==='2'||e.key==='3'){ e.preventDefault(); if(!e.repeat) pickKind(+e.key-1) } // a held key never walks on by itself or stakes the next heist
+  else if(e.key===' '||e.key==='Enter'){ e.preventDefault(); if(!e.repeat) cashOut() } });
 addEventListener('click',e=>{ const b=e.detail>0&&e.target.closest&&e.target.closest('button'); if(b) b.blur() },true); // a mouse/touch click leaves no focus behind, so Space/Enter stay the game shortcuts; Tab focus keeps native button activation
 $('fairBtn').onclick=()=>{ $('fairBox').hidden=!$('fairBox').hidden; $('fairBtn').setAttribute('aria-expanded',String(!$('fairBox').hidden)) };
 const openHow=()=>{ $('how').hidden=false; setTimeout(()=>$('go').focus({preventScroll:true}),0) };

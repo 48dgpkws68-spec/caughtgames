@@ -19,14 +19,16 @@
 - PASS IT: na een verborgen tabblad cashen de bots niet meer in de ingehaalde tijd (alleen beeld, geen uitbetaling van de speler); en bij terugkeer in de eindfase kan de explosie-animatie nog doorlopen in de nieuwe ronde (cosmetisch).
 - SONAR 3D: eerste pijltoets na muisgebruik (21 nov) end-to-end testen; headless geeft de 3D-hover geen tegel.
 - SQUISH JAR: max-win-pad (rush banner en HUD na de cap, 22 nov) end-to-end testen met een testhook die een capped ronde nabootst; echte capped rondes zijn te zeldzaam.
-- Andere tegelgames (SNEAK, WOBBLE) nalopen op een tik vlak na het rondeeinde die de onthulling wist (SONAR 3D 23 nov gefixt met 1,2 s wachttijd).
+- WOBBLE nalopen op een tik vlak na het rondeeinde die de onthulling wist (SONAR 3D 23 nov gefixt; SNEAK 28 nov nagelopen: in orde, busy tot na de reset).
 - Verifier-test SONAR 3D (scratch: rondes in node nabouwen, links door index.html) als vaste test in check.sh; nu los gedraaid.
 - index: statische startwaarden van rekenlab/teller in de HTML bij elke wijziging van de standaard (rCash=30) meenemen (24 nov gelijkgetrokken: 4.01× / 24.2%).
 - index rekenlab op mobiel: canvas (1200 breed) schaalt naar ~330px, aslabels worden dan ~6px; grotere fontmaat of minder labels onder 600px.
 - Andere pagina's met sliders (peek/sonar/games) nalopen op aria-valuetext (index en battles 25 nov gedaan).
-- FREEZE (en andere games met een auto-cash-veld dat per frame gelezen wordt) nalopen op uitcashen tijdens het typen (PEEK! 26 nov gefixt met een bevestigde waarde).
-- Saldo in hele centen in de andere games nalopen (PEEK! 26 nov en SONAR 27 nov gedaan).
+- Saldo in hele centen in de andere games nalopen (PEEK! 26 nov, SONAR 27 nov en SNEAK 28 nov gedaan).
 - PEEK!: eigen ingezette bet al tijdens de inzetfase in de spelerslijst tonen (nu pas bij de start van de ronde).
 - SONAR 3D en andere games: dubbelklik op CASH OUT / ingehouden Enter mag het resultaat niet wegvegen (SONAR 27 nov gefixt met 0,5 s wachttijd en e.repeat).
 - SONAR: pijltjes links/rechts op het bord door de replay laten stappen na een duik (nu alleen de knoppen ◀ ▶).
 - check.sh: SONAR-screenshot zonder how-to-dialoog (nu bedekt de dialoog het bord en de knoppen op alle formaten).
+- Auto-cash SKYLINE/PASS IT (28 nov: telt pas na bevestigen) end-to-end testen; alleen FREEZE is headless bewezen.
+- Andere games nalopen op ingehouden toetsen (e.repeat) die na een ronde vanzelf opnieuw inzetten (SONAR 27 nov, SNEAK 28 nov gedaan).
+- FREEZE/SKYLINE/PASS IT: auto-veld bij bevestigen normaliseren (onder 1.01 terug naar 0, max = max win), zoals PEEK!.

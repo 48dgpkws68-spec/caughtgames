@@ -343,8 +343,10 @@ function tick(now){
   $('incoming').classList.toggle('on',mine&&hs<0&&W.next===0);
   $('bigS').textContent=hs===0&&mine?'YOU HAVE IT!':hs===0&&joined?'YOU PASS IT ON':hs>=0?nameOf(hs).toUpperCase()+' HAS IT':'IN THE AIR';
 }
+// auto target counts once it is confirmed (Enter, Tab, click elsewhere), never while it is still being typed: typing 25 at 3x used to cash out on the 2
+var autoV=parseFloat($('autoX').value)||0; $('autoX').addEventListener('change',()=>{ const a=parseFloat($('autoX').value); autoV=a>=1.01?a:0; });
 function autoAt(el){
-  const auto=parseFloat($('autoX').value);
+  const auto=autoV;
   if(!(joined&&seats[0].state==='in'&&auto>=E.MIN_CASH)) return null;
   const a=Math.min(E.MAX_WIN,Math.ceil(auto*100-1e-6)/100), ta=E.msTo(a);
   for(const r of route){
